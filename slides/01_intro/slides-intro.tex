@@ -1,0 +1,639 @@
+
+
+
+
+\input{../../2021/style/preamble4tex}
+\input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+
+
+\begin{document}
+    
+
+
+\lecturechapter{1}{Introduction}
+\lecture{Computerintensive Methods}
+
+%\SweaveOpts{engine = R, eps = FALSE, pdf = FALSE, png = TRUE, resolution = 120, keep.source = TRUE}
+
+% \begin{vbframe}{Organisatorisches}
+%
+% \begin{itemize}
+% \item \textbf{Infos \& Kursunterlagen in LMU-Moodle:} \\
+%
+% {\small \url{www.elab.moodle.elearning.lmu.de/course/view.php?id=2481}}
+%
+% \item \textbf{Einschreibeschlüssel:} \\
+% CIM1718
+% \end{itemize}
+%
+% Bitte den Einschreibeschlüssel JETZT notieren und der Veranstaltung auf Moodle beitreten!
+% \end{vbframe}
+
+
+%FIXME: Do we already know all this??
+%\begin{vbframe}{Termine}
+
+%\lz
+
+%\begin{center}
+%\footnotesize
+%\begin{tabular}{l|l|l}
+%\textbf{Vorlesung} & \textbf{übung} & \textbf{Tutorium} \\ \hline
+%08.10 / 09.10 & 16.10 & 17.10? (entfällt oder \proglang{R} Intro) \\
+%15.10         & 30.10 & 24.10 / 31.10 \\
+%22.10 / 23.10 & 13.11 & 07.11 / 14.11 \\
+%29.10         & 27.11 & 21.11 / 28.11 \\
+%05.11 / 06.11 & 11.12 & 05.12 / 12.12 (Seminarraum) \\
+%12.11         & 08.01 & 19.12 / 09.01 \\
+%19.11 / 20.11 & 22.01 & 16.01 / 23.01 \\
+%26.11         &       & 30.01 \\
+%03.12 / 04.12 &       & \\
+%10.12         &       & \\
+%17.12 / 18.12 &       & \\
+%07.01         &       & \\
+%14.01 / 15.01 &       & \\
+%21.01         &       & \\
+%28.01 / 29.01 &
+%\end{tabular}
+%\end{center}
+%\end{frame}
+
+
+% \begin{vbframe}{Literatur}
+% Folien, Handouts und Code zum Stoff der Vorlesung werden zum
+% Download bereitgestellt, als Vorlagen dienen:
+%
+% \lz
+%
+% \begin{itemize}
+% \item \href{https://www.crcpress.com/Statistical-Computing-with-R/Rizzo/9781584885450}{M. Rizzo, \textbf{Statistical Computing in R}, Chapman and Hall/CRC, 2007.}
+% \item \href{http://onlinelibrary.wiley.com/doi/10.1002/9781118555552.scard/summary}{G.H. Givens, J.A. Hoeting, \textbf{Computational Statistics}, 2nd edition, Wiley, 2013.}
+% \item \href{http://ebooks.cambridge.org/ebook.jsf?bid=CBO9780511812231}{J.F. Monahan, \textbf{Numerical Methods of Statistics}, 2nd edition, Cambridge, 2011.}
+% \item \href{http://biowww.dfci.harvard.edu/~gray/248-02/report.pdf}{Robert Gray, \textbf{Advanced Statistical Computing}, Vorlesungsskriptum, 2002.}
+% \end{itemize}
+% \end{vbframe}
+
+
+% \begin{vbframe}{Software}
+% \begin{itemize}
+% \item Als Software in den �bungen wird \pkg{R} verwendet.
+% \item \pkg{R}-Grundkenntnisse im Umfang der Einführungsveranstaltungen
+%   werden vorausgesetzt.
+% \item Teilnehmer, die keinen \pkg{R}-Kurs besucht haben: bitte so schnell wie
+%   möglich die Unterlagen der Kurse \enquote{Statistische Software} (2. Semester, nur \pkg{R}-Teil)
+%   und \enquote{Programmieren mit Statistischer Software} (4. Semester) durcharbeiten. Probleme mit
+%   \pkg{R} im Tutorium ansprechen.
+% \item Zur Unterstützung der Programmierung von \pkg{R}
+%   empfiehlt sich die Verwendung eines Editors wie \pkg{Vim}, \pkg{Emacs} oder \pkg{RStudio}.
+% \end{itemize}
+% \end{vbframe}
+
+
+% \begin{vbframe}{R Kenntnisse}
+%
+% Was ist bekannt bzw. nicht bekannt?
+%
+% \begin{itemize}
+% \item if-else, for-Schleifen?
+% \item Eigene Funktionen schreiben?
+% \item basic plots? ggplot2?
+% \item lapply / sapply / apply / Map / Reduce / Filter?
+% \item S3? S4? generische Methoden?
+% \item Exception Handling (try / tryCatch) bekannt?
+% \item Debugging (in RStudio oder traceback, debug, browser, etc.)
+% \item R-Profiling bzw. Laufzeitanalyse?
+% \end{itemize}
+% \end{vbframe}
+
+\begin{vbframe}{What is this lecture about}
+  \oneliner{How to analyze and solve interesting computational problems in stats}
+
+\lz
+
+We will mainly study techniques from applied maths (numerics, linear algebra, optimization) for that purpose,
+not so much from statistics itself.
+
+\end{vbframe}
+
+
+
+\begin{vbframe}{Stat. Computing vs. Comp. Statistics}
+Westlake (1994)
+
+\textbf{\enquote{Computational statistics relates to the advance
+  of statistical theory and methods through the use of computational
+  methods. This includes both the use of computation to explore the
+  impact of theories and methods, and development of algorithms to
+  make these ideas available to users.}}
+
+\lz
+\textbf{Statistical Computing}\\
+Computational tools for statistics using methods and techniques of computer science, numerics and optimization.
+
+\bigskip
+
+\textbf{Computational Statistics}\\
+Applied statistics with the help of computational tools.
+
+\lz
+
+We will mainly study the former.
+
+\end{vbframe}
+
+
+% \begin{vbframe}{Computational vs. Applied Statistics}
+% What can you do without a computer? \\
+% \textbf{tests, models, graphics}
+
+% \lz
+
+% What can be done better with a computer? \\
+% \textbf{tests, models, graphics}
+
+% \lz
+
+% What cannot be done without a computer? \\
+% \textbf{complex models, simulations, interactive graphics, learning algorithms}
+
+% \lz
+
+% \ldots
+
+% \framebreak
+
+% The scientific field of computational statistics is the part of statistics that \textbf{would not be (reasonably) possible without computer usage}.
+
+% \lz
+
+% Corresponding procedures are often referred to as \textbf{computationally intensive}.
+
+% \lz
+
+% In the broadest sense, applied statistics is computational, and, consequently, applied statistics is also mathematical.
+
+% \end{vbframe}
+
+% \begin{vbframe}{Idee der LVA: Was machen wir, was nicht?}
+%   \oneliner{Steht im Moodle}
+% \end{vbframe}
+
+\begin{vbframe}{Principal questions of computer science}
+\begin{itemize}
+  \item What is a computer?
+  \item What is an algorithm?
+  \item What is computable?
+  \item How to analyze algorithms? What is
+    a \enquote{good} / \enquote{clever} algorithm?
+  \item How can you describe the efficiency of an algorithm?
+\end{itemize}
+
+\lz
+
+For only a few of these questions we have (appropriately much) time in the lecture, but we will at least discuss questions of efficiency.
+
+\end{vbframe}
+
+\begin{vbframe}{Numerical Analysis}
+
+Subfield of mathematics that deals with the development and analysis of algorithms for continuous problems.
+
+\lz
+
+We are interested in these if:
+\begin{itemize}
+\item There is no analytic solution to a problem, or
+\item An exact solution to a problem is available, but the solution cannot be computed efficiently,
+  or computational errors strongly impact the solution.
+\end{itemize}
+\end{vbframe}
+
+
+\begin{vbframe}{Numerical Computations}
+
+\begin{itemize}
+\item In this lecture we focus on how to solve statistical problems numerically with the help of a digital computer.
+\item Numbers are represented by fixed-length bit-strings, so there is only a finite set of numbers available.
+\item None of the common mathematical sets of numbers $\N$, $\Z$, $\Q$
+  and $\R$ is therefore entirely representable on the computer
+\item Reals will be replaced by approximate machine numbers.
+  % The quality of the approximation depends on the size of the number.
+\item Even the basic arithmetic operations $+$, $-$, $*$, and $/$ can only be approximated.
+  % since $\M$ is not closed with respect to rational operations.
+\end{itemize}
+\end{vbframe}
+
+\begin{vbframe}{Optimization}
+
+\begin{itemize}
+  \item Huge and diverse subfield of applied maths
+\begin{itemize}
+  \item Linear optimization
+  \item Convex optimization
+  \item Discrete optimization
+  \item Black-box optimization
+  \item \ldots
+\end{itemize}
+  \item Many things in stats and nearly everything in machine learning is solved by optimizing
+    a quality criterion and of the problems are often difficult enough to care about
+    how this works.
+\end{itemize}
+\end{vbframe}
+
+
+% \framebreak
+
+% \begin{itemize}
+% \item \enquote{Elementary} mathematical functions like \textsf{sin},
+%   \textsf{cos}, \textsf{exp}, \textsf{log}, \ldots\ are components of
+%   numerical software.
+% \item Even if the result of a function evaluation can be represented in $\M$, often only an approximation for the true value is returned.
+
+% \item In the best case, the result is the value that corresponds to the exact
+%   function value nearest to the machine number, but it can also deviate significantly from it.
+% \item In particular, the boundaries of the function's domain can be difficult to represent, but those are often particularly important in statistics.
+% \item In principle, an error should be expected in every evaluation.
+% \end{itemize}
+
+% \framebreak
+
+% \begin{itemize}
+% \item Operations associated with the infinitesimal calculus cannot be computed by a digital computer.
+
+% \item Because of the finiteness of $\M$, there are no arbitrarily
+%   small or large numbers and also no arbitrarily close numbers.
+% \item Each arithmetic operation needs time, therefore each calculation can consist of only finitely many arithmetic steps.
+% \item Operations defined by limits (differentiation,
+%   sum of an infinite series, \ldots) can only be approximated.
+% \end{itemize}
+
+% \framebreak
+
+% \begin{itemize}
+% \item Many approaches must therefore be replaced by \textbf{finite} procedures
+%   which provide an approximate value for the desired result.
+% \item Initially, accuracy can often be improved by increasing the
+%   computational effort (more sophisticated procedure, finer subdivision,
+%   \ldots).
+% \item However, at some point one reaches a limitation imposed by the inaccuracy of the computer.
+% \item The best possible result often causes an unacceptably
+%   high computational effort.
+% \item It is therefore often important to quantify a desired \textbf{approximation quality} in advance.
+% \end{itemize}
+% \end{vbframe}
+
+
+% \begin{vbframe}{When is a problem solved?}
+% \begin{itemize}
+% \item The numerical solution of a problem can not be considered independent from the application.
+% \item Error sources:
+%   \begin{itemize}
+%   \item Variance of the data,
+%   \item Inaccuracy of the statistical model,
+%   \item Approximations introduced by digital arithmetics.
+%   \end{itemize}
+% \item If the error sources are independent of each other, the individual errors can be added up to the total error.
+% \item A result is \textbf{acceptable} when it approximates the real solution with a given accuracy.
+% \end{itemize}
+
+% \framebreak
+
+% \begin{itemize}
+% \item Ideally, a numerical solution algorithm should allow the specification of parameterized accuracy requirements (i.e. specifying a \enquote{tolerance}).
+% \item The algorithm should either return a satisfying approximation, or indicate that it fails doing so.
+% \item If this is not feasible, accuracy should be at least identifiable
+%   a posteriori.
+% \item In the optimal case, the digital implementation of the algorithm does not affect the solution process, i.e. errors due to digital arithmetics only affect the decimal place that comes after the \enquote{natural} error of the algorithm.
+% \end{itemize}
+% \end{vbframe}
+
+
+% \begin{vbframe}{Types of numerical problems}
+
+% Common problems in statistics:
+% $$
+% y = \fx \qquad \mbox{or} \qquad y \approx \fx
+% $$
+
+% \begin{description}
+% \item [Direct Problem:] Given $f$ and $\xb$, find $y$.
+% \item[Inverse problem:] Given $f$ and $y$, find $\xb$.
+% \item[Identification problem:] Given pairs $(\xb,y)$, find $f$.
+% \end{description}
+
+% \framebreak
+
+% Beim \textbf{direkten Problem} stellt sich die Genauigkeitsanforderung
+% i.A.\ direkt an die Güte der Auswertung der Funktion $f$. Sei $y^*$
+% die exakte Lösung, so ist der Abstand zwischen $y^*=\fx$ und
+% $\tilde y=\tilde f(x)\in\M$ von Interesse.
+
+% \lz
+
+% Beispiel: $f$ wird durch Taylorreihe $\tilde f$ approximiert $\to$
+% Vorgabe an Ordnung des Polynoms durch Fehlerabschätzung über
+% Restglied.
+
+% \framebreak
+
+% Beim \textbf{inversen Problem} ist nicht eindeutig, wie der Fehler
+% gemessen wird: Sei $\tilde x$ die berechnete Lösung, und $x^*$ die
+% wahre Lösung. Es ergeben sich zwei Fehlerarten (der Einfachheit halber nehmen
+% wir an, dass $f$ modulo $\M$ exakt berechnet werden kann):
+
+% \begin{enumerate}
+% \item Fehler der Näherungslösung: $x^* - \tilde x$
+% \item Residuum der Näherungslösung: $y - f(\tilde x)$
+% \end{enumerate}
+% Da $x^*$ unbekannt ist, kann meist nur das Residuum direkt berechnet
+% werden, während der Fehler nur abgeschätzt werden kann. Wie gut diese
+% Schätzung ist, hängt von der Empfindlichkeit des Problems ab.
+
+% \framebreak
+
+% Beim \textbf{Identifikationsproblem} ist das \enquote{natürliche} Fehlermaß
+% ein Abstand in einem geeigneten Funktionenraum.
+
+% \lz
+
+% Dieses kann jedoch wieder nicht direkt berechnet werden, da die wahre
+% Funktion $f$ unbekannt ist.
+
+% \lz
+
+% Durch die Residuen $y-\tilde f(x)$ können jedoch viele Abstände in
+% Funktionenräumen approximiert werden, z.B. der $L^2$-Abstand
+% $$
+% d(f, g) = \int (f(x)-g(x))^2\, dx
+% $$
+% durch die Quadratsumme der Residuen. Die Fehlerabschätzung ist daher
+% in der Regel ungenauer als beim direkten oder inversen Problem.
+
+% \end{vbframe}
+
+\begin{vbframe}{Example: Simple computation}
+
+\begin{center}
+\begin{figure}
+  \includegraphics[height = 4.5cm, width = 9cm]{figure_man/simple-comp.png}
+\end{figure}
+\end{center}
+
+How do we calculate $cos(x)$ here?\\
+Possible answer: approximated Taylor series!
+
+\end{vbframe}
+
+\begin{vbframe}{Example: Equation solving / Root finding}
+
+\begin{center}
+\begin{figure}
+  \includegraphics[height = 5cm, width = 9cm]{figure_man/Equation-solving.png}
+\end{figure}
+\end{center}
+
+\framebreak
+
+For a tolerance of $0.001$, the numerical solution is:
+
+%<<include=FALSE>>=
+%opts_chunk$set(size = "scriptsize")
+%@
+\lz
+\footnotesize
+\begin{verbbox}
+f = function(x) { 2 + cos(x) + sin(2 * x) }
+f0 = function(x) { f(x) - 2.5 }
+uniroot(f0, c(0, 4), tol = 0.001)
+## $root
+## [1] 1.401727
+##
+## $f.root
+## [1] -2.382814e-06
+##
+## $iter
+## [1] 6
+##
+## $init.it
+## [1] NA
+##
+## $estim.prec
+## [1] 0.0005500599
+\end{verbbox}
+\col
+
+\end{vbframe}
+
+% \begin{vbframe}{Example for an Identification Problem}
+
+% \begin{center}
+% <<echo = FALSE>>=
+% set.seed(111)
+% x2 = x
+% x = seq(0, 10, length = 30)
+% e = rnorm(length(x), sd = 0.2)
+% y = f(x) + e
+% plot(y ~ x, ylab = "y")
+% text(1.5, 3.5, expression(y == 2 + cos(x) + sin(2 * x) + epsilon), pos = 4)
+% b = lm(y ~ 1 + poly(x, 11))
+% @
+% \end{center}
+
+% \framebreak
+
+% Polynomial of degree $11$:
+% $$
+% y = \beta_0 + \beta_1x + \beta_2x^2 + \ldots + \beta_{11}x^{11} + \varepsilon
+% $$
+
+% \lz
+
+% Estimated coefficients:
+
+% <<echo=FALSE>>=
+% cb <- coef(b)
+% names(cb) = paste("x^", 0:11, sep = "")
+% print(cb)
+% @
+
+% \lz
+
+% Error (standard deviation) on the sample: round(summary(b)$sigma, 4)
+
+% \framebreak
+
+% \begin{center}
+% <<echo = FALSE>>=
+% plot(y ~ x, ylab = "y")
+% text(1.5, 3.5, expression(y == 2 + cos(x) + sin(2 * x) + epsilon), pos = 4)
+% fit = predict(b, newdata = list(x = x2))
+% lines(fit ~ x2)
+% @
+
+% \end{center}
+
+% % \framebreak
+
+% % \begin{itemize}
+% %   \item For a linear model, the variance of the estimator and thus the variance of the predicted values can, under certain assumptions, be calculated in closed-form:
+
+% %   $$
+% % \hat{\boldsymbol{\beta}} \sim N(\boldsymbol{\beta},
+% %     \sigma^2 (\mathbf{X}^{\top}\mathbf{X})^{-1} / N)
+% %   $$
+% %   $$
+% % \hat{y}_0 \sim N(y_0,
+% %     \sigma^2 \mathbf{x}_0^\top(\mathbf{X}^{\top}\mathbf{X})^{-1}\mathbf{x}_0 / N)
+% %   $$
+% %   \item What happens if the assumptions do not apply?
+% %   \item How large is the variation in a non-parametric smoothing?
+% %   \end{itemize}
+
+% \end{vbframe}
+
+% \framebreak
+
+% \begin{center}
+% <<echo = FALSE, fig.keep='all'>>=
+% fit0 = fitted(b)
+% fb = NULL
+% for(i0 in 1:100) {
+%   ys = fit0 + rnorm(length(x), sd = b$s)
+%   bb = loess(ys ~ x, span = 0.33)
+%   fb = cbind(fb, predict(bb, newdata = data.frame(x = x2)))
+% }
+% fit = t(apply(fb, 1, function(x) {
+%  c(quantile(x, prob = 0.0275), mean(x), quantile(x, prob = 0.975))
+% }))
+% plot(y ~ x, ylab = "y", ylim = (ylim <- range(c(y, fit))))
+% matplot(x2, fit, type = "l", lty = c(2, 1, 2), col = "black", add = TRUE)
+% @
+% \end{center}
+
+% Idee: Schätze Modell wiederholt aus verschiedenen Datensätzen,
+% betrachte Schwankungen der resultierenden Schätzer:
+% \begin{enumerate}
+% \item Passe Modell $y_i = f(x_i) + \epsilon_i$ an Daten an: schätze
+%   Koeffizienten $\hat{\boldsymbol{\beta}}$ und Fehlervarianz $\hat{\sigma}^2$.
+% \item Erzeuge neue Responses:
+% $$
+% \tilde y_i = \hat{f}(x_i) + \tilde{\varepsilon}_i, \qquad
+%   \tilde{\varepsilon}_i\sim N(0, \hat{\sigma}^2)
+%   $$
+% \item Passe Modell an neue Daten $\{(x_1, \tilde{y}_1), \ldots, (x_n, \tilde{y}_n)\}$ an.
+% \item Wiederhole ab~2 (z.B.\ 100 Mal).
+% \item Evaluiere Schwankungen der Koeffizienten, Prognose, usw.
+% \end{enumerate}
+
+% \framebreak
+
+% \begin{center}
+% <<echo = FALSE, fig.keep='all'>>=
+% plot(y ~ x, ylab = "y", ylim = ylim)
+% points(x, ys, col = "blue")
+% lines(fb[, 100] ~ x2, col = "blue")
+% matplot(x2, fit, type = "l", lty = c(2, 1, 2), col = "black", add = TRUE)
+% @
+% \end{center}
+
+% \framebreak
+
+% \begin{center}
+% <<echo = FALSE, fig.keep='all'>>=
+% plot(x, y, ylim = ylim)
+% matplot(x2, fb, type = "l", lty = 1, col = rgb(0.1, 0.1, 0.1, alpha = 0.1), add = TRUE)
+% lines(f(x2) ~ x2, col = "red")
+% @
+% \end{center}
+% \end{vbframe}
+
+
+% \begin{vbframe}{Parametrischer Bootstrap}
+
+% Das vorgestellte Verfahren heißt \enquote{parametrischer Bootstrap}.
+
+% Zutaten:
+% \begin{itemize}
+% \item eine programmierbare Umgebung für statistisches Rechnen
+% \item das Verfahren selber (hier: LOESS), inkl.~Berechnung
+%   prognostizierter Werte
+% \item ein Generator für normalverteilte Zufallszahlen
+% \end{itemize}
+%
+% \framebreak
+%
+% Code:
+%
+%  <<echo = TRUE, eval = FALSE>>=
+%  b = loess(y ~ x, span = 0.33)
+%  fit0 = fitted(b)
+% fb = NULL
+% for(i in 1:100) {
+%   ys = fit0 + rnorm(length(x), sd = b$s)
+%   bb = loess(ys ~ x, span = 0.33)
+%   fb = cbind(fb, predict(bb))
+% }
+% fit = apply(fb, 1, function(x) {
+%   quantile(x, prob = c(0.0275, 0.5, 0.975))
+% })
+% @
+%
+%
+% \end{vbframe}
+\normalsize
+\begin{vbframe}{Example: Sampling}
+
+How does a computer generate randomness?
+How does \texttt{R} calculate:
+\lz
+\footnotesize
+\begin{verbbox}
+rnorm(10)
+## [1] 0.06758659 0.67908219 -0.26783828 0.77266612
+## [5] -0.02887604 -0.46867480 -0.94277461 0.15943498
+## [9] -0.73383393 -0.48259188
+\end{verbbox}
+\col
+
+\normalsize
+\lz
+\begin{itemize}
+\item How do we sample from a \enquote{non-standard} density?
+\item Wait for someone to create a CRAN package for it...?
+\end{itemize}
+
+\end{vbframe}
+
+\begin{vbframe}{Example: Linear Model}
+
+ How do we solve the normal equations?
+
+  $$ \boldsymbol{\beta} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T y $$
+
+\begin{itemize}
+\item So invert matrix once (how does that work?),
+  then 2 matrix multiplications? Nope! See chapter on matrix decompositions.
+\item How exact is that?
+\item How expensive is it for large $n$?
+\end{itemize}
+
+\end{vbframe}
+
+ \begin{vbframe}{Example: LASSO}
+ How do we optimize something like this?
+  $$ \sum_{i=1}^n (\boldsymbol{\beta}^T \xb^{(i)} - y^{(i)})^2 + \lambda \sum_{j=1}^p |\beta_j|$$
+
+  \begin{itemize}
+    \item Analytically solvable? Answer: no!
+    \item How does it work \enquote{numerically}?
+    \item How expensive is it?
+  \end{itemize}
+\end{vbframe}
+
+%\end{frame}
+
+
+\endlecture
+\end{document}

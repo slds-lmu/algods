@@ -1,0 +1,269 @@
+
+%<<setup-child, include = FALSE>>=
+%library(knitr)
+%set_parent("../style/preamble.Rnw")
+%@
+\input{../../2021/style/preamble4tex}
+\input{../../latex-math/basic-math}
+
+\begin{document}
+
+\lecturechapter{2}{Peculiarities of machine arithmetic}
+\lecture{Computerintensive Methods}
+
+
+
+\begin{vbframe}{Peculiarities of machine arithmetic}
+
+Common arithmetic properties are no longer fulfilled.
+
+\vspace*{0.1cm}
+
+For simplicity, we use decimal representation with $m = 4$ and rounding.
+
+\begin{itemize}
+\item \textbf{Associative property:}
+ \begin{eqnarray*}
+ &a = 4, b = 5003, c = 5000 \SpAr& \\
+ &a = 0.4 \cdot 10^1, b = 0.5003 \cdot 10^4, c = 0.5 \cdot 10^4&
+ \end{eqnarray*}
+ \begin{eqnarray*}
+ (\tilde a + \tilde b) &=& 0.4 \cdot 10^1 + 0.5003 \cdot 10^4 = 0.5007 \cdot 10^4 \\
+ (\tilde a + \tilde b) + \tilde c &=& 0.5007 \cdot 10^4 + 0.5 \cdot 10^4 = 1.0007 \cdot 10^4 \\
+ &\approx& 0.1001 \cdot 10^5 = 10010
+ \end{eqnarray*}
+ \begin{eqnarray*}
+ (\tilde b + \tilde c) &=& 0.5003 \cdot 10^4 + 0.5 \cdot 10^4 = 1.0003 \cdot 10^4 \\
+ &\approx& 0.1000 \cdot 10^5 \\
+ (\tilde b + \tilde c) + \tilde a &=& 0.1000 \cdot 10^5 + 0.4 \cdot 10^1 = 0.10004 \cdot 10^5 \\
+ &\approx& 0.1000 \cdot 10^5 = 10000
+ \end{eqnarray*}
+
+ \framebreak
+
+\item \textbf{Distributive property:}
+ \begin{eqnarray*}
+ 2 \cdot (\tilde b - \tilde c) &=& 2 \cdot (0.5003 \cdot 10^4 - 0.5 \cdot 10^4) \\
+ &=& 0.0006 \cdot 10^4 = 6
+ \end{eqnarray*}
+ \begin{eqnarray*}
+ (2 \cdot \tilde b - 2 \cdot \tilde c) &=& 2 \cdot 0.5003 \cdot 10^4 - 2 \cdot 0.5 \cdot 10^4 \\
+ &=& 1.0006 \cdot 10^4 - 1 \cdot 10^4 \\
+ &\approx& 0.1001 \cdot 10^5 - 0.1 \cdot 10^5 = 0.0001 \cdot 10^5 = 10
+ \end{eqnarray*}
+\end{itemize}
+Problem in the second example: catastrophic cancellation.
+\end{vbframe}
+
+
+
+\begin{vbframe}{Examples}
+\footnotesize
+\vspace{0.5cm}
+\begin{verbbox}
+1e16 - 1e16
+## [1] 0
+\end{verbbox}
+\col
+\vspace{0.2cm}
+\begin{verbbox}
+(1e16 + 1) - 1e16
+## [1] 0
+\end{verbbox}
+\col
+\vspace{0.2cm}
+\begin{verbbox}
+(1e16 + 2) - 1e16
+## [1] 2
+\end{verbbox}
+\col
+\lz
+\normalsize
+$1e16$ cannot be represented exactly since it is larger than $2^{53}$, hence the distance is greater than 1.
+\end{vbframe}
+
+
+
+\begin{vbframe}{Examples}
+\lz
+\footnotesize
+\begin{verbbox}
+x = seq(1, 2e16, length = 100000)
+s1 = sum(x)
+s2 = sum(rev(x))
+s1
+## [1] 1e+21
+\end{verbbox}
+\col
+\vspace{0.3cm}
+\begin{verbbox}
+s2
+## [1] 1e+21
+## [1] 1e+21
+\end{verbbox}
+\col
+\vspace{0.3cm}
+\begin{verbbox}
+s1 - s2
+## [1] -262144
+\end{verbbox}
+\col
+\end{vbframe}
+
+\normalsize
+
+\begin{vbframe}{Order of addition}
+
+{\bf General recommendation:} Start with numbers having the smallest absolute values.
+
+\lz
+
+Assuming $0 \leq a_1 \leq a_2 \dots \leq a_n$, there are still various ways to perform the summation, e.g.:
+\begin{itemize}
+\item $ (( (a_1 + a_2) + a_3) + a_4) + a_5$
+\item $ ((a_1 + a_2) + (a_3 + a_4) ) + a_5$
+\item $ ((a_1 + a_2) + a_3) + (a_4 + a_5)$
+\end{itemize}
+
+\lz
+
+Remark: Particularly bad errors can occur when calculating differences of numbers on computers (this will be discussed in another lecture). 
+
+\end{vbframe}
+
+
+\begin{vbframe}{Calculation of variances}
+Sample: $x_1 = 356, x_2 = 357, x_3 = 358, x_4 = 359, x_5 = 360$
+$$
+4 S^2 = \sum\limits_{i=1}^5 (x_i - \bar x)^2 = \sum\limits_{i=1}^5 x_i^2 - 5(\bar x)^2 = 10
+$$
+
+Not like that in decimal machine arithmetic with $m=4$:
+
+\lz 
+
+First formula OK, but second one is a disaster:
+\begin{eqnarray*}
+&\tilde x_1^2 = .1267E6,\ \tilde x_2^2 = .1274E6,\ \tilde x_3^2 = .1282E6, & \\\
+&\tilde x_4^2 = .1289E6,\ \tilde x_5^2 = .1296E6, & \\
+&\sum \tilde x_i^2 = .6408E6 \qquad 5 \cdot (\bar {\tilde x})^2 = 5 \cdot .1282E6 = .6410E6&
+\end{eqnarray*}
+
+The second formula gives a negative empirical variance!
+
+
+\framebreak
+
+Three approaches to calculate the $1/n$ normalized standard deviation of a sample:
+\lz
+\footnotesize
+\begin{verbbox}
+sd1 = function(x) {
+  s2 = mean((x - mean(x))^2)
+  sqrt(s2)
+}
+\end{verbbox}
+\col
+\vspace{0.1cm}
+\begin{verbbox}
+sd2 = function(x) {
+  s2 = mean(x^2) - mean(x)^2
+  sqrt(s2)
+}
+\end{verbbox}
+\col
+\vspace{0.1cm}
+\begin{verbbox}
+sd3 = function(x) {
+  n = length(x)
+  s2 = ((n - 1) / n) * var(x)
+  sqrt(s2)
+}
+\end{verbbox}
+\col
+
+\framebreak
+\lz
+
+\begin{verbbox}
+options("digits" = 20)
+sd1(1:9)
+## [1] 2.5819888974716112
+\end{verbbox}
+\col
+\vspace{0.3cm}
+\begin{verbbox}
+sd2(1:9)
+## [1] 2.5819888974716116
+\end{verbbox}
+\col
+\vspace{0.3cm}
+\begin{verbbox}
+sd3(1:9)
+## [1] 2.5819888974716112
+\end{verbbox}
+\col
+
+\normalsize
+\framebreak
+
+\begin{algorithm}[H]
+  \begin{center}
+  \caption{Calculation of variance in \texttt{R} (simplified)}
+    \begin{algorithmic}[1]
+    \State \textbf{Input:} $x \in \R^n$
+    \State $s1 = s2 = 0;$
+    \For{i = 1, ..., n}
+      \State $s1 = s1 + x[i]$
+    \EndFor
+    \State $\text{xm} \leftarrow \frac{s1}{n}$
+    \For{i = 1, ..., n}
+      \State $s2 = s2 + (x[i] - xm) * (x[i] - xm)$
+    \EndFor \\
+    \Return $\frac{s2}{n - 1}$
+    \end{algorithmic}
+    \end{center}
+\end{algorithm}
+
+\vspace*{-0.5cm}
+
+\begin{footnotesize}
+\url{https://github.com/SurajGupta/r-source/blob/56becd21c75d104bfec829f9c23baa2e144869a2/src/library/stats/src/cov.c}
+\end{footnotesize}
+
+\end{vbframe}
+
+% \begin{vbframe}{Algorithmus zu Beginn des Kapitels}
+% \vspace*{-0.5cm}
+% <<>>=
+% exp2 = function(x) {
+%   oldsum = 0
+%   newsum = n = term = 1
+%   while(oldsum != newsum){
+%     oldsum = newsum
+%     term = term * x / n
+%     n = n + 1
+%     newsum = oldsum + term
+%   }
+%   return(newsum)
+% }
+% exp2(-707)
+
+% exp2(-708)
+% @
+
+% Nun auch klar warum \textbf{exp2} schlecht funktioniert für $x < 0$
+
+% $\SpAr$ Differenz von sehr vielen betragsmäßig großen
+% Zahlen
+
+% $\SpAr$  Für $|x|$ sehr groß fast schon ein Zufallsergebnis
+
+% Hier einfache Lösung des Problems  $\exp(-x) = 1 / \exp(x)$
+% \end{vbframe}
+
+\endlecture
+\end{document}
+
+% https://github.com/SurajGupta/r-source/blob/56becd21c75d104bfec829f9c23baa2e144869a2/src/library/stats/src/cov.c
+

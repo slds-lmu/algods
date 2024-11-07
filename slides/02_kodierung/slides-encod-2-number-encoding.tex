@@ -1,0 +1,167 @@
+
+%<<setup-child, include = FALSE>>=
+%library(knitr)
+%set_parent("../style/preamble.Rnw")
+%@
+
+\input{../../2021/style/preamble4tex}
+\input{../../latex-math/basic-math}
+
+\begin{document}
+
+\lecturechapter{2}{Number encoding}
+\lecture{Computerintensive Methods}
+
+
+\begin{vbframe}{Codes for numbers}
+\begin{itemize}
+% \item Clearly, it is possible to represent every number with arbitrary preciseness in ASCII, however this also requires varying numbers of bytes for each number
+
+%<<include = FALSE>>=
+%int2bits = function(x) {
+%  x = as.integer(intToBits(x))
+%  paste(rev(x), collapse = "")
+%}
+%int2bits(23)
+%int2bits(127106)
+%@
+
+% \item It is possible to fix the varying numbers of bytes, however this representation is extremely inefficient
+\item The basic arithmetic operations (and many other arithmetic operations)
+  are performed directly by the CPU. The fewer bits per number,
+  the faster.
+% \item The fewer different possibilities there are to calculate numbers
+  %, the simpler the CPU becomes (or \ can be used with given
+  % Complexity with available number formats more complicated things
+  %).
+\item For technical reasons, a number should be encoded by a
+  \textbf{fixed number of bytes}, thus using $N$ bits only.
+\item We are looking for a function that maps sets of numbers like $\Z$ or $\R$
+   to the set of the $2^N$ available machine numbers.
+% \item Many people keep dealing with computer arithmetic
+  % for a more \quota{esoteric} subject.
+\item A fallacy: \enquote{Computer calculations are always correct.}
+% \item Unfortunately, that's not true, in many cases computers are capable of
+  % not even the basic accounting types.
+\item Basic knowledge of computer arithmetic is essential for anyone who mainly uses computers for calculations, i.e. especially for statisticians.
+\end{itemize}
+
+\framebreak
+
+\enquote{Bug}-Report in \pkg{R}:
+\small
+\begin{verbatim}
+   From: focus17@libero.it
+   To: R-bugs@biostat.ku.dk
+   Subject: error in trunc function
+   Date: Fri,  6 Jul 2007 15:03:58 +0200 (CEST)
+
+   the command get a wrong result
+
+   > trunc(2.3 * 100)
+   [1] 229
+\end{verbatim}
+
+Answer Duncan Murdoch:
+\begin{verbatim}
+   That is the correct answer. 2.3 is not
+   representable exactly; the actual value used
+   is slightly less.
+\end{verbatim}
+
+\framebreak
+
+\small
+\begin{verbatim}
+   From: wchen@stat.tamu.edu
+   To: R-bugs@biostat.ku.dk
+   Subject: [Rd] match() (PR#13135)
+   Date: Tue, 7 Oct 00:05:06 2008
+
+   The match function does not return value properly.
+   See an example below.
+
+   > a = seq(0.6, 1, by = 0.01)
+   > match(0.88, a)
+   [1] 29
+   > match(0.89, a)
+   [1] NA
+   ...
+   > match(0.94, a)
+   [1] 35
+\end{verbatim}
+
+\framebreak 
+
+Answer Brian Ripley:
+\begin{verbatim}
+   FAQ Q7.31 strikes again!
+
+   0.89 is not a member of seq(0.6,1,by=0.01), since 0.01
+   cannot be represented exactly in a binary computer.
+\end{verbatim}
+
+
+\framebreak
+
+\small
+\begin{verbatim}
+From: Friedrich Leisch <friedrich.leisch@stat.uni-muenchen.de>
+To: Antonio Linan <antoniolvsa@hotmail.com>
+Cc: <cran@r-project.org>
+Subject: Re: Bug in R?
+Date: Thu, 5 Nov 2009 13:57:03 +0100
+
+>>>>> On Thu, 5 Nov 2009 13:35:09 +0100,
+>>>>> Antonio Linan (AL) wrote:
+
+  > Hi, I'm not sure if it's really a bug:
+  > When you execute:
+  >> (2 / 3) * (0.6 / (1 - 0.6))
+  > the result will be:
+  > [1] 1
+  > but if you execute:
+  >> (2 / 3) * (0.6 / (1 - 0.6)) == 1
+  > the result is:
+  > [1] FALSE
+  > Note: I'm using version 2.9.2, (and tried it in
+  >   2.9.1 in 2.9.1 too) with Microsoft Windows XP
+  >   [Version 5.1.2600].
+  > Thank you.
+
+FAQ 7.31 strikes again:
+R> 1 - (2 / 3) * (0.6 / (1 - 0.6))
+[1] 2.220446e-16
+R> .Machine$double.eps
+[1] 2.220446e-16
+\end{verbatim}
+
+\framebreak
+\vspace*{-0.5cm}
+\begin{verbatim}
+From: Marc Schwartz <marc_schwartz_at_me.com>
+Date: Fri, 09 Jul 2010 09:00:10 -0500
+
+On Jul 9, 2010, at 8:46 AM, Trafim Vanishek wrote:
+  > Dear all,
+  >
+  > might seem an easy question but I cannot figure it out.
+  >
+  > floor(100 * (.58))
+  > [1] 57
+  >
+  > where is the trick here?
+  >   And how can I end up with the right answer?
+
+See R FAQ 7.31
+> sprintf("%.20f", 100 * .58)
+[1] "57.99999999999999289457"
+\end{verbatim}
+\end{vbframe}
+
+
+\endlecture
+\end{document}
+
+% https://github.com/SurajGupta/r-source/blob/56becd21c75d104bfec829f9c23baa2e144869a2/src/library/stats/src/cov.c
+

@@ -1,0 +1,42 @@
+"x"
+"1"	"Google and others, fighting for a small pool of researchers, are looking for automated ways to deal with a shortage of artificial intelligence experts."
+"2"	"By CADE METZNOV. 5, 2017"
+"3"	"SAN FRANCISCO 
+"4"	"With recent speeches in both Silicon Valley and China, Jeff Dean, one of Google
+"5"	"With it, Google may soon find a way to create A.I. technology that can partly take the humans out of building the A.I. systems that many believe are the future of the technology industry."
+"6"	"The project is part of a much larger effort to bring the latest and greatest A.I. techniques to a wider collection of companies and software developers."
+"7"	"Advertisement"
+"8"	"The tech industry is promising everything from smartphone apps that can recognize faces to cars that can drive on their own. But by some estimates, only 10,000 people worldwide have the education, experience and talent needed to build the complex and sometimes mysterious mathematical algorithms that will drive this new breed of artificial intelligence."
+"9"	"The world
+"10"	"The industry is not willing to wait. Companies are developing all sorts of tools that will make it easier for any operation to build its own A.I. software, including things like image and speech recognition services and online chatbots."
+"11"	"
+"12"	"This is not altruism. Researchers like Mr. Dean believe that if more people and companies are working on artificial intelligence, it will propel their own research. At the same time, companies like Google, Amazon and Microsoft see serious money in the trend that Mr. Sirosh described. All of them are selling cloud-computing services that can help other businesses and developers build A.I."
+"13"	"Advertisement"
+"14"	"
+"15"	"This is most likely what Google has in mind for AutoML, as the company continues to hail the project
+"16"	"Eventually, the Google project will help companies build systems with artificial intelligence even if they don
+"17"	"
+"18"	""
+"19"	"Please verify you're not a robot by clicking the box."
+"20"	"Invalid email address. Please re-enter."
+"21"	"You must select a newsletter to subscribe to."
+"22"	"View all New York Times newsletters."
+"23"	"Google is investing heavily in cloud-computing services 
+"24"	"Neural networks are rapidly accelerating the development of A.I. Rather than building an image-recognition service or a language translation app by hand, one line of code at a time, engineers can much more quickly build an algorithm that learns tasks on its own."
+"25"	"By analyzing the sounds in a vast collection of old technical support calls, for instance, a machine-learning algorithm can learn to recognize spoken words."
+"26"	"But building a neural network is not like building a website or some run-of-the-mill smartphone app. It requires significant math skills, extreme trial and error, and a fair amount of intuition. Jean-Fran
+"27"	"In building a neural network, researchers run dozens or even hundreds of experiments across a vast network of machines, testing how well an algorithm can learn a task like recognizing an image or translating from one language to another. Then they adjust particular parts of the algorithm over and over again, until they settle on something that works. Some call it a 
+"28"	"Advertisement"
+"29"	"But with AutoML, Google is trying to automate this process. It is building algorithms that analyze the development of other algorithms, learning which methods are successful and which are not. Eventually, they learn to build more effective machine learning. Google said AutoML could now build algorithms that, in some cases, identified objects in photos more accurately than services built solely by human experts."
+"30"	"Barret Zoph, one of the Google researchers behind the project, believes that the same method will eventually work well for other tasks, like speech recognition or machine translation."
+"31"	"This is not always an easy thing to wrap your head around. But it is part of a significant trend in A.I. research. Experts call it 
+"32"	"Many believe such methods will significantly accelerate the progress of A.I. in both the online and physical worlds. At the University of California, Berkeley, researchers are building techniques that could allow robots to learn new tasks based on what they have learned in the past."
+"33"	"
+"34"	"This is also a way of expanding the number of people and businesses that can build artificial intelligence. These methods will not replace A.I. researchers entirely. Experts, like those at Google, must still do much of the important design work. But the belief is that the work of a few experts can help many others build their own software."
+"35"	"Renato Negrinho, a researcher at Carnegie Mellon University who is exploring technology similar to AutoML, said this was not a reality today but should be in the years to come. 
+"36"	"Follow Cade Metz on Twitter: @CadeMetz."
+"37"	"A version of this article appears in print on November 6, 2017, on Page B1 of the New York edition with the headline: This A.I. Can Build A.I. Itself.   Order Reprints|  Today's Paper|Subscribe
+
+"
+"38"	"We
+"39"	"Go to Home Page 

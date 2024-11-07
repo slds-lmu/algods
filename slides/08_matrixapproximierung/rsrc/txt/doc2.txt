@@ -1,0 +1,41 @@
+"x"
+"1"	"Advertisement"
+"2"	"By CADE METZSEPT. 10, 2017"
+"3"	"BERKELEY, Calif. 
+"4"	"
+"5"	"For the typical human, that is an easy task. For a robot, it is a remarkable talent 
+"6"	"Today, robots play important roles inside retail giants like Amazon and manufacturing companies like Foxconn. But these machines are programmed for very specific tasks, like moving a particular type of container across a warehouse or placing a particular chip on a circuit board. They can
+"7"	"Advertisement"
+"8"	"The Berkeley robot was all the more remarkable because it could grab stuff it had never seen before. Mr. Mahler and the rest of the Berkeley team trained the machine by showing it hundreds of purely digital objects, and after that training, it could pick up items that weren
+"9"	"Advertisement"
+"10"	"
+"11"	"The robot was far from perfect, and it could be several years before it is seen outside research labs. Though it was equipped with a suction cup or a parallel gripper 
+"12"	"Rather than trying to program behavior into their robot 
+"13"	"
+"14"	"Physically, the Berkeley robot was nothing new. Mr. Mahler and his team were using existing hardware, including two robotic arms from the Swiss multinational ABB and a camera that captured depth."
+"15"	"What was different was the software. It demonstrated a new use for what are called neural networks. Loosely based on the network of neurons in the human brain, a neural network is a complex algorithm that can learn tasks by analyzing vast amounts of data. By looking for patterns in thousands of dog photos, for instance, a neural network can learn to recognize a dog."
+"16"	"Over the past five years, these algorithms have radically changed the way the internet
+"17"	"Advertisement"
+"18"	"The Berkeley team began by scouring the internet for CAD models, short for computer-aided design. These are digital representations of physical objects. Engineers, physicists and designers build them when running experiments or creating new products. Using these models, Mr. Mahler and his team generated many more digital objects, eventually building a database of more than seven million items. Then they simulated the physics of each item, showing the precise point where a robotic arm should pick it up."
+"19"	"That was a large task, but the process was mostly automated. When the team fed these models into a neural network, it learned to identify a similar point on potentially any digital object with any shape. And when the team plugged this neural network into the two-armed robot, it could do the same with physical objects."
+"20"	""
+"21"	"Please verify you're not a robot by clicking the box."
+"22"	"Invalid email address. Please re-enter."
+"23"	"You must select a newsletter to subscribe to."
+"24"	"View all New York Times newsletters."
+"25"	"When facing a single everyday object with cylindrical or at least partly planar surfaces 
+"26"	"What
+"27"	"Like Siemens and the Toyota Research Institute, Amazon is helping to fund the work at Berkeley, and it has an acute need for this kind of robot. For the past three years, the company has run a contest in which researchers seek to solve the 
+"28"	"
+"29"	"The research demonstrated how a task learned in the digital world can be transferred to the physical. Since the camera on Berkeley
+"30"	"Other researchers are developing ways for robots to learn directly from physical experience. For example, at Google, using an algorithmic technique called reinforcement learning, robots are training themselves to open doors through extreme trial and error. But this kind of physical training is both time consuming and expensive. Digital training is more efficient."
+"31"	"For this reason, some organizations are hoping to train robots using complex virtual worlds 
+"32"	"This is still largely theory. But at places like Berkeley and Northeastern, researchers are showing that digital learning can indeed make the leap into the real world."
+"33"	"Advertisement"
+"34"	"
+"35"	"Follow Cade Metz on Twitter: @CadeMetz"
+"36"	"A version of this article appears in print on September 11, 2017, on Page B1 of the New York edition with the headline: The Next Big Leap Is Teaching Machines To Teach Themselves.   Order Reprints|  Today's Paper|Subscribe
+
+"
+"37"	"We
+"38"	"Go to Home Page 

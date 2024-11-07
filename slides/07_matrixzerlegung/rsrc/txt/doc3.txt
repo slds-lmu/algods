@@ -1,0 +1,46 @@
+"x"
+"1"	"Advertisement"
+"2"	"By NICK WINGFIELDSEPT. 10, 2017"
+"3"	"Amazon
+"4"	"FLORENCE, N.J. 
+"5"	"Now Ms. Scott, 21, watches her replacement 
+"6"	"Her new job at Amazon is to babysit several robots at a time, troubleshooting them when necessary and making sure they have bins to load. On a recent afternoon, a claw at end of the arm grabbed a bin off a conveyor belt and stacked it on another bin, forming neat columns on wooden pallets surrounding the robot. It was the first time Amazon had shown the arm, the latest generation of robots in use at its warehouses, to a reporter."
+"7"	"
+"8"	"Advertisement"
+"9"	"Perhaps no company embodies the anxieties and hopes around automation better than Amazon. Many people, including President Trump, blame the company for destroying traditional retail jobs by enticing people to shop online. At the same time, the company
+"10"	"Advertisement"
+"11"	"Amazon
+"12"	"Complicating the equation even more, Amazon is also on the forefront of automation, finding new ways of getting robots to do the work once handled by employees. In 2014, the company began rolling out robots to its warehouses using machines originally developed by Kiva Systems, a company Amazon bought for $775 million two years earlier and renamed Amazon Robotics. Amazon now has more than 100,000 robots in action around the world, and it has plans to add many more to the mix."
+"13"	"The robots make warehouse work less tedious and physically taxing, while also enabling the kinds of efficiency gains that let a customer order dental floss after breakfast and receive it before dinner."
+"14"	"
+"15"	"The dynamics between people and machines play out on a daily basis on the floor of Amazon warehouses in places like Florence, N.J., and Kent, Wash. In Kent, the robots vaguely resemble giant beetles and scurry around with vertical shelves loaded with merchandise weighing up to 3,000 pounds on their backs. Hundreds of them move autonomously inside a large caged area, tailgating each other but not colliding."
+"16"	"On one edge of the cage, a group of human workers 
+"17"	"There, human 
+"18"	"Dave Clark, the top executive in charge of operations at Amazon, said the company wanted the machines to perform the most monotonous tasks, leaving people to do jobs that engage them mentally."
+"19"	"Advertisement"
+"20"	"\"It
+"21"	"The robots also cut down on the walking required of workers, making Amazon pickers more efficient and less tired. The robots also allow Amazon to pack shelves together like cars in rush-hour traffic, because they no longer need aisle space for humans. The greater density of shelf space means more inventory under one roof, which means better selection for customers."
+"22"	"The Amazon warehouse in Florence shows the latest example of the kinds of jobs machines can do better than people. Eight mechanical arms are in operation at the facility, a warehouse where large quantities of merchandise are broken down into smaller units and distributed to Amazon fulfillment centers across the country."
+"23"	"The arms go by the awkward name of robotic palletizers, but workers have given them a dash of personality, sticking signs on each one naming them after Stuart, Dave and other minion characters from the 
+"24"	"Amazon began installing them late last year, not long after it opened the warehouse in Florence. The robot arm is configured to pick up only bins of a standard size, not objects of other dimensions. In a demonstration of future possibilities, Amazon showed a virtual reality simulation used to prototype new robot concepts, including an arm with a forklift attachment that moved pallets."
+"25"	"When Amazon installed the robots, some people who had stacked bins before, like Ms. Scott, took courses at the company to become robot operators. Many others moved to receiving stations, where they manually sort big boxes of merchandise into bins. No people were laid off when the robots were installed, and Amazon found new roles for the displaced workers, Mr. Clark said."
+"26"	"
+"27"	"The question going forward is: What happens when the future generations of robots arrive?"
+"28"	"Advertisement"
+"29"	"For now, there are warehouse tasks 
+"30"	"But start-ups and researchers are scrambling to overcome the many remaining technical obstacles. Amazon even sponsors an annual contest to encourage more innovation in the category."
+"31"	"Mr. Ford, the author, believes it is just a matter of time before the employment picture in Amazon
+"32"	"
+"33"	"Amazon
+"34"	"
+"35"	"In the case of the Florence facility, it opened up the new opportunity for Ms. Scott."
+"36"	"At one point, one of the arms knocked over a tote, sending a dozen or so cone-shaped plastic coffee filters skidding across the ground. Ms. Scott hit a button that froze the arm so she could safely pick up the mess."
+"37"	"Then the arms started working again."
+"38"	"
+"39"	"Earlier versions of the captions for the pictures of a robotic arm in Florence, N.J., and human 
+"40"	"Follow Nick Wingfield on Twitter @nickwingfield."
+"41"	"A version of this article appears in print on September 11, 2017, on Page B1 of the New York edition with the headline: The Robots of Amazon.   Order Reprints|  Today's Paper|Subscribe
+
+"
+"42"	"We
+"43"	"Go to Home Page 

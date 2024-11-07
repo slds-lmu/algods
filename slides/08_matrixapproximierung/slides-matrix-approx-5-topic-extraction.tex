@@ -1,0 +1,193 @@
+
+%<<setup-child, include = FALSE>>=
+
+%library(knitr)
+%options(digits = 16)
+
+%library(RCurl)
+%library(XML)
+%library(tm)
+%library(NMF)
+%library(microbenchmark)
+%library(ggplot2)
+%library(wordcloud)
+%set_parent("../style/preamble.Rnw")
+%@
+
+
+\newcommand{\xdownarrow}[1]{%
+	{\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
+}
+
+\newcommand{\grey}[1]{\textcolor{grey}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+\input{../../2021/style/preamble4tex}
+\input{../../latex-math/basic-math}
+
+\begin{document}
+
+\lecturechapter{7}{Topic Extraction}
+\lecture{CIM1 Statistical Computation}
+
+
+
+\begin{vbframe}{Application: Topic Extraction}
+
+Often online articles refer to articles with similar content, e.g.
+
+\begin{center}
+	\textbf{\emph{\href{https://www.nytimes.com/2017/11/05/technology/machine-learning-artificial-intelligence-ai.html?rref=collection\%2Fsectioncollection\%2Ftechnology&action=click&contentCollection=technology&region=rank&module=package&version=highlights&contentPlacement=2&pgtype=sectionfront}{Building AI that Can Build AI}}} \\
+	$\Big\downarrow$ \footnotesize{\enquote{related}}\\
+	\normalsize \textbf{	\emph{\href{https://www.nytimes.com/2017/09/10/business/warehouse-robots-learning.html?action=click&contentCollection=Technology&module=RelatedCoverage&region=Marginalia&pgtype=article}{In the Future, Warehouse Robots Will Learn on Their Own}}} \\
+	$\Big\downarrow$ \footnotesize \enquote{related}\\
+	\normalsize\textbf{	\emph{\href{https://www.nytimes.com/2017/09/10/technology/amazon-robots-workers.html?action=click&contentCollection=Business\%20Day&module=RelatedCoverage&region=Marginalia&pgtype=article}{As Amazon Pushes Forward With Robots, Workers Find New Roles}}}
+\end{center}
+
+The first two articles should definitely have one topic in common, just like the last two articles. We want to extract these two topics using a NMF.
+
+\framebreak
+
+We set up the corresponding document-term matrix.
+
+\lz
+
+\footnotesize
+\begin{verbatim}
+##                doc1 doc2 doc3
+## accelerate      1    0    0
+## accelerating    1    0    0
+## accurately      1    0    0
+## across          1    1    2
+## address         1    1    0
+## adjust          1    0    0
+\end{verbatim}
+
+%<<echo = F>>=
+%options(digits = 2)
+%@
+
+%<<echo = F>>=
+%tdm = readRDS("rsrc/tdm")
+%@
+
+%<<echo=F>>=
+%head(tdm)
+%@
+
+\framebreak
+
+We \enquote{search} two topics linking the articles.
+\vspace{0.2cm}
+
+\footnotesize
+\begin{verbbox}
+set.seed(1)
+res = nmf(tdm, 2, "Frobenius")
+\end{verbbox}
+\col
+
+\lz
+\begin{verbatim}
+##                topic1   topic2
+## accelerate     0.0016   3.8e-11
+## accelerating   0.0016   3.8e-11
+## accurately     0.0016   3.8e-11
+## across         0.0023   4.1e-03
+## address        0.0026   6.3e-05
+## adjust         0.0016   3.8e-11
+\end{verbatim}
+
+%<<>>=
+%set.seed(1)
+%res = nmf(tdm, 2, "Frobenius")
+%@
+
+%<<echo = F>>=
+%wordmatrix = as.data.frame(basis(res)) # topic-word-matrix
+
+%wordmatrix$word = rownames(wordmatrix)
+%colnames(wordmatrix) = c("topic1", "topic2", "word")
+
+%head(wordmatrix)[1:2]
+%@
+
+\normalsize
+\end{vbframe}
+
+\begin{vbframe}{Topic Extraction: Topic 1}
+
+For both topics, we print the $30$ words with the largest values in the columns of matrix $\mathbf{W}$. The size of the word in the wordcloud is determined by the value of $w_{ij}$ (placement of the word is completely random).\\
+
+\begin{center}
+	\includegraphics[width = 0.4\textwidth]{figure_man/wordcloud01.png}
+\end{center}
+
+%<<echo = F, out.width='70%', fig.align='center'>>=
+%df = wordmatrix[order(- wordmatrix[, 1]), ]
+%df = as.data.frame(df[1:30, ])
+
+%wordcloud(df$word,df$topic1)
+%@
+
+\end{vbframe}
+
+\begin{vbframe}{Topic Extraction: Topic 2}
+\lz
+\begin{center}
+	\includegraphics[width = 0.4\textwidth]{figure_man/wordcloud02.png}
+\end{center}
+
+
+%<<echo = F, fig.align='center'>>=
+%df = wordmatrix[order(- wordmatrix[, 2]), ]
+%df = as.data.frame(df[1:30, ])
+
+%wordcloud(df$word,df$topic2)
+%@
+
+\end{vbframe}
+
+\begin{vbframe}{Topic Extraction: Coefficient matrix $\mathbf{H}$}
+
+\footnotesize
+\vspace{0.3cm}
+\begin{verbatim}
+H
+
+##         topic 1   topic 2
+## doc1    4.5e+02   1.8e-09
+## doc2    2.9e+02   5.8e+01
+## doc3    1.6e-09   4.9e+02
+\end{verbatim}
+
+%<<echo = F>>=
+%H = t(coef(res))
+%colnames(H) = c("topic 1", "topic 2")
+%@
+
+%<<>>=
+%H
+%@
+
+\normalsize
+The coefficient matrix shows: The first article clearly refers to the first extracted topic, article 3 clearly to the last.
+Article 2 addresses both topics.
+
+\vfill
+
+\begin{footnotesize}
+Implementation in R: \url{https://rpubs.com/JanpuHou/300168}
+\end{footnotesize}
+
+\end{vbframe}
+
+\endlecture
+\end{document}
+
+
+
+
+
+
+

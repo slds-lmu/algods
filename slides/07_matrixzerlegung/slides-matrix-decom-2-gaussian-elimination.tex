@@ -1,0 +1,582 @@
+
+%<<setup-child, include = FALSE>>=
+%library(knitr)
+%options(digits = 16)
+
+%library(RCurl)
+%library(XML)
+%library(tm)
+%library(NMF)
+%library(microbenchmark)
+%library(ggplot2)
+%library(wordcloud)
+%set_parent("../style/preamble.Rnw")
+%@
+
+
+\newcommand{\xdownarrow}[1]{%
+  {\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
+}
+
+\newcommand{\grey}[1]{\textcolor{grey}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+\input{../../2021/style/preamble4tex}
+\input{../../latex-math/basic-math}
+
+\begin{document}
+
+\lecturechapter{7}{Gaussian Elimination (LU Decomposition)}
+\lecture{CIM1 Statistical Computing}
+
+% \begin{vbframe}{Notation}
+% 
+% \begin{itemize}
+% \item $\xv = (x_1, x_2, ..., x_n)^\top$: Vector in $\R^n$
+% \item $\bm{e}_i:=(0, ..., 0, \underbrace{1}_{\text{Position $i$}}, 0, ..., 0)$: i-th canonical unit vector 
+% \item $\Amat$: Matrix in $\R^{m \times n}$
+% \item $\Amat \ge 0$: $a_{ij} \ge 0$ for all $i, j$ (non-negative matrix)
+% \item $\|\Amat\|$: Matrix norm, e.g. 
+% \begin{itemize}
+% \item $\|\Amat\|_1 = \max_j\left(\sum_i |a_{ij}|  \right)$ (Column sum norm)
+% \item $\|\Amat\|_2 = \left(\mbox{largest eigenvalue of } \Amat^\top\Amat  \right)^{1/2}$ (Euclidean norm)
+% \item $\|\Amat\|_\infty = \max_i\left(\sum_j |a_{ij}|  \right)$ (Row sum norm)
+% \item $\|\Amat\|_F = \sqrt{\sum_{i=1}^m\sum_{j=1}^n |a_{ij}|^2}$ (Frobenius norm)
+% \end{itemize}
+% \item $\kappa$: Condition number
+% \end{itemize}
+% 
+% \framebreak
+% 
+% The following formulas are commonly used in this chapter
+% 
+% \lz
+% 
+% $$
+% \sum_{k = 1}^n k = \frac{n(n+1)}{2}
+% $$
+% 
+% \lz
+% 
+% (Sum of natural numbers by Carl Friedrich Gauss) as well as 
+% 
+% $$
+% \sum_{k = 1}^n k^2 = \frac{n(n+1)(2n + 1)}{6}
+% $$
+% 
+% \end{vbframe}
+
+%\section{Matrix Decompositions to solve Systems of Linear Equations (LES)}
+
+
+
+%\section{Algorithms to solve Systems of Linear Equations}
+
+\begin{vbframe}{Gaussian elimination (LU decomposition)}
+\textbf{Aim:} Solve LES of the form $\Amat \xv = \boldsymbol{b}$\\
+\medskip
+
+with $\Amat \in \R^{n \times n}$ \textbf{regular} (invertible), $\xv \in \R^n$ and $\boldsymbol{b} \in \R^n$.
+
+\begin{enumerate}
+\item Calculate $\Amat = \mathbf{LU}$ (or $\mathbf{PA} = \mathbf{LU}$), \\
+  where $\mathbf{L}$ is a normalized lower triangular matrix, $\mathbf{U}$ is an upper triangular matrix, and $\mathbf{P}$ is a permutation matrix.
+
+\begin{footnotesize}
+$$
+\Amat = \mat{
+1       & 0     & \cdots  & 0 \\
+l_{21}  & \ddots& \ddots  & \vdots \\
+\vdots  & \ddots& \ddots  & 0 \\
+l_{n1}  & \cdots& l_{n(n-1)}  & 1 } \cdot
+\mat{
+u_{11}  & \cdots  & \cdots & u_{1n} \\
+0       & \ddots  & \ddots & \vdots \\
+\vdots  & \ddots  & \ddots  & \vdots \\
+0       & \cdots  & 0       & u_{nn} }$$
+\end{footnotesize}
+
+\item Solve  $\mathbf{L}\textcolor{blue}{\textbf{y}} ( = \mathbf{L(Ux)} = \mathbf{Ax}) = \mathbf{b}$.
+\item Solve  $\mathbf{U}\textcolor{green}{\textbf{x}} = \textcolor{blue}{\textbf{y}}$.
+\end{enumerate}
+
+
+
+\framebreak
+
+Let $\Amat \xv = \boldsymbol{b}$ be a LES
+$$
+\begin{pmatrix*}[r]
+2 & 8 & 1 \\
+4 & 4 & -1 \\
+-1 & 2 & 12\end{pmatrix*}
+\mat{
+x_1 \\ x_2 \\ x_3
+\end{pmatrix} = \begin{pmatrix}
+32 \\ 16 \\ 52 }
+$$
+
+\begin{enumerate}
+\item $\Amat = \mathbf{LU}$\\
+
+To convert $\Amat$ into an upper triangular matrix, we need 3
+elementary transformations of type III:
+\footnotesize
+\begin{eqnarray*}
+\mat{
+2 & 8 & 1 \\
+4 & 4 & -1 \\
+-1 & 2 & 12 }
+\begin{array}{l}
+ \\
+Z_2 - 2Z_1 \\
+Z_3 + \frac{1}{2} Z_1
+\end{array} &\rightarrow& \mat{
+2 & 8 & 1 \\
+0 & -12 & -3 \\
+0 & 6 & \frac{25}{2} }
+\begin{array}{l}
+ \\
+ \\
+ Z_3 + \frac{1}{2} Z_2
+\end{array} \\
+&\rightarrow& \mat{
+2 & 8 & 1 \\
+0 & -12 & -3 \\
+0 & 0 & 11 }
+= \mathbf{U}.
+\end{eqnarray*} \normalsize
+
+\framebreak
+
+If we write these transformations in matrix notation, we obtain
+
+\footnotesize
+$$
+\mathbf{T}_3\mathbf{T}_2\mathbf{T}_1 = \begin{pmatrix*}[r]
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & \frac{1}{2} & 1\end{pmatrix*}
+\begin{pmatrix*}[r]
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+\frac{1}{2} & 0 & 1 \end{pmatrix*}
+\begin{pmatrix*}[r]
+1 & 0 & 0 \\
+-2 & 1 & 0 \\
+0 & 0 & 1 \end{pmatrix*}
+=
+\begin{pmatrix*}[r]
+1 & 0 & 0 \\
+-2 & 1 & 0 \\
+-\frac{1}{2} & \frac{1}{2} & 1 \end{pmatrix*}
+$$ \normalsize
+Hence,
+\footnotesize
+$$
+\mathbf{T}_3\mathbf{T}_2\mathbf{T}_1\Amat =
+\begin{pmatrix*}[r]
+1 & 0 & 0 \\
+-2 & 1 & 0 \\
+-\frac{1}{2} & \frac{1}{2} & 1 \end{pmatrix*}
+\begin{pmatrix*}[r]
+2 & 8 & 1 \\
+4 & 4 & -1 \\
+-1 & 2 & 12\end{pmatrix*} =
+\mat{
+2 & 8 & 1 \\
+0 & -12 & -3 \\
+0 & 0 & 11 }
+= \mathbf{U}
+$$ \normalsize
+and
+\footnotesize
+$$
+\Amat = \mathbf{T}_1^{-1}\mathbf{T}_2^{-1}\mathbf{T}_3^{-1}\mathbf{U} = \mathbf{LU}
+$$
+\normalsize
+with
+\footnotesize
+$$
+\mathbf{L} = \begin{pmatrix*}[r]
+1 & 0 & 0 \\
+2 & 1 & 0 \\
+0 & 0 & 1\end{pmatrix*}
+\begin{pmatrix*}[r]
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+-\frac{1}{2} & 0 & 1 \end{pmatrix*}
+\begin{pmatrix*}[r]
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & -\frac{1}{2} & 1 \end{pmatrix*} =
+\mat{
+1 & 0 & 0 \\
+2 & 1 & 0 \\
+-\frac{1}{2} & -\frac{1}{2} & 1 }.
+$$
+\normalsize
+\framebreak
+
+\textbf{General Theory}:\\
+\medskip
+
+The so-called \emph{Frobenius matrix}
+
+$$
+\mathbf{T}_k = \mathbf{I} - \mathbf{c}_k\mathbf{e}_k^\top
+$$
+with \scriptsize
+$$
+\mathbf{c}_k = \mat{
+0 \\
+0 \\
+\vdots \\
+0 \\
+\mu_{k + 1} \\
+\vdots \\
+\mu_n },
+\quad \mathbf{e}_k = \mat{
+0 \\
+\vdots \\
+0 \\
+1 \\
+0 \\
+\vdots \\
+0 }, \quad
+\mathbf{T}_k = \mat{
+1      & 0      & \cdots & 0            & 0      & \cdots & 0 \\
+0      & 1      & \cdots & 0            & 0      & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots       & \vdots &        & \vdots \\
+0      & 0      & \cdots & 1            & 0      & \cdots & 0 \\
+0      & 0      & \cdots & -\mu_{k + 1} & 1      & \cdots & 0 \\
+\vdots & \vdots &        & \vdots       & \vdots & \ddots & \vdots \\
+0      & 0      & \cdots & -\mu_n       & 0      & \cdots & 1 },
+$$ \normalsize
+and $\mathbf{T}_k^{-1} = \mathbf{I} + \mathbf{c}_k\mathbf{e}_k^\top$.
+
+\framebreak
+
+Any type III row transformation that is required to eliminate the elements below the $k$-th pivot can be performed by multiplication with $\mathbf{T}_k$.
+
+$$
+\mathbf{T}_k\Amat_{k - 1} = (\mathbf{I} - \mathbf{c}_k\mathbf{e}_k^\top)\Amat_{k - 1} =
+\Amat_{k - 1} - \mathbf{c}_k\mathbf{e}_k^\top\Amat_{k - 1}
+$$
+
+\lz
+
+We obtain the decomposition by 
+
+$$
+\mathbf{U} = \mathbf{T}_n\cdot \mathbf{T}_{n - 1} \cdot ... \cdot \mathbf{T}_1 \cdot \Amat
+$$
+
+and
+
+$$
+\mathbf{L} = \mathbf{T}_1^{-1} \cdot \mathbf{T}_2^{-1} \cdot ... \cdot \mathbf{T}_n^{-1}
+$$
+
+\framebreak
+
+\textbf{Example}:
+$$ \scriptsize
+n = 4, \quad \mathbf{Ax} = \mathbf{b}, \quad \Amat = \mat{
+a_{11} & \cdots & a_{14} \\
+\vdots & \ddots & \vdots \\
+a_{41} & \cdots & a_{44} }
+= \Amat_0
+$$
+
+\footnotesize{
+\textbf{Note:} Multiplying by $\mathbf{T}_i$ changes the entries of the $(n - i)$ lower right block. To keep the notation readable we write $a_{ij}$ even if the entry was modified by the multiplication. The entries that change in the respective step are highlighted in color. }
+
+\lz
+
+\normalsize
+Step 1: \scriptsize
+$$
+\mathbf{T}_1 \Amat_0 = \mat{
+1                & 0 & 0 & 0 \\
+-a_{21} / a_{11} & 1 & 0 & 0 \\
+-a_{31} / a_{11} & 0 & 1 & 0 \\
+-a_{41} / a_{11} & 0 & 0 & 1 }
+\Amat_0 =
+\mat{
+a_{11} & a_{12} & a_{13} & a_{14} \\
+0      & \textcolor{red}{a_{22}} & \textcolor{red}{a_{23}} & \textcolor{red}{a_{24}} \\
+0      & \textcolor{red}{a_{32}} & \textcolor{red}{a_{33}} & \textcolor{red}{a_{34}} \\
+0      & \textcolor{red}{a_{42}} & \textcolor{red}{a_{43}} & \textcolor{red}{a_{44}} }
+= \Amat_1
+$$
+
+\normalsize
+
+\framebreak
+
+Step 2: \scriptsize
+$$
+\mathbf{T}_2 \Amat_1 = \mat{
+1 & 0                & 0 & 0 \\
+0 & 1                & 0 & 0 \\
+0 & -\textcolor{red}{a_{32}} / \textcolor{red}{a_{22}} & 1 & 0 \\
+0 & -\textcolor{red}{a_{42}} / \textcolor{red}{a_{22}} & 0 & 1 }
+\Amat_1 =
+\mat{
+a_{11} & a_{12} & a_{13} & a_{14} \\
+0      & \textcolor{red}{a_{22}} & \textcolor{red}{a_{23}} & \textcolor{red}{a_{24}} \\
+0      & 0      & \textcolor{blue}{a_{33}} & \textcolor{blue}{a_{34}} \\
+0      & 0      & \textcolor{blue}{a_{43}} & \textcolor{blue}{a_{44}} }
+= \Amat_2
+$$ \normalsize
+Step 3: \scriptsize
+$$
+\mathbf{T}_3 \Amat_2 = \mat{
+1 & 0 & 0                & 0 \\
+0 & 1 & 0                & 0 \\
+0 & 0 & 1                & 0 \\
+0 & 0 & -\textcolor{blue}{a_{43}} / \textcolor{blue}{a_{33}} & 1 }
+\Amat_2 =
+\mat{
+a_{11} & a_{12} & a_{13} & a_{14} \\
+0      & \textcolor{red}{a_{22}} & \textcolor{red}{a_{23}} & \textcolor{red}{a_{24}} \\
+0      & 0      & \textcolor{blue}{a_{33}} & \textcolor{blue}{a_{34}} \\
+0      & 0      & 0      & \textcolor{green}{a_{44}} } = \mathbf{U}
+$$
+
+\normalsize
+
+\framebreak
+
+\textbf{Effort} in step $k$ (in multiplications):
+
+\begin{itemize}
+\item $(n - k)^2$ multiplications for calculation of $\mathbf{T}_k\Amat_{k - 1}$
+\item $(n-k)$ multiplications for $\mathbf{T}_k^{-1}\cdot \underbrace{\mathbf{T}_{k-1}^{-1} \cdot ... \cdot \mathbf{T}_{1}^{-1}}_{\text{already calculated}}$
+\end{itemize}
+
+The total effort is therefore
+
+\vspace*{-0.3cm}
+
+\begin{eqnarray*}
+& &\sum_{k=1}^n (n - k)^2 + (n - k) = \sum_{k=1}^n n^2 - 2 n k + k^2 + n - k \\
+&=& n^3 - 2n \frac{(n + 1)n}{2} + \frac{n(n + 1)(2n + 1)}{6} + n^2 - \frac{n(n+1)}{2} \\
+&=& n \cdot \biggl(n^2 - n^2 - n + \frac{1}{3}n^2 + \frac{1}{2} n + \frac{1}{6} + n - \frac{1}{2} n - \frac{1}{2}\biggr) \\
+&\approx& \frac{1}{3}n^3 + \order(n).
+\end{eqnarray*}
+
+\framebreak
+
+\textbf{Problem}: This only works if all $a_{kk} \not= 0$!
+
+\medskip
+\textbf{Pivotization}: $\mathbf{PA} = \mathbf{LU}$\\
+\medskip
+$\mathbf{P}$ is a permutation matrix which contains the required line switching transformations of the algorithm. \\
+\medskip
+Switching lines to obtain a more stable algorithm.\\
+\medskip
+Example: \scriptsize
+$$
+\Amat_1 = \begin{pmatrix*}[r]
+1 &  2 & -1   & 0 \\
+0 &  \color{red}{0} & 1/2  & 1 \\
+0 &  2 & -1/2 & 3/2 \\
+0 & \color{red}{-3} & 5/2  & 0 \end{pmatrix*}
+\quad
+\mathbf{P}_2 =
+\mat{
+1 & 0 & 0 & 0 \\
+0 & 0 & 0 & \color{red}{1} \\
+0 & 0 & 1 & 0 \\
+0 & \color{red}{1} & 0 & 0 }
+$$
+
+$$
+\mathbf{P}_2 \Amat_1 =
+\begin{pmatrix*}[r]
+1 &  2 & -1   & 0 \\
+0 & -3 & 5/2  & 0 \\
+0 &  2 & -1/2 & 3/2 \\
+0 &  0 & 1/2  & 1 \end{pmatrix*},
+$$
+
+\normalsize
+
+then $\mathbf{T}_2\mathbf{P}_2\Amat_1$ etc.
+
+\framebreak
+
+Calculation in general
+$$
+\Amat_k = \mathbf{T}_k\mathbf{P}_k\Amat_{k - 1}
+$$
+\medskip
+It can be shown
+$$
+\mathbf{T}_{k - 1}\mathbf{P}_{k - 1} \cdot \ldots \cdot \mathbf{T}_{1}\mathbf{P}_{1} =
+  \underbrace{\mathbf{T}_{k - 1} \cdot \ldots \cdot \mathbf{T}_{1}}_{\mathbf{T}} \cdot
+  \underbrace{\mathbf{P}_{k - 1} \cdot \ldots \cdot \mathbf{P}_{1}}_{\mathbf{P}}
+$$
+and thus
+$$
+\mathbf{TPA} = \mathbf{U} \quad \text{ and } \quad \mathbf{T}^{-1} = \mathbf{L}.
+$$
+
+\textbf{Note}: When solving the linear system $\Amat \xv = \mathbf{b}$ the vector $\mathbf{b}$ must also be permuted by $\mathbf{P}$. 
+
+\framebreak
+
+
+\item Solve  $\mathbf{Ly} = \mathbf{L(Ux)} = \mathbf{Ax} = \mathbf{b}$
+\footnotesize
+$$
+\mat{
+1       & 0     & 0       & \cdots & 0 \\
+l_{21}  & 1     & 0       & \cdots & 0 \\
+l_{31}  & l_{32}& 1       & \cdots & 0 \\
+\vdots  & \vdots& \vdots  & \ddots & \vdots \\
+l_{n1}  & l_{n2}& l_{n3}  & \cdots & 1 }
+\mat{
+y_1 \\ y_2 \\ y_3 \\ \vdots \\ y_n
+\end{pmatrix} = \begin{pmatrix}
+b_1 \\ b_2 \\ b_3 \\ \vdots \\ b_n }
+$$
+\normalsize
+
+by using \textbf{forward substitution}
+$$
+y_1 = b_1 \quad \text{ and } \quad y_k = b_k - \sum_{i = 1}^{k - 1}l_{ki}y_i \quad
+  \text{ for } \quad k = 2, \ldots, n.
+$$
+
+\vspace*{-0.4cm}
+\medskip
+for our example the result is
+\footnotesize
+$$
+\mat{
+1 & 0 & 0 \\
+2 & 1 & 0 \\
+-\frac{1}{2} & -\frac{1}{2} & 1 }
+\mat{
+y_1 \\ y_2 \\ y_3
+\end{pmatrix} = \begin{pmatrix}
+32 \\ 16 \\ 52  } \Rightarrow
+\mathbf{y} =
+\mat{
+32 \\
+-48\\
+44 }
+$$
+\normalsize
+\framebreak
+
+\item Solve  $\mathbf{Ux} = \mathbf{y}$\\
+\medskip
+Since $\mathbf{y}$ is now known from step 2\\
+\footnotesize
+$$
+\mat{
+u_{11}  & \cdots  & \cdots & u_{1n} \\
+0       & \ddots  & \ddots & \vdots \\
+\vdots  & \ddots  & \ddots  & \vdots \\
+0       & \cdots  & 0       & u_{nn} }
+\mat{
+  x_1 \\ x_2 \\ x_3 \\ \vdots \\ x_n
+  \end{pmatrix} = \begin{pmatrix}
+  y_1 \\ y_2 \\ y_3 \\ \vdots \\ y_n }
+$$
+\normalsize
+
+we can calculate $\mathbf{x}$ using \textbf{back substitution}:
+\footnotesize
+$$
+x_i = \frac{1}{u_{ii}} \left( y_i - \sum_{k = i + 1}^n u_{ik}x_k \right) \quad
+  \text{ for } \quad i = n - 1, n - 2, \ldots, 1.
+$$
+\normalsize
+For our example the solution to the LES is:
+\footnotesize
+$$
+\mat{
+2 & 8 & 1 \\
+0 & -12 & -3 \\
+0 & 0 & 11 }
+\mat{
+x_1 \\ x_2 \\ x_3
+\end{pmatrix} = \begin{pmatrix}
+32 \\ -48 \\ 44  } \Rightarrow
+\mathbf{x} =
+\mat{
+2 \\
+3\\
+4 }
+$$
+\normalsize
+\end{enumerate}
+\framebreak
+
+\textbf{Effort} of \textbf{forward substitution}:\\
+
+\medskip
+
+In step $k$,  $k - 1$ multiplications are performed. If only multiplications are taken into consideration, the resulting effort is
+
+\begin{eqnarray*}
+\sum_{k=2}^{n} (k - 1) = \sum_{k=1}^{n - 1} k = \frac{(n- 1)n}{2} = \frac{1}{2}n^2 - \frac{n}{2}
+\end{eqnarray*}
+
+\lz
+
+\textbf{Effort} of \textbf{back substitution}:\\
+\medskip
+Similar to forward substitution, the required effort is
+
+\begin{eqnarray*}
+\frac{1}{2}n^2 + \frac{n}{2}
+\end{eqnarray*}
+
+\framebreak
+
+
+\end{vbframe}
+
+\begin{vbframe} {Properties LU decomposition}
+
+\begin{itemize}
+\item \enquote{Interpretation} of the Gaussian elimination as matrix decomposition
+% \item $\Amat$ is split into a lower triangle matrix $\mathbf{L}$ and a lower triangle matrix $\mathbf{U}$.
+\item Numerically stable during pivoting
+\item \textbf{Existence:} For each \textbf{regular} matrix $\Amat$ there is a permutation matrix $\mathbf{P}$, a normalized lower triangle matrix $\mathbf{L} \in \R^{n \times n}$ and a normalized upper triangular matrix $\mathbf{U} \in \R^{n \times n}$ such that 
+$$
+\mathbf{P} \cdot \Amat = \mathbf{L} \cdot \mathbf{U}
+$$
+\item Runtime behavior:
+\begin{itemize}
+\item Decomposition of the matrix: $\frac{n^3}{3} + \order(n)$ multiplications. 
+\item Forward and back substitution: $n^2$
+\end{itemize}
+% $\to$ Gesamtaufwand von $\order(n^3)$
+% \item Rechnung für Zerlegung kann auf Speicher der Matrix $\Amat$ durchgeführt werden \\
+% $\to$ kein zusätzlicher Speicher nötig
+\end{itemize}
+
+
+
+
+
+\end{vbframe}
+
+
+\endlecture
+\end{document}
+
+
+
+
+
+
+

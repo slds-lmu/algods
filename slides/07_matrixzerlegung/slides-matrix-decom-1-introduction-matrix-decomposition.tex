@@ -1,0 +1,457 @@
+
+%<<setup-child, include = FALSE>>=
+%library(knitr)
+%options(digits = 16)
+
+%library(RCurl)
+%library(XML)
+%library(tm)
+%library(NMF)
+%library(microbenchmark)
+%library(ggplot2)
+%library(wordcloud)
+%set_parent("../style/preamble.Rnw")
+%@
+
+
+\newcommand{\xdownarrow}[1]{%
+  {\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
+}
+
+\newcommand{\grey}[1]{\textcolor{grey}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+\input{../../2021/style/preamble4tex}
+\input{../../latex-math/basic-math}
+
+\begin{document}
+
+\lecturechapter{7}{Introduction to Matrix Decomposition and Recap on Matrices}
+\lecture{CIM1 Statistical Computing}
+
+% \begin{vbframe}{Notation}
+% 
+% \begin{itemize}
+% \item $\xv = (x_1, x_2, ..., x_n)^\top$: Vector in $\R^n$
+% \item $\bm{e}_i:=(0, ..., 0, \underbrace{1}_{\text{Position $i$}}, 0, ..., 0)$: i-th canonical unit vector 
+% \item $\Amat$: Matrix in $\R^{m \times n}$
+% \item $\Amat \ge 0$: $a_{ij} \ge 0$ for all $i, j$ (non-negative matrix)
+% \item $\|\Amat\|$: Matrix norm, e.g. 
+% \begin{itemize}
+% \item $\|\Amat\|_1 = \max_j\left(\sum_i |a_{ij}|  \right)$ (Column sum norm)
+% \item $\|\Amat\|_2 = \left(\mbox{largest eigenvalue of } \Amat^\top\Amat  \right)^{1/2}$ (Euclidean norm)
+% \item $\|\Amat\|_\infty = \max_i\left(\sum_j |a_{ij}|  \right)$ (Row sum norm)
+% \item $\|\Amat\|_F = \sqrt{\sum_{i=1}^m\sum_{j=1}^n |a_{ij}|^2}$ (Frobenius norm)
+% \end{itemize}
+% \item $\kappa$: Condition number
+% \end{itemize}
+% 
+% \framebreak
+% 
+% The following formulas are commonly used in this chapter
+% 
+% \lz
+% 
+% $$
+% \sum_{k = 1}^n k = \frac{n(n+1)}{2}
+% $$
+% 
+% \lz
+% 
+% (Sum of natural numbers by Carl Friedrich Gauss) as well as 
+% 
+% $$
+% \sum_{k = 1}^n k^2 = \frac{n(n+1)(2n + 1)}{6}
+% $$
+% 
+% \end{vbframe}
+
+%\section{Matrix Decompositions to solve Systems of Linear Equations (LES)}
+
+\begin{vbframe}{Systems of Linear Equations}
+\textbf{Motivation:}
+Large datasets can be challenging when it comes to data processing. Solving a LES of 10 equations in 10 unknowns might be easy, but an increasing size of the system usually comes along with algorithmic complexity and efficiency which may become critical.
+
+\lz
+\vspace*{-0.1cm}
+\textbf{Definition:}
+We consider a system of linear equations 
+\vspace*{-0.1cm}
+$$
+\Amat \xv = \boldsymbol{b}
+$$
+\vspace*{-0.1cm}
+with $\Amat \in \R^{n \times n}$ \textbf{regular} (invertible), $\xv \in \R^n$ and $\boldsymbol{b} \in \R^n$.
+
+\lz
+
+In Chapter 3 - Numerics we have considered the condition of linear systems and have shown that
+\vspace*{-0.2cm}
+$$
+\kappa(\Amat) = \|\Amat\|\|\Amat^{-1}\|
+$$
+We have seen that a solution of the LES by using $\bm{x} = \bm{A}^{-1}\bm{b}$ is to be avoided from a numerical perspective. 
+
+% \framebreak
+
+% Dabei spielt häufig die Skalierung eine große Rolle.
+
+% \medskip
+
+% \textbf{Beispiel}: Zwei identische Gleichungssysteme
+% \footnotesize
+% $$
+% \left(\begin{array}{cc}
+% 100 & 100\\ -1/100& 1/100
+% \end{array}\right)
+% \left(\begin{array}{c}
+% x_1 \\ x_2
+% \end{array}\right) =
+% \left(\begin{array}{c}
+% 50 \\ 1/50
+% \end{array}\right) \ , \quad
+% \left(\begin{array}{rc}
+% 1 & 1\\ -1& 1
+% \end{array}\right)
+% \left(\begin{array}{c}
+% x_1 \\ x_2
+% \end{array}\right) =
+% \left(\begin{array}{c}
+% 1/2 \\ 2
+% \end{array}\right)
+% $$
+
+% \begin{eqnarray*}
+% \kappa\biggl(\mat{ 100 & 100 \\ -1/100 & 1/100}\biggr) &=& \bigg\|\mat{ 100 & 100 \\ -1/100 & 1/100}\bigg\|_1 \cdot \bigg\|\mat{ 0.005 & -50 \\ 0.005 & 50}\bigg\|_1 \\
+% &=& 100.01 \cdot 100 = 10000.1 \\
+% \kappa\biggl(\mat{ 1 & 1 \\ -1 & 1}\biggr) &=& \bigg\|\mat{ 1 & 1 \\ -1 & 1}\bigg\|_1 \bigg\|\mat{ 1/2 & -1/2 \\ 1/2 & -1/2}\bigg\|_1 = 2 \cdot 1 = 2
+% \end{eqnarray*}
+
+% \normalsize
+% Konditionszahl der ersten Matrix sehr groß, nur aufgrund schlechter Skalierung des LGS.\\
+% \medskip
+% Allerdings gibt es Matrizen, bei denen die beste Skalierung nichts nützt, z.B.\ Hilbertmatrizen.\\
+% \medskip
+% Letztlich ist das Problem schlecht konditioniert, wenn Spalten der Matrix stark korrelieren
+% $\SpAr$ bekanntes  Problem der \textbf{Multikollinearität} in der Statistik.
+
+
+% Abgesehen von der Kondition des LGS, sollte ein LGS \textbf{niemals} mittels
+
+% $$
+% \xv = A^{-1}\boldsymbol{b}
+% $$
+
+% gelöst werden.
+
+% \lz
+
+\framebreak
+
+Reminder: Why should we not calculate $\Amat^{-1} \mathbf{b}$ (\texttt{x = solve(A) \%*\% b})?
+
+\begin{itemize}
+\item \textbf{Effort}: Calculation of inverse needs $n^3$ flops. In addition there are about $2n^2$ flops for matrix-vector multiplication.
+\item \textbf{Memory}: The $n^2$ entries of the inverted matrix must be stored.
+  % Zum Vergleich, mit LU Zerlegung braucht man $\frac{2}{3} n^3 + O(n^2)$ flops.
+
+\item \textbf{Stability}: Two (possibly ill-posed) subproblems are solved: 
+  \begin{enumerate}
+  \item Calculation of $\Amat^{-1}$ by solving $\Amat \xv = \mathbf{0}$ \\
+  $\to$ Condition $\kappa_1 = \|\Amat\|\|\Amat^{-1}\|$
+  \item Calculation of matrix-vector product $\Amat^{-1}\mathbf{b}$\\
+  $\to$ Condition $\kappa_2 = \|\Amat\|\|\Amat^{-1}\|$
+  \end{enumerate}
+
+ The error is amplified by the factor $\kappa = \kappa_1 \cdot \kappa_2 = (\|\Amat\|\|\Amat^{-1}\|)^2$.
+\end{itemize}
+
+\framebreak
+
+\textbf{Example:} Hilbertmatrix (see Chapter 3 - Numerics)
+
+\vspace*{0.1cm}
+
+We solve the LES once by matrix inversion and once directly using \texttt{solve(H, b)}. 
+\footnotesize
+\vspace{0.5cm}
+
+\begin{verbbox}
+n = 10
+H = hilbert(n)
+x = rnorm(n)
+b = H %*% x
+\end{verbbox}
+\col
+
+\framebreak
+\vspace{0.1cm}
+\begin{verbbox}
+microbenchmark(
+xhat_inverting = solve(H) %*% b, # matrix inversion
+xhat_solving = solve(H, b)) # direct solution
+## Unit: microseconds
+## expr min lq mean median uq max neval
+## xhat_inverting 25.7 28.55 31.554 31.3 33.00 59.0 100
+## xhat_solving 14.8 16.10 18.890 17.9 19.55 81.2 100
+## cld
+## b
+## a
+\end{verbbox}
+\col
+
+\vspace{0.3cm}
+\begin{verbbox}
+norm(xhat_inverting - x) # matrix inversion
+## [1] 0.005478653464037843
+
+norm(xhat_solving - x) # direct solution
+## [1] 0.0003750897921233343
+\end{verbbox}
+\col
+
+%<<echo=F>>=
+%hilbert = function(n) {
+%  i = 1:n
+%  return(1 / outer(i - 1, i, "+"))
+%}
+%@
+
+%<<size = "tiny">>=
+%n = 10
+%H = hilbert(n)
+%x = rnorm(n)
+%b = H %*% x
+%@
+
+%<<echo=F>>=
+%xhat_inverting = solve(H) %*% b # matrix inversion
+%xhat_solving = solve(H, b) # direct solution
+%@
+
+%<<size = "tiny">>=
+%microbenchmark(
+%  xhat_inverting = solve(H) %*% b, # matrix inversion
+%  xhat_solving = solve(H, b)) # direct solution
+%@
+
+%<<size = "tiny">>=
+%norm(xhat_inverting - x) # matrix inversion
+%norm(xhat_solving - x) # direct solution
+%@
+
+
+\framebreak
+\normalsize
+\textbf{Better:} Solve LES directly with \texttt{x = solve(A, b)}
+
+\lz
+
+\textbf{In this chapter:} How can a LES be solved in a \textbf{stable} and \textbf{efficient} way? How does \texttt{solve(A, b)} work?
+
+\lz
+
+\textbf{Idea:} Decompose the matrix $\Amat$ into a product of matrices in such a way that the linear system is \enquote{easily} solvable.
+
+\lz
+
+\textbf{Important procedures: }
+
+\begin{itemize}
+\item LU decomposition
+\item Cholesky decomposition
+\item QR decomposition
+\end{itemize}
+
+\end{vbframe}
+
+\begin{vbframe}{Reminder: elementary matrices}
+
+Elementary row and column transformations of a matrix $\bm{A}$:
+
+\begin{description}
+\item[type I:] Row switching (Column switching)
+\item[type II:] Multiplication of row (column) i by a real number $\lambda \not= 0$
+\item[type III:] Addition of multiples of row (column) j to row (column) i
+\end{description}
+
+These transformations are applied when multiplying $\bm{A}$ by \textbf{elementary matrices}
+from the left (row transformations) or from the right (column transformations).
+
+\framebreak
+
+Be $\Amat$ a $(4 \times 4)$ - matrix:
+$\Amat = \mat{1 & 2 & 3 & 4 \\ 5 & 6 & 7 & 8 \\ 9 & 10 & 11 & 12 \\ 13 & 14 & 15 & 16}$
+
+
+\lz
+
+\textbf{Example elementary matrix type I:}\\
+Switch row 2 and row 4 in $\Amat$:
+
+$$
+\mat{ 1 & 0 & 0 & 0 \\
+      0 & 0 & 0 & 1 \\
+      0 & 0 & 1 & 0 \\
+      0 & 1 & 0 & 0 }
+\Amat
+= \mat{1 & 2 & 3 & 4 \\ 13 & 14 & 15 & 16 \\ 9 & 10 & 11 & 12 \\ 5 & 6 & 7 & 8}
+$$
+\vspace*{0.2cm}
+
+The elementary matrix is created by switching the 2nd and 4th row (column) of the identity matrix.
+
+\framebreak
+
+\textbf{Example elementary matrix type II:}\\
+Multiply column 3 of $\Amat$ with $\lambda$.
+$$
+\Amat
+\mat{ 1 & 0 & 0 & 0 \\
+      0 & 1 & 0 & 0 \\
+      0 & 0 & \lambda & 0 \\
+      0 & 0 & 0 & 1 }
+= \mat{1 & 2 & \lambda 3 & 4 \\ 5 & 6 & \lambda 7 & 8 \\
+       9 & 10 & \lambda 11 & 12 \\ 13 & 14 & \lambda 15 & 16}
+$$
+
+\lz
+
+\textbf{Example elementary matrix type III:}\\
+Multiply row 1 with $\lambda$ and add it to row 3.
+$$
+\mat{ 1 & 0 & 0 & 0 \\
+      0 & 1 & 0 & 0 \\
+      \lambda & 0 & 1 & 0 \\
+      0 & 0 & 0 & 1 }
+\Amat
+= \mat{1 & 2 & 3 & 4 \\ 5 & 6 & 7 & 8 \\
+       \lambda 1+9 & \lambda 2+10 & \lambda 3+11 & \lambda 4+12 \\ 13 & 14 & 15 & 16}
+$$
+
+\framebreak
+
+The elementary matrix of type III results from
+$\bm{E} = \bm{I} + \lambda \bm{e}_i \bm{e}^{\top}_j (i \not= j)$.
+
+For the example above:
+
+$$
+  \bm{E} = \bm{I_4} + \lambda \bm{e}_3 \bm{e}^{\top}_1
+         = \mat{ 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 } +
+           \lambda \mat{0 \\ 0 \\ 1 \\ 0} \mat{1 & 0 & 0 & 0}
+$$
+
+\lz
+
+$\bm{E^{-1}}$ results from $\bm{E^{-1}} = \bm{I} - \lambda \bm{e}_i \bm{e}^{\top}_j$. Easy to check:
+
+$$
+  \bm{E E^{-1}} = (\bm{I} + \lambda \bm{e}_i \bm{e}^{\top}_j) (\bm{I} - \lambda \bm{e}_i \bm{e}^{\top}_j)
+                = \bm{I}^2 - \lambda^2 \bm{e}_i \bm{e}^{\top}_j \bm{e}_i \bm{e}^{\top}_j
+                = \bm{I} - 0 \cdot \lambda^2 \bm{e}_i \bm{e}^{\top}_j
+                = \bm{I},
+$$
+
+since $\bm{e}^{\top}_j \bm{e}_i = 0$ for $i \neq j$.
+
+\end{vbframe}
+
+\begin{vbframe}{Repetition: permutation matrix}
+
+Permutation matrices contain exactly one 1 in each row and column,
+all other entries are 0. 
+\lz
+
+\textbf{Example:}
+
+$$
+  \bm{P} = \mat{\bm{e}_5 & \bm{e}_2 & \bm{e}_4 & \bm{e}_1 & \bm{e}_3}
+         = \mat{0 & 0 & 0 & 1 & 0 \\
+                0 & 1 & 0 & 0 & 0 \\
+                0 & 0 & 0 & 0 & 1 \\
+                0 & 0 & 1 & 0 & 0 \\
+                1 & 0 & 0 & 0 & 0}
+$$
+
+Multiplying by a permutation matrix corresponds to one or more elementary transformations of type I.
+
+Thus, an elementary matrix of type I is also a permutation matrix.
+
+\end{vbframe}
+
+\begin{vbframe}{Reminder: positive (semi-)definite}
+
+A symmetric matrix $\Amat \in \R^{n \times n}$ is \textbf{positive semi-definite} iff
+
+$$
+\xv^{\top}\Amat\xv \ge 0 \quad \text{for all } \xv \in \R^n, \xv \ne \boldsymbol{0}.
+$$
+
+Or equivalently: A matrix is positive semi-definite if all eigenvalues are non-negative. 
+
+\lz
+
+A matrix is \textbf{positive-definite}, if the above equation can be rewritten with a \enquote{strict} greater than
+
+$$
+\xv^{\top}\Amat\xv > 0 \quad \text{for all }\xv \in \R^n, \xv \ne \boldsymbol{0}.
+$$
+
+or equivalently if all eigenvalues are positive. 
+
+\end{vbframe}
+
+\begin{vbframe}{Reminder: orthogonal matrices}
+
+A matrix $\mathbf{Q} \in \R^{n \times n}$ is \textbf{orthogonal} iff
+$$
+\mathbf{Q}\mathbf{Q}^{\top} = \id.
+$$
+
+The column vectors (or row vectors) of an orthogonal matrix are orthogonal to each other and normalized (to length $1$). They form an orthonormal basis of $\R^n$.
+
+\lz
+
+The inverse of an orthogonal matrix is equal to its transpose, i.e. 
+
+$$
+\mathbf{Q}^{-1} = \mathbf{Q}^{\top}
+$$
+
+Permutation matrices are orthogonal.
+
+\end{vbframe}
+
+\begin{vbframe}{Reminder: rank of a matrix}
+
+\textbf{Definition: } Rank of a matrix \\
+
+A matrix $\Amat \in \R^{m\times n}$ has rank $k$ if one of the following equivalent conditions is met:
+
+\begin{itemize}
+\item Maximum number of independent columns $= k$ \\
+($k$-dimensional column space)
+\item Maximum number of independent rows $=k$ \\
+($k$-dimensional row space)
+\item $\Amat$ can be factorized into matrices of rank $k$: $\mathbf{W} \in \R^{m \times k}$ and $\mathbf{H} \in \R^{k\times n}$
+$$
+\Amat = \mathbf{W} \cdot \mathbf{H}
+$$
+\end{itemize}
+
+\end{vbframe}
+
+
+
+
+
+\endlecture
+
+\end{document}
+
+
+
+
+
+

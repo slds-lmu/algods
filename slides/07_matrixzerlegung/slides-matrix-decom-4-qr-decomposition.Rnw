@@ -1,0 +1,344 @@
+
+<<setup-child, include = FALSE>>=
+library(knitr)
+options(digits = 16)
+
+library(RCurl)
+library(XML)
+library(tm)
+library(NMF)
+library(microbenchmark)
+library(ggplot2)
+library(wordcloud)
+set_parent("../style/preamble.Rnw")
+@
+
+
+\newcommand{\xdownarrow}[1]{%
+  {\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
+}
+
+\newcommand{\grey}[1]{\textcolor{grey}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+
+\input{../../latex-math/basic-math}
+
+
+
+\lecturechapter{7}{QR Decomposition}
+\lecture{CIM1 Statistical Computing}
+
+
+
+
+\begin{vbframe}{QR decomposition}
+
+% Als Alternative zu Cholesky wird mitunter die QR-Zerlegung angewandt.
+
+Given $\Amat \in \R^{n \times n}$. We decompose $\Amat$ into the product of an orthogonal matrix $\bm{Q}\in \R^{n \times n}$ and an upper triangular matrix $\bm{R} \in \R^{n \times n}$
+
+$$
+\Amat = \bm{QR} \quad \mbox{with} \quad \bm{Q}^\top\bm{Q} = \bm{I},
+$$
+
+The columns of the matrix $\bm{Q} = (\bm{q}_1, \ldots, \bm{q}_n)$ form an orthonormal basis for the column space of the matrix $\Amat$ and
+
+$$
+\bm{R} = \mat{
+\langle \bm{q_1}, \bm{a_1} \rangle & \langle \bm{q_1}, \bm{a_2} \rangle & \langle \bm{q_1}, \bm{a_3} \rangle & \cdots \\
+0                                  & \langle \bm{q_2}, \bm{a_2} \rangle & \langle \bm{q_2}, \bm{a_3} \rangle & \cdots \\
+0                                  & 0                                  & \langle \bm{q_3}, \bm{a_3} \rangle & \cdots \\
+\vdots                             & \vdots                             & \vdots                             & \ddots \\}
+$$
+
+The orthonormal basis for $\Amat$ is calculated by the Gram-Schmidt process.
+
+\end{vbframe}
+
+\begin{vbframe}{Gram-Schmidt process}
+
+The process takes a finite, linearly independent set of vectors and generates an orthogonal set of vectors that form an orthonormal basis.$^{(*)}$
+
+\vspace*{0.2cm}
+\begin{footnotesize}
+\textbf{Procedure:}
+Projection: $\text{proj}_{\bm{q}} \bm{a} = \frac{\langle \bm{q}, \bm{a} \rangle}{\langle \bm{q}, \bm{q} \rangle} \bm{q}$.
+\vspace*{-0.1cm}
+
+\begin{align*}
+\bm{u}_1 & = \bm{a}_1                                     & \bm{q}_1 & = \frac{\bm{u}_1}{\|\bm{u}_1\|}\\
+\bm{u}_2 & = \bm{a}_2 - \text{proj}_{\bm{u}_1} \bm{a}_2   & \bm{q}_2 & = \frac{\bm{u}_2}{\|\bm{u}_2\|}\\
+\vdots   & = \vdots                                       & \vdots   & = \vdots \\
+\bm{u}_k & = \bm{a}_k - \sum_{j=1}^{k-1} \text{proj}_{\bm{u}_j} \bm{a}_k & \bm{q}_k & = \frac{\bm{u}_k}{\|\bm{u}_k\|}
+\end{align*}
+\end{footnotesize}
+The vectors constructed in this way actually form an orthonormal basis of the column space of $\Amat$ (can be shown).
+\vfill
+
+\begin{footnotesize}
+$^{(*)}$ If the vector $\bm{a}_i$ is not independent of $\bm{a}_1, ..., \bm{a}_{i - 1}$, then $\bm{u}_i = \bm{0}$. %The $i$th calculation step is skipped.
+\end{footnotesize}
+
+% \framebreak
+% 
+% The vectors constructed in this way actually form an orthonormal basis of the column space of $\Amat$ (can be shown).
+
+
+\framebreak
+
+$\bm{A}$ can now be represented by the calculated orthonormal basis:
+
+\begin{align*}
+  \bm{a}_1 & = \bm{q}_1 \langle \bm{q}_1, \bm{a}_1 \rangle \\
+  \bm{a}_2 & = \bm{q}_1 \langle \bm{q}_1, \bm{a}_2 \rangle + \bm{q}_2 \langle \bm{q}_2, \bm{a}_2 \rangle \\
+  \vdots   & = \vdots \\
+  \bm{a}_k & = \sum_{j=1}^{k} \bm{q}_j \langle \bm{q}_j, \bm{a}_k \rangle
+\end{align*}
+
+Or in matrix notation:
+
+$$
+  \bm{Q} \bm{R} = (\bm{q}_1 \langle \bm{q}_1, \bm{a}_1 \rangle,
+                   \bm{q}_1 \langle \bm{q}_1, \bm{a}_2 \rangle + \bm{q}_2 \langle \bm{q}_2, \bm{a}_2 \rangle,
+                   \cdots) = \bm{A}
+$$
+
+% \vspace*{0.2cm}
+%
+% \begin{footnotesize}
+% \textbf{Beweis}:
+%
+% Wir zeigen die Orthogonalität der Vektoren $\bm{u}_1, ..., \bm{u}_l$ mittels Induktion:
+%
+% \begin{enumerate}
+% \item $l = 1$: $\bm{u}_1 = \bm{a}_1$ ist (trivialerweise) linear unabhängig. \checkmark
+% \item Induktionsschritt $l \to l + 1$: Es sei $j \le l$.
+% \vspace*{-0.5cm}
+%
+% \begin{eqnarray*}
+%   \scp{\bm{u}_{l + 1}}{\bm{u}_j} &=& \scp{\bm{a}_{l + 1}}{\bm{u}_j} - \sum_{k \le l} \frac{\scp{\bm{a}_{l + 1}}{\bm{u}_k}}{\scp{\bm{u}_k}{\bm{u}_k}} \underbrace{\scp{\bm{u}_k}{\bm{u}_j}}_{\substack{= 0 \text{ für } k \ne j \\ \text{Induktions-} \\ \text{ voraussetzung}}} \\
+%   &=&  \scp{\bm{a}_{l + 1}}{\bm{u}_j} - \frac{\scp{\bm{a}_{l + 1}}{\bm{u}_j}}{\scp{\bm{u}_j}{\bm{u}_j}}\scp{\bm{u}_j}{\bm{u}_j} = 0
+% \end{eqnarray*}
+%
+% Daher sind $\{\bm{u}_1, ..., \bm{u}_l, \bm{u}_{l + 1}\}$ und somit auch $\{\bm{q}_1, ..., \bm{q}_l, \bm{q}_{l + 1}\}$ linear unabhängig. \checkmark
+%
+% \end{enumerate}
+%
+% Da gezeigt wurde, dass die Spaltenvektoren von $\Amat$ über die Vektoren  $\bm{q}_1, ..., \bm{q}_n$ dargestellt werden können (s. vorhergehende Slide), folgt, dass $\bm{q}_1, ..., \bm{q}_n$ den Spaltenraum von $\Amat$ aufspannen. \checkmark
+% \end{footnotesize}
+
+
+\end{vbframe}
+
+\begin{frame}{Gram-Schmidt visualized}
+
+\begin{scriptsize}
+
+\textbf{Given:} Three independent vectors \textcolor{red}{$a_1$}, \textcolor{green}{$a_2$}, \textcolor{blue}{$a_3$} \\
+\textbf{Aim:} Vectors of an orthonormal basis \textcolor{red}{$q_1$}, \textcolor{green}{$q_2$}, \textcolor{blue}{$q_3$}
+
+
+\begin{enumerate}
+\setbeamercovered{transparent}
+  \item \textcolor{red}{$a_1$} serves as the first vector of the orthogonal basis (\textcolor{red}{$u_1$}).
+\uncover<3->{
+  \item \textcolor{green}{$a_2$} is projected onto \textcolor{red}{$u_1$}; projection is substracted from \textcolor{green}{$a_2$}
+        to obtain \textcolor{green}{$u_2$}.
+}
+\uncover<6->{
+  \item \textcolor{blue}{$a_3$} is projected onto \textcolor{red}{$u_1$} and \textcolor{green}{$u_2$},
+        to obtain \textcolor{blue}{$u_3$}.
+}
+\uncover<15->{
+  \item \textcolor{red}{$u_1$}, \textcolor{green}{$u_2$} and \textcolor{blue}{$u_3$} are normalized.
+}
+\end{enumerate}
+
+\end{scriptsize}
+
+\centering
+<<echo=FALSE,results='asis'>>=
+figures = list.files("figure_man/")
+
+for (i in 1:(length(figures)-1)) {
+cat("\\only<", i, ">{\\includegraphics[width=0.5\\textwidth]{figure_man/", figures[i], "}}\n", sep = "")
+}
+@
+
+\tiny{\url{https://commons.wikimedia.org/wiki/File:Gram-Schmidt_orthonormalization_process.gif}}
+
+\end{frame}
+
+\begin{vbframe}{QR decomposition: Example}
+
+Calculation of $\bm{A} = \bm{Q}\bm{R}$ with $\bm{A}$ given by
+
+\begin{footnotesize}
+$$
+\Amat = \begin{pmatrix*}[r]
+0 & -20 & -14 \\
+3 & 27 & -4 \\
+4 & 11 & -2 \end{pmatrix*}
+$$
+\end{footnotesize}
+
+\begin{footnotesize}
+$k = 1$:
+\vspace*{-0.5cm}
+\begin{align*}
+  \bm{u}_1 =& \bm{a}_1 = \mat{0 \\ 3 \\ 4} \\
+  \bm{q}_1 =& \frac{\bm{u}_1}{\|\bm{u}_1\|} = \frac{\bm{u}_1}{\sqrt{0+9+16}}
+           = \frac{1}{5} \mat{0 \\ 3 \\ 4} \\
+  r_{11} =& \scp{\bm{q}_1}{\bm{a}_1} = \frac{1}{5} (0^2 + 3^2 + 4^2) = 5 \\
+    r_{12} =& \scp{\bm{q}_1}{\bm{a}_2} = \frac{1}{5} (0 \cdot (-20) + 3 \cdot 27 + 4 \cdot 11) = 25 \\
+        r_{13} =& \scp{\bm{q}_1}{\bm{a}_3} = \frac{1}{5} (0 \cdot (-14) + 3 \cdot (-4) + 4 \cdot (-2)) = -4
+\end{align*}
+
+\framebreak
+
+$k = 2$:
+
+\vspace*{-0.5cm}
+
+\begin{align*}
+  \bm{u}_2 =& \bm{a}_2 - \frac{\langle \bm{u}_1, \bm{a}_2 \rangle}{\langle \bm{u}_1, \bm{u}_1 \rangle} \bm{u}_1 \\
+           =& \bm{a}_2 - \frac{125}{25} \mat{0 \\ 3 \\ 4} \\
+           =& \mat{-20 \\ 12 \\ -9} \\
+  \bm{q}_2 =& \frac{\bm{u}_2}{\|\bm{u}_2\|} = \frac{\bm{u}_2}{\sqrt{400+144+81}}
+           = \frac{1}{25} \mat{-20 \\ 12 \\ -9} \\
+               r_{22} =& \scp{\bm{q}_2}{\bm{a}_2} = \frac{1}{25} ((-20) \cdot (-20) + 12 \cdot 27 + (-9) \cdot 11) = 25 \\
+           r_{23} =& \scp{\bm{q}_2}{\bm{a}_3} = \frac{1}{25} ((-20) \cdot (-14) + 12 \cdot (-4) + (-9) \cdot (-2)) = 10
+\end{align*}
+
+\framebreak
+
+$k = 3$:
+
+\begin{align*}
+  \bm{u}_3 =& \bm{a}_3 - \frac{\langle \bm{u}_1, \bm{a}_3 \rangle}{\langle \bm{u}_1, \bm{u}_1 \rangle} \bm{u}_1
+                       - \frac{\langle \bm{u}_2, \bm{a}_3 \rangle}{\langle \bm{u}_2, \bm{u}_2 \rangle} \bm{u}_2 \\
+           =& \bm{a}_3 - \frac{-20}{25} \mat{0 \\ 3 \\ 4} - \frac{250}{625} \mat{-20 \\ 12 \\ -9} \\
+           =& \mat{-6 \\ -6.4 \\ 4.8} \\
+  \bm{q}_3 =& \frac{\bm{u}_3}{\|\bm{u}_3\|} = \frac{1}{25} \mat{-15 \\ -16 \\ 12} \\
+  r_{33} =& \scp{\bm{q}_3}{\bm{a}_3} = \frac{1}{25} ((-15) \cdot (-14) + (-16) \cdot (-4) + 12 \cdot (-2)) = 10
+\end{align*}
+\end{footnotesize}
+
+\framebreak
+
+
+% \medskip
+% $r_{13} \leftarrow \mathbf{q}_1^\top\mathbf{x}_3 = -4$ und $r_{23} \leftarrow \mathbf{q}_2^\top\mathbf{x}_3 = 10$
+% $\mathbf{q}_3 \leftarrow \mathbf{x}_3 - r_{13}\mathbf{q}_1 - r_{23}\mathbf{q}_2 = \frac{2}{5}
+%   \begin{pmatrix*}[r] -15 \\ -16 \\ 12\end{pmatrix*}$ \\
+% $r_{33} \leftarrow \|\mathbf{q}_3\| = 10$ und $\mathbf{q}_3 \leftarrow \frac{\mathbf{q}_3}{r_{33}} =
+%   \frac{1}{25} \begin{pmatrix*}[r] -15 \\ -16 \\ 12 \end{pmatrix*}$\\
+% \medskip
+
+\framebreak
+
+This results in
+$$
+\mathbf{Q} = \frac{1}{25} \begin{pmatrix*}[r]
+0 & -20 & -15 \\
+15 & 12 & -16 \\
+20 & -9 & 12 \end{pmatrix*}
+\quad \text{ and } \quad \mathbf{R} = \begin{pmatrix*}[r]
+5 & 25 & -4 \\
+0 & 25 & 10 \\
+0 & 0 & 10 \end{pmatrix*}.
+$$
+
+\end{vbframe}
+
+
+\begin{vbframe}{Householder and Givens matrix}
+
+\vspace*{-0.2cm}
+\textbf{Problem in practice:}\\
+$\mathbf{Q}$ often not really orthogonal when using the above algorithm due to numerical reasons.\\
+\vspace*{0.2cm}
+Two other methods for QR decomposition\\
+\medskip
+{\bf Householder matrix:}\\
+\medskip
+For vector $\mathbf{u}$, matrix $\mathbf{U} = \mathbf{I} - d\mathbf{uu}^\top$ is orthogonal,
+if $d = 2/ \mathbf{u}^\top\mathbf{u}$.
+Choose $\mathbf{u} = \mathbf{x} + s\mathbf{e}_1$ with $s = \mathbf{x}^\top\mathbf{x}$
+$\SpAr \mathbf{Ux} = - s\mathbf{e}_1$.\\
+\medskip
+Successive elimination of column elements yields QR decomposition.\\
+\medskip
+{\bf Givens matrix:}\\
+\medskip
+Similar to Householder, but orthogonal transformations that eliminate an element of a column vector each, and change a second vector. \\
+\medskip
+
+\begin{footnotesize}
+For details see Carl D.\ Meyer \emph{Matrix Analysis and Applied Linear Algebra}.
+\end{footnotesize}
+
+\end{vbframe}
+
+\begin{vbframe} {Properties of QR decomposition}
+
+\begin{itemize}
+\item Splitting a matrix into an orthogonal matrix $\mathbf{Q}$ and $\mathbf{R}$
+% \item $\Amat$ is split into a lower triangle matrix $\mathbf{L}$ and a lower triangle matrix $\mathbf{U}$.
+\item Gram-Schmidt process is numerically unstable, but can be extended and numerically stabilized
+\item \textbf{Existence:} Decomposition exists for each $n \times n$ matrix and can be extended to general $m \times n, m \ne n$ matrices
+\item Runtime behavior: Numerical stable solution of Householder transformation or Givens rotation comes along with higher effort:
+\begin{itemize}
+\item Decomposition of $n \times n$ matrix using Householder transformation: $\approx \frac{2}{3}n^3$ multiplications
+\item Forward and back substitution: $n^2$
+\end{itemize}
+% $\to$ Gesamtaufwand von $\order(n^3)$
+% \item Rechnung für Zerlegung kann auf Speicher der Matrix $\Amat$ durchgeführt werden \\
+% $\to$ kein zusätzlicher Speicher nötig
+\end{itemize}
+
+\end{vbframe}
+
+\begin{vbframe}{Comparison of methods}
+
+\begin{table}
+\centering
+\begin{tabular}{c|c|c|c}
+Procedure & $\mathbf{A}$ & \# Multiplications & Stability \\
+\hline
+LU & regular & $\approx \frac{1}{3} n^3$ & yes, by pivoting \\
+Cholesky & p.d. & $\approx \frac{1}{6}n^3$ & yes \\
+QR (Gram Schmidt) & - & $\approx 2n^3$ & no \\
+QR (Householder) & - & $\approx \frac{2}{3}n^3$ & yes \\
+\end{tabular}
+\end{table}
+
+
+\end{vbframe}
+
+\begin{vbframe}{QR decomposition for $m \times n$ matrices}
+
+General $m \times n, m \ge n$ matrices can be decomposed as well when using QR decomposition.
+
+$$
+\Amat = \bm{QR} = \bm{Q} \begin{bmatrix} \bm{R}_1 \\ \mathbf{0} \end{bmatrix} = \begin{bmatrix} \bm{Q}_1 & \bm{Q}_2 \end{bmatrix} \begin{bmatrix} \bm{R}_1 \\ \mathbf{0} \end{bmatrix} = \bm{Q}_1 \bm{R}_1
+$$
+
+$\bm{Q}_1 \in \R^{m \times n}, \bm{Q}_2 \in \R^{m\times(m-n)}$ with orthogonal columns, and $\bm{R} \in \R^{n \times n}$ upper triangular matrix.
+
+\lz
+
+$\bm{Q}_1 \times \bm{R}_1$ is known as a \textbf{reduced} QR decomposition.
+
+\end{vbframe}
+
+
+\endlecture
+
+
+
+
+
+
+

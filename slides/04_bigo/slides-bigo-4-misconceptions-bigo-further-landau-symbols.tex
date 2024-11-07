@@ -1,0 +1,160 @@
+
+%<<setup-child, include = FALSE>>=
+%library(knitr)
+%library(microbenchmark)
+%library(reshape2)
+%library(ggplot2)
+%set_parent("../style/preamble.Rnw")
+%
+%set.seed(1)
+%@
+
+\input{../../2021/style/preamble4tex}
+\input{../../latex-math/basic-math}
+
+\begin{document}
+
+\lecturechapter{4}{Misconceptions of Big O, further Landau Symbols \& Discussion}
+\lecture{CIM1 Statistical Computing}
+
+
+
+\begin{vbframe}{Misconceptions Big O}
+
+\begin{itemize}
+
+\item \textbf{Misconception 1}: $f = \order(g)$: The sign of equality means equality \\
+  \begin{itemize}
+  \item Left: Function
+  \item Right: Function class $\to$ equality makes no sense
+  \item Formally correct: $f \in \order(g)$
+  \end{itemize}
+
+\item \textbf{Misconception 2}: Big O means that functions \enquote{have approximately the same} runtime behaviour
+  \begin{itemize}
+  \item $f \in \order(1)$ implies by definition also $f \in \order(n)$
+  \item $f \in \order(g)$ only means that $f$ does not grow faster than $g$, but not that $f$ grows as fast as $g$
+  \end{itemize}
+  \framebreak
+\item \textbf{Misconception 3}: Big O describes the runtime of an algorithm
+  \begin{itemize}
+  \item Big O describes how well an algorithm scales
+  \item Big O is not an absolute measure of runtime - an algorithm can have a shorter runtime for a small instance, but scale much worse
+  \end{itemize}
+\item \textbf{Misconception 4}: Big O is always the worst case
+  \begin{itemize}
+  \item The notation is often used to describe the worst case
+  \item However Big O does not imply the worst case
+  \item Also best case and average case can be considered
+  \end{itemize}
+\end{itemize}
+\end{vbframe}
+
+
+\begin{vbframe}{Alternative Notations}
+
+In addition to Big O notation another Landau symbol is used in mathematics: The little o.\\
+Informally $f(x) = o(g(x))$ means that $f$ grows much slower than $g$.
+
+
+\lz
+
+\begin{block}{Formal definition:}
+  $$
+    f(x) \in o(g(x))
+  $$
+  if and only if\\
+  for each $M > 0$ there exists $x_0$ such that
+  $$
+    |f(x)| < M \cdot |g(x)| \quad \text{for all } x > x_0.
+  $$
+\end{block}
+
+\framebreak
+
+Further we define for $a \in \R$
+$$f(x) \in o(g(x)) \quad \text{for } x \rightarrow a $$
+only if for every $M>0$ there is a $d \in \R$
+such that for all x we have $|x - a| < d$
+$$
+|f(x)| < M \cdot |g(x)|
+$$
+
+
+\lz
+
+For $g(x) \neq 0$, it is equivalent to
+$$
+\lim_{x \rightarrow a} \bigg|\frac{f(x)}{g(x)}\bigg|= 0
+$$
+
+\framebreak
+
+\begin{block}{Overview: Landau symbols}
+  \vspace*{-0.3cm}
+  \begin{center}
+    \begin{tabular}{ c | c | c}
+      Notation & Definition & Analog to\\
+      \hline
+      $f(n) \in \order(g(n))$ & see above & $\leq$ \\
+      $f(n) \in o(g(n))$ & see above & $<$\\
+      $f(n) \in \Omega(g(n))$ & $g(n) \in \order(f(n))$ & $\geq$ \\
+      $f(n) \in \omega(g(n))$ & $g(n) \in o(f(n))$ & $>$ \\
+      $f(n) \in \Theta(g(n))$ &
+      {\footnotesize $f(n) \in \order(g(n)) \text{ and } g(n) \in \order(f(n))$}
+      & $=$ \\
+    \end{tabular}
+  \end{center}
+
+\end{block}
+
+\vspace*{-.4cm}
+\begin{center}
+\begin{figure}
+  \includegraphics[width=0.3\textwidth]{figure_man/bigo.png}~~
+  \includegraphics[width = 0.3\textwidth]{figure_man/bigomega.png}~~
+  \includegraphics[width = 0.3\textwidth]{figure_man/bigtheta.png} \\
+  %\caption{$O(f(n))$, $\Omega(f(n))$ and $\Theta(f(n))$}
+\end{figure}
+\end{center}
+
+Left panel $O(f(n))$, middle panel $\Omega(f(n))$ and right panel $\Theta(f(n))$
+
+
+\end{vbframe}
+
+\begin{vbframe}{Complexity vs. empirical runtime}
+
+In this chapter we dealt with the \textbf{complexity of algorithms}:
+
+\begin{itemize}
+\item How does an algorithm \textbf{scale} with regards to the required resources?
+\item What happens when the problem gets bigger?
+\item What is the theoretical runtime complexity of an algorithm? (Knowledge / Estimation / Evidence)
+\begin{itemize}
+\item Bubble sort has a worst-case runtime of $\order(n^2)$
+\item Matrix multiplication of two regular $n\times n$ matrices has a runtime complexity of $\order(n^3)$
+\item The Traveling Salesman Problem is NP-complete
+\item ...
+\end{itemize}
+\item It is often helpful to test the complexity of an algorithm empirically!
+\end{itemize}
+
+\framebreak
+
+\textbf{But:} How many resources does my algorithm \textbf{really} need?\\
+$\to$ \textbf{empirical runtime analysis}:
+
+\begin{itemize}
+\item Measurement of the runtime of an implementation on a given machine
+\item How much time (or memory etc.) is needed when the code is executed?
+\item $\to$ Depends on the machine, the compiler/interpreter, dependencies, and the code itself
+\item The empirical runtime can be measured for a fixed input quantity, but can also be systematically analyzed for different input quantities / problem instances
+\item When computing on a cluster, the cloud, or a machine on which several people are computing, the empirical run-time is usually influenced by the actions of other users
+\end{itemize}
+
+\end{vbframe}
+
+\endlecture
+\end{document}
+

@@ -1,0 +1,618 @@
+
+<<setup-child, include = FALSE>>=
+library(knitr)
+library(microbenchmark)
+library(reshape2)
+library(ggplot2)
+library(xtable)
+set_parent("../style/preamble.Rnw")
+
+set.seed(1)
+@
+
+\input{../../latex-math/basic-math}
+
+\lecturechapter{\Sexpr{lecture_nr}}{Properties \& Examples of Big O}
+\lecture{CIM1 Statistical Computing}
+
+
+
+\begin{vbframe}{Properties}
+
+Be $f, g, h, f_i, g_i: X \to \R$, $c \ge 0$.
+
+\begin{enumerate}
+  \item Constants: $f \in \order(c g)$ is equivalent to $f \in \order(g)$. In particular: $f \in \order(c)$ is equivalent to $f \in \order(1)$ (Constant runtime)
+  \item Transitivity: If $f \in \order(g)$ and $g \in \order(h)$ then $f \in \order(h)$
+  \item Products: $f_{1} \in \order(g_{1}){\text{ and }}f_{2} \in \order(g_{2})\,\Rightarrow f_{1}f_{2} \in \order(g_{1}g_{2})$
+  \item Sums: $f_{1}\in \order(g_{1}){\text{ and }}f_{2} \in \order(g_{2})\,\Rightarrow f_{1}+f_{2} \in \order(|g_{1}|+|g_{2}|)$
+  % \item factorization: If $f \in \order(g \cdot h)$, then $f \in g \cdot \order(h)$
+  %\item $f \cdot \order(g) \subset \order(f \cdot g)$
+\end{enumerate}
+
+\vfill
+
+\framebreak
+
+Particularly important for determining the runtime of an algorithm:
+\begin{itemize}
+   \item If a function is the sum of several functions, the fastest growing function determines the order of the sum of functions.
+  \item If $f$ is a product of several factors, constants can be neglected.
+\end{itemize}
+
+\lz
+
+\textbf{Example 1: }
+
+The complexity of the function $f(n) = n \log n + 3 \cdot n^3$ can be determined quickly: the fastest growing function is $3 \cdot n^3$, multiplicative constants can be neglected. So
+
+$$
+f(n) \in \order(n^3)
+$$
+
+\end{vbframe}
+
+\begin{vbframe}{Other examples}
+
+\textbf{Example 2:}
+
+$$f(n) = 10 \log(n) + 5 (\log(n))^3 + 7n + 3n^2 + 6n^3$$
+
+\begin{itemize}
+\item The fastest growing summand is $6n^3$
+\item Constants can be neglected
+\item $\Rightarrow f(n) \in \order(n^3)$
+\end{itemize}
+
+\lz
+
+\textbf{Example 3:}
+
+$$ g(n) = n^2 \cdot \exp(n) $$
+\begin{itemize}
+\item $\Rightarrow g(n) \in \order(n^2 \cdot \exp(n))$
+\end{itemize}
+
+\end{vbframe}
+
+\begin{vbframe}{Determining the runtime}
+How fast a function runs depends on the different statements that are executed.
+$$
+total time = time(statement_1) + time(statement_2) + \ldots + time(statement_k)
+$$
+
+If each statement is a simple base operation, the time for each
+statement is constant and the total runtime is also constant: $\order(1)$.
+
+\framebreak
+
+\begin{block}{If-else}
+
+<<eval=FALSE>>=
+if (cond) {
+  block1 # sequence of statements
+} else {
+  block2 # sequence of statements
+}
+@
+
+\begin{itemize}
+  \item Either \code{block1} \textbf{or} \code{block2} is executed
+  \item The worst case is the slower one of the two options:
+  $$
+  \max(time(block1), time(block2))
+  $$
+\end{itemize}
+\end{block}
+
+\framebreak
+
+\begin{block}{Loops}
+
+<<eval=FALSE>>=
+for (i in 1:n) {
+  block # sequence of statements
+}
+@
+
+\begin{itemize}
+  \item We consider $n$ as part of our input size (e.g., number of elements in a list).
+  \item The loop is executed $n$ times.
+  \item If we assume that the statements are $\order(1)$, then the total runtime is: $n \cdot \order(1) = \order(n)$.
+\end{itemize}
+\end{block}
+
+\framebreak
+
+\begin{block}{Nested loops}
+
+<<eval=FALSE>>=
+for (i in 1:n) {
+  for (j in 1:m) {
+    block # sequence of statements
+  }
+}
+@
+
+\begin{itemize}
+  \item Let $m$, $n$ be part of our input size (e.g. number of rows/columns of a matrix).
+  \item The outer loop is executed $n$ times.
+  \item At each iteration of $i$ the inner loop is executed $m$ times.
+  \item Thus the statements are executed $n \cdot m$ times in total and the complexity is $\order(n \cdot m)$.
+\end{itemize}
+\end{block}
+
+\framebreak
+
+\begin{block}{Statements with function calls}
+
+\begin{itemize}
+  \item When a statement calls a function, the complexity of the function must be included in the calculation.
+  \item This also holds for loops:\\
+  <<eval=FALSE>>=
+  for (i in 1:n) {
+    g(i)
+  }
+  @
+  If $g \in \order(n)$, the runtime of the loop is $\order(n^2)$.
+\end{itemize}
+
+\end{block}
+
+\end{vbframe}
+\begin{vbframe}{Examples (continued)}
+
+\textbf{Example 4: } Bubble sort algorithm
+
+\vspace*{0.2cm}
+
+The bubble sort is an algorithm that sorts the elements of a (numeric) vector of length $n$ in ascending order.
+
+\vspace*{0.4cm}
+
+\begin{minipage}{.45\textwidth}
+\begin{footnotesize}
+\begin{lstlisting}
+for (k in n:2) {
+  for (i in 1:(k - 1)) {
+    if (x[i] > x[i + 1]) {
+      # swap elements
+      s = x[i]
+      x[i] = x[i + 1]
+      x[i + 1] = s
+    }
+  }
+}
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}\hfill
+\begin{minipage}{.45\textwidth}
+\includegraphics[width= 0.6\textwidth]{figure_man/bubble-sort-1.png}\\
+\begin{footnotesize}
+\url{http://teerexie.blogspot.com/}
+\end{footnotesize}
+
+\end{minipage}
+
+\framebreak
+
+\begin{itemize}
+\item The inner loop depends on the outer loop and is executed $i = n - 1$, then $i = n - 2$, ... and finally $i = 1$ times.
+\item According to the sum of natural numbers (Carl Friedrich Gauss) the inner loop is executed $\sum_{i = 1}^{n - 1} i = \frac{(n - 1)n}{2} = \frac{n^2 - n}{2}$ times.
+\item The operations in the \texttt{if} statement are operations with constant runtime.
+\end{itemize}
+
+The total runtime is therefore
+$$\frac{n^2 - n}{2} \cdot\order(1) = \order\left(\frac{n^2 - n}{2}\right) = \order(n^2)$$
+
+\framebreak
+
+\textbf{Example 5: } The multiplication of two matrices $\mathbf{A} \in \R^{m \times n}, \mathbf{B} \in \R^{n \times p}$ has a runtime of $\order(mpn)$:
+
+\begin{itemize}
+\item $m \cdot p$ scalar products
+\item For each scalar product: $n$ multiplications and $n - 1$ additions
+\item $\rightarrow$ $m \cdot p \cdot (n + (n - 1))$ operations
+\end{itemize}
+
+\begin{center}
+\includegraphics[width= 0.3\textwidth]{figure_man/matrix_multiplication.png}\\
+\begin{footnotesize}
+\url{https://commons.wikimedia.org/wiki/File:Matrix\_multiplication\_diagram\_2.svg}
+\end{footnotesize}
+\end{center}
+
+
+\framebreak
+The Coppersmith-Winograd algorithm allows matrix multiplication of two $n\times n$ matrices in $\order(n^{2.373})$. A lower bound for the complexity of the matrix multiplication is $n^2$, since each of the $n^2$ elements of the output matrix must be generated.
+
+\vfill
+\begin{footnotesize}
+More about the complexity of mathematical operations: \href{https://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations}{\color{blue}\underline{Computational complexity of mathematical operations}}
+\end{footnotesize}
+
+\framebreak
+
+<<>>=
+multiplyMatrices = function(n) {
+  A = matrix(runif(n^2), n, n)
+  B = matrix(runif(n^2), n, n)
+
+  return(A %*% B)
+}
+@
+
+\vspace{-0.2cm}
+\begin{center}
+\includegraphics[height = 0.5\textheight, width= 0.6\textwidth]{figure_man/runtime_matmult.pdf}
+\end{center}
+
+\framebreak
+
+If possible: Avoid matrix multiplication!
+<<>>=
+n = 1000
+A = matrix(runif(n), n, n)
+B = matrix(runif(n), n, n)
+y = c(runif(n))
+
+system.time(A %*% B %*% y)
+system.time(A %*% (B %*% y))
+@
+
+<<>>=
+n = 1000
+A = matrix(rnorm(n), n, n) + diag(1, nrow = n)
+b = rnorm(n)
+
+# solving Ax = b
+system.time(solve(A) %*% b)  # A^{-1} %*% b
+
+system.time(solve(A, b)) # direct solution of the LES
+@
+
+
+% \lz
+%
+% \textbf{Beispiel 5: }
+%
+% Lösen eines LGS $Ax = b$ mit $\mathbf{A} \in \R^{m \times n}, \mathbf{b} \in \R^{m}$ mit Gauss
+
+\framebreak
+
+\textbf{Example 6:}
+
+In mathematics one is interested in the estimation of error terms for approximations.
+
+Using Taylor's theorem a $m$-times differentiable function $f$ at point $x = x_0$ can be defined as follows:
+
+\begin{footnotesize}
+\begin{eqnarray*}
+f(x) &=& f(x_0) + \frac{f'(x_0)}{1!}(x - x_0) +  \frac{f'(x_0)}{2!}(x - x_0)^2 + ... +  \frac{f^{(m)}(x_0)}{m!}(x - x_0)^m \\
+&+& \order(|x - x_0|^{m + 1}), \quad x\to x_0.
+\end{eqnarray*}
+\end{footnotesize}
+
+\begin{itemize}
+\item The more $x$ approaches $x_0$, the better the Taylor polynomial approximates $f$ at point $x$.
+\item The higher the order $m$ of the Taylor polynomial, the better the approximation for $x \to x_0$.
+\end{itemize}
+
+
+\framebreak
+
+For example, consider the exponential function as \textbf{Taylor series}
+
+$$
+\exp(x) = \sum_{i=0}^\infty \frac{x^i}{i!}
+$$
+
+$\exp(x)$ approximated at the point $x=0$
+
+$$
+\exp(x) = 1 + x + \frac{x^2}{2!} + \order(x^3) \text{ for } x \rightarrow 0
+$$
+
+In this way, it becomes clear that the error does not become greater than
+$M \cdot x^3$ when $x$ approaches $0$.
+
+\framebreak
+
+\textbf{Example 7:}
+
+The complexity of the \textbf{binary search} is visualized by a tree representation.
+
+\begin{center}
+  \includegraphics[width=0.3\textwidth]{figure_man/binarysearch.png}
+\end{center}
+
+For an array of length $n$, the search tree has a height of $\log_2(n)$. After a maximum of $\log_2(n)$ comparisons, the searched element is found. The complexity of the binary search is $\order(\log n)$.
+
+\framebreak
+
+\textbf{Example 8:}
+
+\footnotesize
+The \textbf{Fibonacci sequence} is a series of numbers where each number is the sum of the two preceding ones, starting with 1. The sequence thus begins as:
+
+$1, 1, 2, 3, 5, 8, 13, 21, 34, ...$
+
+\normalsize
+<<size = "scriptsize">>=
+fib = function(n) {
+  if (n <= 2L)
+    return(1L)
+  return(fib(n - 2) + fib(n - 1))
+}
+
+fib_table = microbenchmark(fib(5), fib(10), fib(20), fib(21), times = 500L)
+@
+<<size = "scriptsize", echo=FALSE, results='asis'>>=
+print(xtable(summary(fib_table), digits = 0), booktabs=TRUE, caption.placement="top", size="\\fontsize{8pt}{9pt}\\selectfont")
+@
+
+
+
+\framebreak
+
+$Fibonacci(n) \in \order(2^n)$ (exponential runtime) \\
+
+\lz
+
+\textbf{Informal proof:}
+
+$$
+\texttt{Fibonacci(n)} = \underbrace{\texttt{Fibonacci(n - 1)}}_{T(n-1)} \underbrace{+}_{\order(1)} \underbrace{\texttt{Fibonacci(n - 2)}}_{T(n-2)}
+$$
+
+This results in a runtime of $T(n) = T(n-1) + T(n-2) + \order(1)$ for $n >1$.
+
+\lz
+
+The function is executed twice in each step.
+
+\begin{eqnarray*}
+  T(n) &=& T(n-1) + T(n-2)  \\
+  &=& T(n-2) + T(n-3) + T(n-3) + T(n-4) = \ldots
+\end{eqnarray*}
+
+\framebreak
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{figure_man/fibonacci.png}
+\end{center}
+
+By simply \enquote{counting} the nodes of this recursion tree you can determine the exact number of operations. \\
+$\to$ Worst case runtime $\order(2^n)$.
+
+\framebreak
+
+
+\textbf{Variations of Fibonacci(n): Iterative}
+
+<<fib2, size = "scriptsize">>=
+fib2 = function(n) {
+  a = 0; b = 1
+  if (n <= 2)
+    return(1)
+  for (i in seq_len(n-1L)) {
+    tmp = b;  b = a + b; a = tmp
+  }
+  return(b)
+}
+@
+This is $\order(n)$ (if we, incorrectly, assume addition is constant in n).
+
+\framebreak
+<<size = "scriptsize", tidy = FALSE, cache = TRUE>>=
+fib2_table = microbenchmark(fib2(10), fib2(20), fib2(40), fib2(80), fib2(160),
+                            times = 5000L)
+@
+<<size = "scriptsize", echo=FALSE, results='asis'>>=
+print(xtable(summary(fib2_table), digits = 0), booktabs=TRUE, caption.placement="top", size="\\fontsize{8pt}{9pt}\\selectfont")
+@
+Time measurement becomes imprecise since ``for loops'' are not that slow in R due to JIT compilation. Hence we are using doubles here as a lazy trick to generate large fibonacci numbers. An alternative to generate large integers would be to use the int64 package.\\
+
+
+
+
+
+\framebreak
+
+\textbf{Variations of Fibonacci(n): In C}
+
+<<fib3, size = "scriptsize", warning=FALSE, message=FALSE>>=
+library(inline)
+fib3 = cfunction(signature(n="integer"), language="C",
+         convention=".Call", body = '
+         int nn = INTEGER(n)[0];
+         SEXP res;
+         PROTECT(res = allocVector(INTSXP, 1));
+         INTEGER(res)[0] = 1;
+         int a = 0; int b = 1;
+         for (int i=0; i<nn-1; i++) {
+         int tmp = b;
+         b = a + b;
+         a = tmp;
+         }
+         INTEGER(res)[0] = b;
+         UNPROTECT(1);
+         return res;
+         ')
+@
+See how ugly the C interface is?
+\framebreak
+
+%\textbf{Variations of fib(n): In C}
+<<size = "scriptsize", tidy = FALSE, cache = TRUE>>=
+fib3_table = microbenchmark(fib3(20L), fib3(40L),times = 5000L)
+@
+<<size = "scriptsize", echo=FALSE, results='asis'>>=
+print(xtable(summary(fib3_table), digits = 0), booktabs=TRUE, caption.placement="top", size="\\fontsize{8pt}{9pt}\\selectfont")
+@
+
+This is both $\order(n)$ ... See the difference? Actually, you do not see anything as the function
+is so fast, we would need to calculate with bigints to really see the $\order(n)$!
+
+\framebreak
+
+\textbf{Variations of Fibonacci(n): C++-version}
+<<fib4, warning = FALSE, message=FALSE>>=
+library(Rcpp)
+fib4 = cppFunction('int fibonacci(const int x) {
+         if (x <= 2) return(1);
+         return (fibonacci(x - 1)) + fibonacci(x - 2);
+}
+' )
+@
+
+Much nicer C++-Interface with Rcpp.
+
+\framebreak
+
+%\textbf{Variations of fib(n): C++-version}
+%<<size = "footnotesize">>=
+%microbenchmark(fib3(20L), fib4(20L), fib3(40L), fib4(40L))
+%@
+
+%\framebreak
+
+
+\textbf{Variations of Fibonacci(n): Matrix power-exponentiation}
+<<fib5, size = "footnotesize">>=
+suppressAll(library(expm))
+fib5 = function(n) {
+  A = matrix(c(1, 1, 1, 0), 2, 2)
+  B = A%^%n
+  B[1, 2]
+}
+@
+
+
+How does \pkg{fib5()} work?
+
+\begin{align*}
+  \bm{A} &= \mat{1 & \color{red}{1} \\ 1 & 0} \quad
+  \bm{A}^2 = \mat{2 & \color{red}{1} \\ 1 & 1} \quad
+  \bm{A}^3 = \mat{3 & \color{red}{2} \\ 2 & 1} \quad
+  \bm{A}^4 = \mat{5 & \color{red}{3} \\ 3 & 2} \\
+  \bm{A}^5 &= \mat{8 & \color{red}{5} \\ 5 & 3} \quad
+  \bm{A}^6 = \mat{13 & \color{red}{8} \\ 8 & 5} \quad
+  \bm{A}^7 = \mat{21 & \color{red}{13} \\ 13 & 8} \quad
+  \hdots
+\end{align*}
+
+\framebreak
+
+
+\textbf{Matrix power-exponentiation}
+
+What does \verb|A %^% n| do? \\
+Computes the n-th power of a matrix corresponding to $n-1$ matrix multiplications
+(\verb|A^n| only computes element wise powers).
+
+The algorithm uses $\order(log_2(k))$ matrix multiplications.
+
+\lz
+\textbf{Exponentiation by squaring:}
+
+$$
+  x^n =
+  \begin{cases}
+    x(x^2)^{\frac{n-1}{2}} & \text{if n is odd} \\
+    (x^2)^{\frac{n}{2}}    & \text{if n is even}
+  \end{cases}
+$$
+
+\framebreak
+
+\textbf{Exponentiation by squaring}
+
+Implemented as a recursive algorithm:
+
+<<size = "scriptsize">>=
+exp.by.squaring = function(x, n) {
+  if(n<0) {
+    return(exp.by.squaring(1 / x, -n))
+  } else if(n==0){
+    return(1)
+  } else if(n==1){
+    return(x)
+  } else if(n%%2 == 0){
+    return(exp.by.squaring(x^2, n/2))
+  } else {
+    return(x * exp.by.squaring(x^2, (n-1)/2))
+  }
+}
+exp.by.squaring(2,5)
+@
+
+% Time can not be measured via microbenchmark since it is too fast.
+\framebreak
+
+%\textbf{Variations of Fibonacci(n): Matrix power-exponentiation}
+%<<size = "footnotesize">>=
+%microbenchmark(fib5(7), fib5(25L), fib5(49), times = 1000)
+%@
+
+
+\framebreak
+
+
+\textbf{Example 9:} The \textbf{Traveling Salesman Problem} (TSP) is the problem of planning a route through all locations in such a way that
+
+\begin{itemize}
+\item The entire route is as short as possible,
+\item The first location is equal to the last location.
+\end{itemize}
+
+\vspace*{-0.2cm}
+
+\begin{center}
+  \includegraphics[width=0.3\textwidth]{figure_man/tsp.png}~~\includegraphics[width=0.4\textwidth]{figure_man/weighted-graph.png}
+\end{center}
+\vspace*{-0.2cm}
+
+\begin{footnotesize}
+Left: Route through places in Germany (\url{https://de.wikipedia.org/wiki/Problem_des_Handlungsreisenden}) \\
+Right: Weighted graph (\url{https://www.chegg.com/})
+\end{footnotesize}
+
+\framebreak
+
+Exact algorithms with long runtime exist
+
+\begin{itemize}
+  \item Brute force search (Calculate lengths of all possible round trips and choose shortest): $\order(n!)$
+  \item Dynamic Programming (Held-Karp algorithm): $\order(n^22^n)$
+\end{itemize}
+
+and heuristic algorithms with shorter runtime, which do not guarantee an optimal solution, e.g.
+
+\begin{itemize}
+  \item Nearest-Neighbor heuristics: $\order(n^2)$
+  %\item Minimum-Spanning-Tree-Heuristic: $\order(n^2\log(n))$
+\end{itemize}
+
+The TSP problem is \textbf{NP-complete}.
+
+\end{vbframe}
+
+
+\begin{vbframe}{Complexity classes}
+
+In theoretical computer science, problems are divided into complexity classes. For an input size $n$ a distinction is made between
+
+\begin{itemize}
+\item \textbf{P}: Problems solvable in polynomial runtime ($\order(n^k), k\ge 1$)
+\item \textbf{NP} (\textbf{N}on-deterministic \textbf{P}olynomial time): Problems from \textbf{P} and problems that cannot be solved in polynomial time;\\ NP problems can only be solved with a non-deterministic turing machine in an acceptable time (hence the name)
+\item \textbf{NP-complete}: All problems from NP can be traced back to this problem
+\end{itemize}
+
+It has not yet been proven that P $\ne$ NP holds.
+
+\end{vbframe}
+
+
+
+\endlecture

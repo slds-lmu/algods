@@ -1,0 +1,323 @@
+
+%<<setup-child, include = FALSE>>=
+%library(knitr)
+%set_parent("../style/preamble.Rnw")
+%options(digits = 16)
+%@
+\input{../../2021/style/preamble4tex}
+\input{../../latex-math/basic-math}
+
+\begin{document}
+
+\lecturechapter{3}{Condition in systems of linear equations (LES)}
+\lecture{CIM1 Statistical Computing}
+
+\begin{vbframe}{Condition number: matrix multiplication}
+Although we are actually interested in $\xv = \Amat^{-1}\yv$, we first consider the direct problem: $\yv = \Amat \xv$.
+
+\lz
+
+Since
+$$
+y_i = \sum_{j = 1}^n A_{ij}x_j,
+$$
+it is to be expected that the high condition number of the addition is also transferred to $\Amat \xv$.
+
+\framebreak
+
+When $\Amat$ and $\xv$ are disturbed by $\Delta \Amat$ and $\Delta \xv$, the \textbf{absolute error} in the result $\yv$ is:
+
+\begin{eqnarray*}
+\yv + \Delta \yv &=& (\Amat + \Delta \Amat)(
+  \xv + \Delta \xv)\\  &=& \Amat \xv + \Delta \Amat\xv + \Amat\Delta \xv +
+      \Delta \Amat\Delta \xv \qquad | - \yv \\
+\Delta \yv &=& \Delta \Amat\xv + \Amat\Delta \xv +
+      \Delta \Amat\Delta \xv
+\end{eqnarray*}
+
+The absolute error is therefore estimated as follows
+\begin{eqnarray*}
+\to \quad \|\Delta \yv\| &=& \|\Delta \Amat\xv + \Amat\Delta \xv +
+      \Delta \Amat\Delta \xv\| \\ &\le& \|\Delta \Amat\|\|\xv\| + \|\Amat\|\|\Delta \xv\| +
+      \|\Delta \Amat\|\|\Delta \xv\| \\
+      &\approx& \|\Delta \Amat\|\|\xv\| + \|\Amat\|\|\Delta \xv\|
+\end{eqnarray*}
+
+% \framebreak
+%
+% Kondition Addition:\\
+% \medskip
+% $\quad y = x_1 + x_2,\quad \tilde y = (x_1 + \delta_1) + (x_2 + \delta_2)$
+% \begin{eqnarray*}
+%  \SpAr \frac{\tilde y - y}{y} &=& \frac{\delta_1 + \delta_2}{x_1 + x_2} \\
+%    &=& \frac{x_1}{x_1 + x_2}\ \frac{\delta_1}{x_1} +  \frac{x_2}{x_1 + x_2}\ \frac{\delta_2}{x_2}
+% \end{eqnarray*}
+% Schlecht konditioniert, falls $x_1 + x_2$ nahe bei 0 ($\kappa$ wird beliebig groß).\\
+% \bigskip
+% Da
+% $$
+% y_i = \sum_{j = 1}^n A_{ij}x_j,
+% $$
+% ist zu erwarten, dass Kondition sich auch auf $\Amat \xv$ überträgt.
+
+\framebreak
+
+From the estimate for the absolute error, we obtain
+\small
+\begin{eqnarray*}
+\|\Delta \yv\| &\leq& \|\Delta \Amat\|\|\xv\| +
+  \|\Amat\|\|\Delta \xv\| \\
+&=& (\|\Delta \Amat\|\|\xv\| +
+  \|\Amat\|\|\Delta \xv\|) \frac{\|\xv\|}{\|\xv\|} \\
+&=& (\|\Delta \Amat\|\|\xv\| +
+  \|\Amat\|\|\Delta \xv\|) \frac{\|\Amat^{-1}\yv\|}{\|\xv\|} \\
+&\leq& (\|\Delta \Amat\|\|\xv\| +
+  \|\Amat\|\|\Delta \xv\|) \frac{\|\Amat^{-1}\|\|\yv\|}{\|\xv\|} \\
+&=& \left(\frac{\|\Amat\|}{\|\Amat\|}\|\Delta \Amat\|\|\xv\| +
+  \|\Amat\|\|\Delta \xv\|\right) \frac{\|\Amat^{-1}\|\|\yv\|}{\|\xv\|} \\
+&=& \left(\frac{\|\Amat\|\|\Amat^{-1}\|}{\|\Amat\|\|\xv\|}\|\Delta \Amat\|\|\xv\| +
+  \|\Amat\|\|\Amat^{-1}\|\frac{\|\Delta \xv\|}{\|\xv\|}\right) \|\yv\| \\
+\frac{\|\Delta \yv\|}{\|\yv\|} &\leq& \|\Amat\|\|\Amat^{-1}\|
+  \left(\frac{\|\Delta \Amat\|}{\|\Amat\|} + \frac{\|\Delta \xv\|}{\|\xv\|} \right).
+\end{eqnarray*}
+
+\framebreak
+
+The condition number
+$$
+\kappa(\Amat) = \|\Amat\|\|\Amat^{-1}\|
+$$
+describes the propagation of relative errors both in the matrix and on the right side of the LES.\\
+\medskip
+Example:
+$$
+\yv = \Amat \xv, \quad \Amat =
+\mat{1 & 1 \\ 1 & 1 + \epsilon}, \quad \xv^T = \mat{ 1 & -1 }
+$$
+$$
+\|\Amat\|_{\infty} = 2 + \epsilon, \quad \Amat^{-1} = \frac{1}{1 + \epsilon - 1}
+\mat{ 1 + \epsilon & -1 \\ -1 & 1}, \quad \|\Amat^{-1}\|_\infty = \frac{2 + \epsilon}{\epsilon}
+$$
+$$
+\kappa(\Amat) = (2 + \epsilon)\frac{2 + \epsilon}{\epsilon} =
+  \frac{4 + 4\epsilon + \epsilon^2}{\epsilon} \approx \frac{4}{\epsilon} \quad
+  \text{ and}\quad \epsilon \ll 1.
+$$
+$\epsilon = 10^{-8}$ and machine epsilon $\texttt{eps} = 10^{-16}$ in $\xv$ result in
+a relative precision of just about $4 / 10^{-8} \cdot 10^{-16} = 4 \cdot 10^{-8}$ in
+$\yv$.
+\end{vbframe}
+
+
+
+\begin{vbframe}{Condition number: LES}
+% Wenn
+% $$
+% \Amat \xv = \yv, \quad \Amat(\xv + \Delta \xv) =
+%   y + \Delta \yv,
+% $$
+% gilt für den relativen Fehler die Abschätzung
+% $$
+% \frac{\|\Delta \xv\|}{\|\xv\|} =
+%   \kappa(\Amat) \frac{\|\Delta \yv\|}{\|\yv\|}.
+% $$
+
+The solution of the LES $\xv = \Amat^{-1}\yv$ is (numerically) equivalent to the results of the matrix multiplication. The following applies
+
+$$
+\kappa(\Amat) = \|\Amat\|\|\Amat^{-1}\| = \kappa(\Amat^{-1}).
+$$
+
+\textbf{Note:}
+$$
+\kappa(\Amat) = \|\Amat\|\|\Amat^{-1}\| \geq \|\Amat\Amat^{-1}\| = \| \mathbf{I} \| = 1.
+$$
+
+%\framebreak
+\lz
+\textbf{Example 1:}
+
+Consider the matrix $\Amat = \mat{1 & 1 \\1 + 10^{-10} & 1 - 10^{-10}}$
+\lz
+% <<>>=
+% A = matrix(c(1, 1 + 10e-10, 1, 1 - 10e-10), nrow = 2)
+% @
+
+The matrix is ill-conditioned with condition number $\kappa \approx 2 \times 10^9$.
+
+For the solution of the LES $\Amat \xv = \yv$ this means: a small variation in the input data (e.g. $\yv=(1, 1) \to \tilde \yv = (1, 1.00001)$) leads to a big change in the solution.
+\lz
+\lz
+\footnotesize
+\begin{verbbox}
+A = matrix(c(1, 1 + 10e-10, 1, 1 - 10e-10), nrow = 2)
+y = c(1, 1)
+yt = c(1, 1.00001)
+\end{verbbox}
+\col
+\vspace{0.1cm}
+
+\begin{verbbox}
+solve(A, y)
+## [1] 0.4999999722444252 0.5000000277555748
+\end{verbbox}
+\col
+\vspace{0.1cm}
+
+\begin{verbbox}
+solve(A, yt)
+## [1] 5000.499858862901 -4999.499858862901
+\end{verbbox}
+\col
+
+\normalsize
+
+\framebreak
+
+\textbf{Example 2:} The Hilbert matrix is known to be ill-conditioned!
+$$
+H_{ij} = \frac{1}{i + j - 1},
+$$
+\footnotesize
+\begin{verbbox}
+hilbert = function(n) {
+  i = 1:n 
+  return(1 / outer(i - 1, i, "+"))
+}
+hilbert(4)
+\end{verbbox}
+\col
+\vspace{0.2cm}
+\begin{verbbox}
+##                    [,1]               [,2]
+## [1,] 1.0000000000000000 0.5000000000000000
+## [2,] 0.5000000000000000 0.3333333333333333
+## [3,] 0.3333333333333333 0.2500000000000000
+## [4,] 0.2500000000000000 0.2000000000000000
+##                    [,3]               [,4]
+## [1,] 0.3333333333333333 0.2500000000000000
+## [2,] 0.2500000000000000 0.2000000000000000
+## [3,] 0.2000000000000000 0.1666666666666667
+## [4,] 0.1666666666666667 0.1428571428571428
+\end{verbbox}
+\col
+\framebreak
+
+\footnotesize
+\begin{verbbox}
+foo = function(n) {
+  cond = sapply(n, function(i) {
+    norm(hilbert(i)) * norm(solve(hilbert(i)))
+  })
+  return(cbind(n, cond))
+}
+foo(4:10)                                                                                                                                                                                                                
+##      n                  cond
+## [1,] 4 2.837499999999738e+04
+## [2,] 5 9.436559999999363e+05
+## [3,] 6 2.907027900294877e+07
+## [4,] 7 9.851948897194694e+08
+## [5,] 8 3.387279082022739e+10
+## [6,] 9 1.099650993366049e+12
+## [7,] 10 3.535372424347476e+13
+\end{verbbox}
+\col
+\end{vbframe}
+
+
+\begin{vbframe}{well- vs. ill-posed problems}
+A problem is called well-posed if the following holds:
+\begin{itemize}
+\item There exists a solution for the problem
+\item The existing solution is unique
+\item The solution depends continuously on the condition of the problem (stable)
+\end{itemize}
+A problem is called ill-posed if it violates at least one of these properties. However, the instability of solutions usually causes the most difficulties.
+\end{vbframe}
+
+
+\begin{vbframe}{\enquote{Do not invert that matrix}}
+
+\textbf{Important:} \textbf{Never} solve an LES (numerically) using $\xv = \Amat^{-1} \yv$.
+\lz
+\footnotesize
+\begin{verbbox}
+solve(A) %*% y
+\end{verbbox}
+\col
+\lz
+
+\normalsize
+Although theoretically correct, internally \textbf{two} (possibly ill-posed) problems are solved:
+
+\begin{itemize}
+\item Inversion of $\Amat$ (solution of $\Amat \xv = \bm{0}$) has a condition of $\|\Amat\|\|\Amat^{-1}\|$
+\item The multiplication of $\Amat^{-1} \cdot \yv$ has a condition of $\|\Amat\|\|\Amat^{-1}\|$
+\end{itemize}
+
+The condition inflates: $\|\Amat\|^2\|\Amat^{-1}\|^2$
+
+\framebreak
+
+\textbf{Better:} Solve directly by
+\lz
+\footnotesize
+\begin{verbbox}
+solve(A, y)
+\end{verbbox}
+\col
+\lz
+\normalsize
+\textbf{Advantages:}
+
+\begin{itemize}
+\item \textbf{Stability}: In the worst case only \textbf{one} ill-posed subproblem is solved.
+\item \textbf{Memory}: The $n^2$ entries of the inverted matrix $\bm{A}^{-1}$ must be saved. With a direct solution via the LES only $\bm{x}\in \R^n$ is stored ($\frac{1}{n}$-th of storage space).
+% \item \textbf{Laufzeit}: Lösungsalgorithmen für die direkte Lösung von $Ax = b$ sind schneller
+\end{itemize}
+
+Systems of equations can be solved efficiently and numerically stable by means of matrix decompositions (more on this in chapter 7 - matrix decompositions).
+
+\end{vbframe}
+
+
+% \begin{vbframe}{Dos and Don'ts}
+% \end{vbframe}
+
+\begin{vbframe}{Sherman-Morrison formula}
+
+If a matrix $\bm{X}$ can be represented by $\bm{X} = \Amat + \bm{u}\bm{v}^T$, $\bm{X}^{-1}$ can be calculated using the \textbf{Sherman-Morrison formula} as follows:
+
+$$\bm{X}^{-1} = (\Amat + \bm{u}\bm{v}^T)^{-1} = \Amat^{-1} -  \frac{\Amat^{-1}\bm{u}\bm{v}^T\Amat^{-1}}{1-\bm{v}^T\Amat^{-1}\bm{u}}$$
+
+\textbf{Proof:}
+\vspace*{-.5cm}
+\begin{eqnarray*}
+\bm{X} \cdot \bm{X}^{-1} &=& (\Amat + \bm{u}\bm{v}^T) (\Amat^{-1} -  \frac{\Amat^{-1}\bm{u}\bm{v}^T\Amat^{-1}}{1-\bm{v}^T\Amat^{-1}\bm{u}}) \\ &=& \Amat\Amat^{-1} + \bm{u}\bm{v}^T \Amat^{-1} - \frac{\Amat\Amat^{-1}\bm{u}\bm{v}^T\Amat^{-1} - \bm{u}\bm{v}^T\Amat^{-1}\bm{u}\bm{v}^T\Amat^{-1}}{1-\bm{v}^T\Amat^{-1}\bm{u}}   \\
+&=& \id + \bm{u}\bm{v}^T \Amat^{-1} - \frac{\bm{u}\bm{v}^T\Amat^{-1} - \bm{u}\bm{v}^T\Amat^{-1}\bm{u}\bm{v}^T\Amat^{-1}}{1-\bm{v}^T\Amat^{-1}\bm{u}}  \\ &=&  \id + \bm{u}\bm{v}^T \Amat^{-1} - \frac{\bm{u} (1 - \bm{v}^T\Amat^{-1}\bm{u}) \bm{v}^T\Amat^{-1}}{1-\bm{v}^T\Amat^{-1}\bm{u}}\\ &=& \id + \bm{u}\bm{v}^T\Amat^{-1} - \bm{u}\bm{v}^T\Amat^{-1} = \id
+\end{eqnarray*}
+
+\end{vbframe}
+
+\begin{vbframe}{Woodbury formula}
+
+If a matrix $\bm{X}$ can be represented by $\bm{X} = \Amat + \bm{U}\bm{C}\bm{V}$, $\bm{X}^{-1}$ can be calculated using the \textbf{Woodbury formula} as:
+
+$$\bm{X}^{-1} = (\Amat + \bm{U}\bm{C}\bm{V})^{-1} = \Amat^{-1} - \Amat^{-1}\bm{U}(\bm{C}^{-1} + \bm{V}\Amat^{-1}\bm{U})^{-1}\bm{V}\Amat^{-1}$$
+
+The formula is especially useful if $\Amat^{-1}$ is very easy to calculate or has already been calculated.
+
+\lz
+
+The Woodbury formula is often used in optimization (low-rank updates, BFGS updates). See Chapter 10 (Multivariate Optimization) for more information.
+
+% Typische Beispiele:
+% \begin{itemize}
+% \item Berechnung der Inversen des Low-Rank-Updates von $\Amat \leftarrow \Amat + \bm{U}\bm{C}\bm{V}$
+% \item Approximation der Inversen von $\Amat+\bm{B}$, wobei $\bm{B} \approx \bm{U}\bm{C}\bm{V}$ durch Singulärwertzerlegung.
+% \end{itemize}
+
+\end{vbframe}
+
+\endlecture
+\end{document}

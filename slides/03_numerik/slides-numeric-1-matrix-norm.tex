@@ -1,0 +1,161 @@
+
+%<<setup-child, include = FALSE>>=
+%library(knitr)
+%set_parent("../style/preamble.Rnw")
+%options(digits = 16)
+%@
+\input{../../2021/style/preamble4tex}
+\input{../../latex-math/basic-math}
+
+\begin{document}
+
+\lecturechapter{3}{Matrix Norm}
+\lecture{CIM1 Statistical Computing}
+
+% \begin{vbframe}{Notation}
+% 
+% \begin{itemize}
+% \item $\xv = (x_1, x_2, ..., x_n)^T$: vector in $\R^n$
+% \item $\Amat$: matrix in $\R^{n \times m}$
+% \item $\|\xv\|$: norm, e.g. 
+%   \begin{itemize}
+%     \item $\|\xv\|_1 = \sum |x_i|$ (taxicab norm)
+%     \item $\|\xv\|_2 = \sqrt{\xv^T\xv}$ (Euclidean norm)
+%     \item $\|\xv\|_\infty = \max |x_i|$ (maximum norm)
+%   \end{itemize}
+% \item $\epsm$: machine accuracy
+% \item $a \ll b$ ($a \gg b$): $a$ is \textbf{considerably} smaller (larger) than $b$ 
+% \end{itemize}
+% \vspace*{0.5cm}
+% In statistics we are often confronted with matrices (e.g. design matrix $X$). To perform an error analysis for e.g. related LES, meaning we want to know if the given problem is well-conditioned, the matrix norm is used.
+% \end{vbframe}
+
+\begin{vbframe}{Reminder: Matrix norm}
+% Wie können Störungen gemessen werden? $\Rightarrow$ Normen.\\
+% \bigskip
+\vspace*{-0.1cm}
+\textbf{Motivation:}
+
+In statistics we are often confronted with matrices (e.g. design matrix $X$). To perform an error analysis for related LES, meaning we want to know if the given problem is well-conditioned, the matrix norm is used.
+
+\lz
+\vspace*{-0.1cm}
+\textbf{Definition:}
+
+$\|\cdot\| : \R^n \rightarrow \R^+_0$ is called norm, if:
+\begin{itemize}
+\item $\|\xv\| = 0 \Leftrightarrow \xv = \mathbf{0} \quad$ (positive definite),
+\item $\|a \, \xv\| = |a|\|\xv\| \quad$ (homogeneity),
+\item $\|\xv + \yv\| \leq \|\xv\| + \|\yv\| \quad$ (triangle inequality).
+\end{itemize}
+\medskip 
+
+General $p$ norm of a vector $\xv \in \R^n$:
+$$
+\|\xv\|_p = \left(\sum\limits_{i=1}^n |x_i|^p\right)^{1/p},
+$$
+where $\|\xv\|_\infty = \max_i (|x_i|)$.\\
+\medskip
+
+\framebreak
+
+\textbf{Examples:}
+$$
+\|\xv\|_1 = \sum_i |x_i| \qquad  \|\xv\|_2 = \sqrt{\xv^T\xv}
+\qquad  \|\xv\|_\infty = \max_i |x_i|
+$$
+
+\vspace*{-.6cm}
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{figure_man/pnorm.png}
+\end{center}
+
+\framebreak 
+
+Corresponding \textbf{matrix norm} (for $\Amat \in \R^{n \times n}$) is defined as
+$$
+\|\Amat\|_p := \sup_{\xv \not = \mathbf{0}}\left(\frac{\|\Amat \xv\|_p}{\|\xv\|_p}\right) =
+  \sup_{\|\xv\|_p = 1} \left( \|\Amat\xv\|_p \right).
+$$
+
+
+
+\textbf{Examples} for matrix norms induced by vector norms:
+\begin{itemize}
+\item $\|\Amat\|_1 = \max_j\left(\sum_i |A_{ij}| \right) \quad$ (maximum absolute column sum norm)
+  \begin{eqnarray*}
+  \Amat = \begin{pmatrix*}[r]1 & -2 & -3 \\
+  2 & 3 & -1\end{pmatrix*}\Rightarrow
+  \|\Amat\|_1 &=& \max (\|A_1\|_1, \|A_2\|_1, \|A_3\|_1) \\
+  &=& \max (3, 5, 4) = 5
+  \end{eqnarray*}
+\item $\|\Amat\|_2 = \left(\mbox{largest eigenvalue of } \Amat^\top\Amat \right)^{1/2} \quad$ (spectral norm)
+\item $\|\Amat\|_\infty = \max_i\left(\sum_j |A_{ij}| \right) \quad$ (maximum absolute row sum norm)
+\end{itemize}
+\bigskip
+Another common matrix norm is the \textbf{Frobenius norm} which can be interpreted as an extension of the Euclidean norm for vectors to matrices. It is defined as follows: 
+$$
+\|\Amat\|_F = \sqrt{\mbox{trace}(\Amat^\top\Amat)} = \sqrt{ \sum_i \sum_j A_{ij}^2}
+$$
+It is: $\quad \|\Amat\|_2 \leq \|\Amat\|_F$\\
+\medskip
+Most important to us is $\|.\| := \|.\|_2$
+
+\framebreak
+
+Intuition matrix norm:
+\begin{itemize}
+\item Longest possible \enquote{stretch} of a vector of length 1 when multiplied by $\Amat$.
+\item For spectral norm: longest possible \enquote{stretch} in direction of the eigenvector of $\Amat^T\Amat$ (major axis of the ellipse) belonging to the largest absolute eigenvalue.
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{figure_man/euklidischenorm.png}
+
+
+\begin{footnotesize}
+Left: Vectors of length 1. Right: Vectors after multiplication by $A$.
+\end{footnotesize}
+\end{center}
+
+\framebreak
+
+\begin{enumerate}
+\item $ \|\Amat \xv\|_p \leq \|\Amat\|_p\|\xv\|_p,$ \\ 
+  i.e., $\|\Amat\|_p$ is the smallest number to which this applies,
+  because $\|\Amat\|_p \geq \frac{\|\Amat \xv\|_p}{\|\xv\|_p}$ for every $\xv \not= 0$.
+  
+\item $ \|\bm{AB}\|_p \leq \|\Amat\|_p \|\bm{B}\|_p$\\
+  \vspace{0.2cm}
+  \begin{footnotesize}
+  \textbf{Proof:}
+  Let $\xv$ be arbitrary with $\|\xv\|_p = 1$ Then
+  $$
+  \|\bm{ABx}\|_p \leq \|\Amat\|_p \|\bm{B}\xv\|_p \leq \|\Amat\|_p \|\bm{B}\|_p \|\xv\|_p = \|\Amat\|_p \|\bm{B}\|_p
+  $$
+  and thus 
+  $$
+  \|\bm{AB}\|_p = \sup_{\|\xv\|_p = 1} \|\bm{ABx}\|_p \leq \|\Amat\|_p \|\bm{B}\|_p
+  $$
+  
+  \end{footnotesize}
+  
+\end{enumerate}
+
+
+% \begin{eqnarray*}
+% \|\mathbf{AB}\|_p &=& \sup \left( \frac{\|\mathbf{ABx}\|_p}{\|\xv\|_p} \right) \\
+%   &=& \sup \left( \frac{\|\mathbf{ABx}\|_p}{\|\xv\|_p} \frac{\|\mathbf{Bx}\|_p}{\|\mathbf{Bx}\|_p} \right) \\
+%   &=& \sup \left( \frac{\|\mathbf{ABx}\|_p}{\|\mathbf{Bx}\|_p} \frac{\|\mathbf{Bx}\|_p}{\|\xv\|_p} \right) \\
+%   &\leq& \sup \left( \frac{\|\mathbf{ABx}\|_p}{\|\mathbf{Bx}\|_p} \right) \sup
+%     \left(\frac{\|\mathbf{Bx}\|_p}{\|\xv\|_p} \right) \\
+%   &=& \|\Amat\|_p\|\mathbf{B}\|_p.
+% \end{eqnarray*}
+
+\end{vbframe}
+
+
+
+\endlecture
+\end{document}
