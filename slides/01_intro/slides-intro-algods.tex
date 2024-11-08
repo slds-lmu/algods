@@ -1,114 +1,24 @@
-
-
-
-
-\input{../../2021/style/preamble4tex}
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 \input{../../latex-math/basic-math}
 \input{../../latex-math/basic-ml}
 
-
+\title{Algorithms and Data Structures}
 
 \begin{document}
-    
 
-
-\lecturechapter{1}{Introduction}
-\lecture{Computerintensive Methods}
-
-%\SweaveOpts{engine = R, eps = FALSE, pdf = FALSE, png = TRUE, resolution = 120, keep.source = TRUE}
-
-% \begin{vbframe}{Organisatorisches}
-%
-% \begin{itemize}
-% \item \textbf{Infos \& Kursunterlagen in LMU-Moodle:} \\
-%
-% {\small \url{www.elab.moodle.elearning.lmu.de/course/view.php?id=2481}}
-%
-% \item \textbf{Einschreibeschlüssel:} \\
-% CIM1718
-% \end{itemize}
-%
-% Bitte den Einschreibeschlüssel JETZT notieren und der Veranstaltung auf Moodle beitreten!
-% \end{vbframe}
-
-
-%FIXME: Do we already know all this??
-%\begin{vbframe}{Termine}
-
-%\lz
-
-%\begin{center}
-%\footnotesize
-%\begin{tabular}{l|l|l}
-%\textbf{Vorlesung} & \textbf{übung} & \textbf{Tutorium} \\ \hline
-%08.10 / 09.10 & 16.10 & 17.10? (entfällt oder \proglang{R} Intro) \\
-%15.10         & 30.10 & 24.10 / 31.10 \\
-%22.10 / 23.10 & 13.11 & 07.11 / 14.11 \\
-%29.10         & 27.11 & 21.11 / 28.11 \\
-%05.11 / 06.11 & 11.12 & 05.12 / 12.12 (Seminarraum) \\
-%12.11         & 08.01 & 19.12 / 09.01 \\
-%19.11 / 20.11 & 22.01 & 16.01 / 23.01 \\
-%26.11         &       & 30.01 \\
-%03.12 / 04.12 &       & \\
-%10.12         &       & \\
-%17.12 / 18.12 &       & \\
-%07.01         &       & \\
-%14.01 / 15.01 &       & \\
-%21.01         &       & \\
-%28.01 / 29.01 &
-%\end{tabular}
-%\end{center}
-%\end{frame}
-
-
-% \begin{vbframe}{Literatur}
-% Folien, Handouts und Code zum Stoff der Vorlesung werden zum
-% Download bereitgestellt, als Vorlagen dienen:
-%
-% \lz
-%
-% \begin{itemize}
-% \item \href{https://www.crcpress.com/Statistical-Computing-with-R/Rizzo/9781584885450}{M. Rizzo, \textbf{Statistical Computing in R}, Chapman and Hall/CRC, 2007.}
-% \item \href{http://onlinelibrary.wiley.com/doi/10.1002/9781118555552.scard/summary}{G.H. Givens, J.A. Hoeting, \textbf{Computational Statistics}, 2nd edition, Wiley, 2013.}
-% \item \href{http://ebooks.cambridge.org/ebook.jsf?bid=CBO9780511812231}{J.F. Monahan, \textbf{Numerical Methods of Statistics}, 2nd edition, Cambridge, 2011.}
-% \item \href{http://biowww.dfci.harvard.edu/~gray/248-02/report.pdf}{Robert Gray, \textbf{Advanced Statistical Computing}, Vorlesungsskriptum, 2002.}
-% \end{itemize}
-% \end{vbframe}
-
-
-% \begin{vbframe}{Software}
-% \begin{itemize}
-% \item Als Software in den �bungen wird \pkg{R} verwendet.
-% \item \pkg{R}-Grundkenntnisse im Umfang der Einführungsveranstaltungen
-%   werden vorausgesetzt.
-% \item Teilnehmer, die keinen \pkg{R}-Kurs besucht haben: bitte so schnell wie
-%   möglich die Unterlagen der Kurse \enquote{Statistische Software} (2. Semester, nur \pkg{R}-Teil)
-%   und \enquote{Programmieren mit Statistischer Software} (4. Semester) durcharbeiten. Probleme mit
-%   \pkg{R} im Tutorium ansprechen.
-% \item Zur Unterstützung der Programmierung von \pkg{R}
-%   empfiehlt sich die Verwendung eines Editors wie \pkg{Vim}, \pkg{Emacs} oder \pkg{RStudio}.
-% \end{itemize}
-% \end{vbframe}
-
-
-% \begin{vbframe}{R Kenntnisse}
-%
-% Was ist bekannt bzw. nicht bekannt?
-%
-% \begin{itemize}
-% \item if-else, for-Schleifen?
-% \item Eigene Funktionen schreiben?
-% \item basic plots? ggplot2?
-% \item lapply / sapply / apply / Map / Reduce / Filter?
-% \item S3? S4? generische Methoden?
-% \item Exception Handling (try / tryCatch) bekannt?
-% \item Debugging (in RStudio oder traceback, debug, browser, etc.)
-% \item R-Profiling bzw. Laufzeitanalyse?
-% \end{itemize}
-% \end{vbframe}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Introduction
+}{% Lecture title
+Introduction
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Learn a thing
+  \item Learn another thing
+}
 
 \begin{vbframe}{What is this lecture about}
-  \oneliner{How to analyze and solve interesting computational problems in stats}
+\oneliner{How to analyze and solve interesting computational problems in stats}
 
 \lz
 
@@ -116,8 +26,6 @@ We will mainly study techniques from applied maths (numerics, linear algebra, op
 not so much from statistics itself.
 
 \end{vbframe}
-
-
 
 \begin{vbframe}{Stat. Computing vs. Comp. Statistics}
 Westlake (1994)
@@ -403,7 +311,7 @@ For a tolerance of $0.001$, the numerical solution is:
 %@
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 f = function(x) { 2 + cos(x) + sin(2 * x) }
 f0 = function(x) { f(x) - 2.5 }
 uniroot(f0, c(0, 4), tol = 0.001)
@@ -421,8 +329,8 @@ uniroot(f0, c(0, 4), tol = 0.001)
 ##
 ## $estim.prec
 ## [1] 0.0005500599
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \end{vbframe}
 
@@ -589,13 +497,13 @@ How does a computer generate randomness?
 How does \texttt{R} calculate:
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 rnorm(10)
 ## [1] 0.06758659 0.67908219 -0.26783828 0.77266612
 ## [5] -0.02887604 -0.46867480 -0.94277461 0.15943498
 ## [9] -0.73383393 -0.48259188
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \normalsize
 \lz
@@ -608,7 +516,7 @@ rnorm(10)
 
 \begin{vbframe}{Example: Linear Model}
 
- How do we solve the normal equations?
+How do we solve the normal equations?
 
   $$ \boldsymbol{\beta} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T y $$
 
@@ -621,9 +529,9 @@ rnorm(10)
 
 \end{vbframe}
 
- \begin{vbframe}{Example: LASSO}
+\begin{vbframe}{Example: LASSO}
  How do we optimize something like this?
-  $$ \sum_{i=1}^n (\boldsymbol{\beta}^T \xb^{(i)} - y^{(i)})^2 + \lambda \sum_{j=1}^p |\beta_j|$$
+  $$\sum_{i=1}^n (\bm{\beta}^T \xv^{(i)} - y^{(i)})^2 + \lambda \sum_{j=1}^p |\beta_j|$$
 
   \begin{itemize}
     \item Analytically solvable? Answer: no!
