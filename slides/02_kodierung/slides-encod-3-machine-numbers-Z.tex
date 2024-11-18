@@ -1,17 +1,26 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%set_parent("../style/preamble.Rnw")
-%@
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{2}{Machine numbers for $\Z$}
-\lecture{Computerintensive Methods}
-
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Encoding
+}{% Lecture title
+Machine numbers for $\Z$
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Signed magnitude representation
+  \item Excess encoding
+  \item One's complement
+  \item Two's complement
+}
 
 
 
@@ -33,7 +42,7 @@
 % Der abgedeckte Zahlenbereich ist: $-2^{31}$ bis $2^{31} - 1$.
 There are different options to represent positive and negative integers ($\Z$) by a computer:
 \begin{itemize}
-  \item signed magnitude representation
+  \item Signed magnitude representation
   \item Excess encoding
   \item One's complement
   \item Two's complement
@@ -51,7 +60,7 @@ Each representation has advantages and disadvantages regarding:
 \end{vbframe}
 
 
-\begin{vbframe}{Signed magnitude Representation}
+\begin{vbframe}{Signed Magnitude Representation}
 
 
 % Zur Kodierung von ganzen Zahlen repräsentiert jedes Bit die Stelle in einem dualen Stellenwertsystem.
@@ -161,12 +170,12 @@ The coded number is given by: $x = \sum_{i=1}^{31} u_i 2^{i-1} - u_{32}(2^{31} -
 
 \framebreak
 
-Let $\tilde x$ be the bitwise complement of $x$. We check the correctness of the formula: 
+Let $\xt$ be the bitwise complement of $x$. We check the correctness of the formula: 
 
 \vspace*{-.5cm}
 
 \begin{eqnarray*}
-  \tilde x &=& \sum_{i=1}^{31} \tilde u_i 2^{i-1} - \tilde u_{32}(2^{31} - 1) \\
+  \xt &=& \sum_{i=1}^{31} \tilde u_i 2^{i-1} - \tilde u_{32}(2^{31} - 1) \\
   &=& \sum_{i=1}^{31} \underbrace{(1 - u_i)}_{\text{complement}} 2^{i-1} - \underbrace{(1 - u_{32})}_{\text{complement}}{(2^{31} - 1)}\\
   &=& \sum_{i=1}^{31} 2^{i-1} - (2^{31} - 1) - \sum_{i=1}^{31} u_i 2^{i-1} + u_{32}(2^{31} - 1)\\
   &=& -1 + 2^{31} - (2^{31} - 1) - (\sum_{i=1}^{31} u_i 2^{i-1} - u_{32}(2^{31} - 1)) = - x
@@ -252,7 +261,7 @@ Why adding a $1$?
 % Allgemein
 %
 % \begin{eqnarray*}
-%   \tilde x + x &=& \sum_{i=1}^{31} (u_i + \tilde u_i) 2^{i-1} - (u_{32} + \tilde u_{32})(2^{31} - 1)
+%   \xt + x &=& \sum_{i=1}^{31} (u_i + \tilde u_i) 2^{i-1} - (u_{32} + \tilde u_{32})(2^{31} - 1)
 % \end{eqnarray*}
 %
 % wobei
@@ -392,7 +401,7 @@ The carry bit can simply be ignored here, since the representation of the $0$ is
 \begin{vbframe}{Integer Overflow}
 
 \textbf{Caution:} Arithmetic operations can cause an \textbf{overflow}.
-This is a common programming error in languages like C and can lead to undefined behavior (e.g. wrap around).
+This is a common programming error in languages like  \texttt{C} and can lead to undefined behavior (e.g. wrap around).
 
 \lz
 
@@ -403,7 +412,7 @@ In a 32-bits two's complement representation $(2^{31} - 1) + 1$ would be outside
 \lz 
 
 \centering
-\begin{tabular}{c:cccc}
+\begin{tabular}{c|cccc}
 $(2^{31} - 1)$ & 01111111 & 11111111 & 11111111 & 11111111 \\
 $+ 1$ & 00000000 & 00000000 & 00000000 & 00000001 \\
 \hline
@@ -412,7 +421,7 @@ $(-2^{31})$ & 10000000 & 00000000 & 00000000 & 00000000 \\
 
 \framebreak
 
-Excerpt from Wikipedia \enquote{Integer Overflow}:
+Excerpt from Wikipedia "Integer Overflow":
 
 \lz
 
@@ -426,75 +435,75 @@ On 30 April 2015, the Federal Aviation Authority announced it will order Boeing 
 
 \end{vbframe}
 
-\begin{vbframe}{Machine numbers for $\Z$ in \pkg{R}}
+\begin{vbframe}{Machine numbers for $\Z$ in \texttt{R}}
 
-In \pkg{R}, integers are encoded in 32-bit (also in 64-bit \pkg{R}!) by the two's complement. 
+In \texttt{R}, integers are encoded in 32-bit (also in 64-bit \texttt{R}!) by the two's complement. 
 
 \footnotesize
 \vspace{0.5cm}
-\begin{verbbox}
+\begin{verbatim}
 .Machine$integer.max
 ## [1] 2147483647
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 2^31 - 1
 ## [1] 2147483647
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \framebreak 
 
 \footnotesize
 \vspace{0.5cm}
-\begin{verbbox}
+\begin{verbatim}
 intToBits(-51L)
 ## [1] 01 00 01 01 00 00 01 01 01 01 01 01 01 01 01 01 01 01
 ## [19] 01 01 01 01 01 01 01 01 01 01 01 01 01 01
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 intToBits(51L)
 ## [1] 01 01 00 00 01 01 00 00 00 00 00 00 00 00 00 00 00 00
 ## [19] 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 # Caution: In R the operation x^y always results in the type 'numeric'!
 intToBits(2L^31L - 1L)
 ## [1] 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01
 ## [19] 01 01 01 01 01 01 01 01 01 01 01 01 01 00
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 
 \framebreak 
 \normalsize
-In \pkg{R}, integer overflows are caught and set to NA.
+In \texttt{R}, integer overflows are caught and set to NA.
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 .Machine$integer.max + 1 
 ## [1] 2147483648
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 str(.Machine$integer.max + 1) 
 ## num 2.15e+09
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 str(.Machine$integer.max + 1L)
 ## Warning in .Machine$integer.max + 1L: NAs produced by 
    integer overflow
 ## int NA
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \end{vbframe}
 \normalsize
@@ -502,27 +511,25 @@ str(.Machine$integer.max + 1L)
 \begin{vbframe}
 \frametitle{R in 64-bit systems}
 \begin{itemize}
-  \item In 2010, the 64-bit version of R was released.
+  \item In 2010, the 64-bit version of \texttt{R} was released.
   \item \textbf{But:} integers are still encoded in 32-bit.
-  \item The largest integer in R is thus about 2 billion.
-  \item When indexing vectors longer than about 2 billion, R uses a trick:
+  \item The largest integer in \texttt{R} is thus about 2 billion.
+  \item When indexing vectors longer than about 2 billion, \texttt{R} uses a trick:
   \begin{itemize}
     \item By using floating point numbers in double precision, integers can be represented reliably within the value range $(-2^{53}, 2^{53})$.
     \item Beyond that, not all integers are covered!
-    \item In R you can index with floating point numbers:
+    \item In \texttt{R} you can index with floating point numbers:
   \end{itemize}
 \end{itemize}
 
 \footnotesize
 \lz
-\begin{verbbox}
+\begin{verbatim}
 c(1,2,3)[1.7]
 ## [1] 1
-\end{verbbox}
-\col
+\end{verbatim}
+
 \end{vbframe}
-
-
 
 \endlecture
 \end{document}

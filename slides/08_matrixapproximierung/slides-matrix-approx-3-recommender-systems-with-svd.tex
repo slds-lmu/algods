@@ -1,36 +1,24 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-
-%library(knitr)
-%options(digits = 16)
-
-%library(RCurl)
-%library(XML)
-%library(tm)
-%library(NMF)
-%library(microbenchmark)
-%library(ggplot2)
-%library(wordcloud)
-%set_parent("../style/preamble.Rnw")
-%@
-
-
-\newcommand{\xdownarrow}[1]{%
-	{\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
-}
-
-\newcommand{\grey}[1]{\textcolor{grey}{#1}}
-\newcommand{\red}[1]{\textcolor{red}{#1}}
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{7}{Recommender Systems Application using SVD}
-\lecture{CIM1 Statistical Computation}
-
-
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Matrix Approximation
+}{% Lecture title
+Recommender Systems Application using SVD
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Recommender systems application (1)
+}
+%\lecture{CIM1 Statistical Computing}
 
 \begin{vbframe}{Application: recommender systems (1)}
 
@@ -45,23 +33,23 @@
 
 \textbf{Example:} Suppose there are 4 movies and 6 users in our database.
 
-\vspace*{-0.5cm}
+\vspace*{0.5cm}
 
 \begin{footnotesize}
 \begin{center}
-\[
-\begin{blockarray}{ccccc}
-& \text{Die Hard} & \text{Top Gun} & \text{Titanic} &  \text{Notting Hill} \\
-\begin{block}{r(cccc)}
-\text{User 1} &  5  &  \textcolor{red}{\text{NA}}  & 3 &  \textcolor{red}{\text{NA}}  \\
-\text{User 2}  & 5 & 4 & 3 &  3  \\
-\text{User 3}  &  2  &  \textcolor{red}{\text{NA}}  & 5 &  \textcolor{red}{\text{NA}}  \\
-\text{User 4}  & 5  &  5  &  3  &  1 \\
-\text{User 5}  & 1  &  2  &  5  &  5  \\
-\text{User 6}  & 1  &  2  &  4  &  5  \\
-\end{block}
-\end{blockarray}
- \]
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|c|c|c|c|}
+    \hline
+           & \textbf{Die Hard} & \textbf{Top Gun} & \textbf{Titanic} & \textbf{Notting Hill} \\ \hline
+    \textbf{User 1} & 5 & \textcolor{red}{NA} & 3 & \textcolor{red}{NA} \\ \hline
+    \textbf{User 2} & 5 & 4 & 3 & 3 \\ \hline
+    \textbf{User 3} & 2 & \textcolor{red}{NA} & 5 & \textcolor{red}{NA} \\ \hline
+    \textbf{User 4} & 5 & 5 & 3 & 1 \\ \hline
+    \textbf{User 5} & 1 & 2 & 5 & 5 \\ \hline
+    \textbf{User 6} & 1 & 2 & 4 & 5 \\ \hline
+    \end{tabular}
+  \end{table}    
 \end{center}
 \end{footnotesize}
 
@@ -86,8 +74,8 @@ Basically one distinguishes between two approaches:
 \framebreak
 
 \begin{itemize}
-\item \textbf{Collaborative Filtering}: Identify \enquote{similar} users based on their behavior and recommend items in which similar users are most interested (e.g. by using singular value decomposition).
-\item \textbf{Content-based}: Identify - using a similarity measure - \enquote{similar} items and recommend items that are similar to the items that the user has rated high in the past.
+\item \textbf{Collaborative Filtering}: Identify "similar" users based on their behavior and recommend items in which similar users are most interested (e.g. by using singular value decomposition).
+\item \textbf{Content-based}: Identify - using a similarity measure - "similar" items and recommend items that are similar to the items that the user has rated high in the past.
 \end{itemize}
 
 \framebreak
@@ -131,21 +119,21 @@ X
 
 \vspace{0.2cm}
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 X = ifelse(is.na(X), rowMeans(X, na.rm = TRUE), unlist(X))
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \framebreak
 \normalsize
 \item Choice of $k$:
 \vspace{0.2cm}
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 svd(X)$d
 ## [1] 17.24 6.13 2.14 0.39
-\end{verbbox}
-\col
+\end{verbatim}
+
 \normalsize
 \vspace{0.2cm}
 We choose $k = $2.
@@ -153,24 +141,24 @@ We choose $k = $2.
 \item Calculate the matrices $\mathbf{W}$ and $\mathbf{H}$ using a singular value decomposition:
 \vspace{0.2cm}
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 res = svd(X, nu = 2, nv = 2)
 Uk = res$u
 Vk = res$v
 Sigmak = diag(res$d[1:2])
 W = Uk %*% sqrt(Sigmak)
 H = sqrt(Sigmak) %*% t(Vk)
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \framebreak
 \normalsize
 \item Calculate the prediction $\boldsymbol{\hat\mathbf{X}} = \mathbf{WH}$
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 Xhat = W %*% H
-\end{verbbox}
-\col
+\end{verbatim}
+
 %<<echo = F>>=
 %options(digits = 2)
 %@
@@ -229,23 +217,24 @@ Xhat = W %*% H
 
 \begin{footnotesize}
 \begin{center}
-\[
-\begin{blockarray}{ccccc}
-& \text{Die Hard} & \text{Top Gun} & \text{Titanic} &  \text{Notting Hill} \\
-\begin{block}{r(cccc)}
-\text{User 1} &  4.82  &  \textcolor{green}{3.69}  & 2.37 &  \textcolor{green}{3.41}  \\
-\text{User 2}  & 5.03 & 3.96 & 2.91 &  3.07  \\
-\text{User 3}  & 2.24 &  \textcolor{green}{2.70}  & 3.64 &  \textcolor{green}{5.44} \\
-\text{User 4}  & 5.34  &  4.37  &  3.65  &  3.96  \\
-\text{User 5}  & 2.87  &  2.90  &  3.85  &  4.52  \\
-\text{User 6}  & 1.09  &  1.85  &  4.05  &  5.00  \\
-\end{block}
-\end{blockarray}
- \]
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|c|c|c|c|}
+    \hline
+           & \textbf{Die Hard} & \textbf{Top Gun} & \textbf{Titanic} & \textbf{Notting Hill} \\ \hline
+    \textbf{User 1} & 4.82 & \textcolor{green}{3.69} & 2.37 & \textcolor{green}{3.41} \\ \hline
+    \textbf{User 2} & 5.03 & 3.96 & 2.91 & 3.07 \\ \hline
+    \textbf{User 3} & 2.24 & \textcolor{green}{2.70} & 3.64 & \textcolor{green}{5.44} \\ \hline
+    \textbf{User 4} & 5.34 & 4.37 & 3.65 & 3.96 \\ \hline
+    \textbf{User 5} & 2.87 & 2.90 & 3.85 & 4.52 \\ \hline
+    \textbf{User 6} & 1.09 & 1.85 & 4.05 & 5.00 \\ \hline
+    \end{tabular}
+    \caption{User Ratings for Movies}
+  \end{table}    
 \end{center}
 \end{footnotesize}
 \normalsize
-Since user 1 is similar to user 2 and user 4 due to their past ratings, we would recommend \enquote{Top Gun}. However, for user 3 we would recommend \enquote{Notting Hill}, since this user is more similar to user 5 and user 6 and they rated the movie particularly well.
+Since user 1 is similar to user 2 and user 4 due to their past ratings, we would recommend "Top Gun". However, for user 3 we would recommend "Notting Hill", since this user is more similar to user 5 and user 6 and they rated the movie particularly well.
 
 \end{enumerate}
 

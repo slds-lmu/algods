@@ -1,23 +1,27 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%library(microbenchmark)
-%library(reshape2)
-%library(ggplot2)
-%set_parent("../style/preamble.Rnw")
-%
-%set.seed(1)
-%@
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{4}{Misconceptions of Big O, further Landau Symbols \& Discussion}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Big O
+}{% Lecture title
+Misconceptions of Big O, further Landau Symbols \& Discussion
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Misconceptions
+  \item Alternative notations
+  \item Complexity vs. empirical runtime
+}
 
-
+%\lecture{CIM1 Statistical Computing}
 
 \begin{vbframe}{Misconceptions Big O}
 
@@ -30,7 +34,7 @@
   \item Formally correct: $f \in \order(g)$
   \end{itemize}
 
-\item \textbf{Misconception 2}: Big O means that functions \enquote{have approximately the same} runtime behaviour
+\item \textbf{Misconception 2}: Big O means that functions "have approximately the same" runtime behaviour
   \begin{itemize}
   \item $f \in \order(1)$ implies by definition also $f \in \order(n)$
   \item $f \in \order(g)$ only means that $f$ does not grow faster than $g$, but not that $f$ grows as fast as $g$

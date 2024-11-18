@@ -1,15 +1,25 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%set_parent("../style/preamble.Rnw")
-%@
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{2}{Peculiarities of machine arithmetic}
-\lecture{Computerintensive Methods}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Encoding
+}{% Lecture title
+Peculiarities of machine arithmetic
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Know associative and distributive properties
+  \item Order of addition
+  \item Calculation of variance
+}
 
 
 
@@ -24,7 +34,7 @@ For simplicity, we use decimal representation with $m = 4$ and rounding.
 \begin{itemize}
 \item \textbf{Associative property:}
  \begin{eqnarray*}
- &a = 4, b = 5003, c = 5000 \SpAr& \\
+ &a = 4, b = 5003, c = 5000 \quad \Rightarrow \quad& \\
  &a = 0.4 \cdot 10^1, b = 0.5003 \cdot 10^4, c = 0.5 \cdot 10^4&
  \end{eqnarray*}
  \begin{eqnarray*}
@@ -60,23 +70,23 @@ Problem in the second example: catastrophic cancellation.
 \begin{vbframe}{Examples}
 \footnotesize
 \vspace{0.5cm}
-\begin{verbbox}
+\begin{verbatim}
 1e16 - 1e16
 ## [1] 0
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 (1e16 + 1) - 1e16
 ## [1] 0
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 (1e16 + 2) - 1e16
 ## [1] 2
-\end{verbbox}
-\col
+\end{verbatim}
+
 \lz
 \normalsize
 $1e16$ cannot be represented exactly since it is larger than $2^{53}$, hence the distance is greater than 1.
@@ -87,27 +97,27 @@ $1e16$ cannot be represented exactly since it is larger than $2^{53}$, hence the
 \begin{vbframe}{Examples}
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 x = seq(1, 2e16, length = 100000)
 s1 = sum(x)
 s2 = sum(rev(x))
 s1
 ## [1] 1e+21
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
-\begin{verbbox}
+\begin{verbatim}
 s2
 ## [1] 1e+21
 ## [1] 1e+21
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
-\begin{verbbox}
+\begin{verbatim}
 s1 - s2
 ## [1] -262144
-\end{verbbox}
-\col
+\end{verbatim}
+
 \end{vbframe}
 
 \normalsize
@@ -144,9 +154,9 @@ Not like that in decimal machine arithmetic with $m=4$:
 
 First formula OK, but second one is a disaster:
 \begin{eqnarray*}
-&\tilde x_1^2 = .1267E6,\ \tilde x_2^2 = .1274E6,\ \tilde x_3^2 = .1282E6, & \\\
-&\tilde x_4^2 = .1289E6,\ \tilde x_5^2 = .1296E6, & \\
-&\sum \tilde x_i^2 = .6408E6 \qquad 5 \cdot (\bar {\tilde x})^2 = 5 \cdot .1282E6 = .6410E6&
+&\xt_1^2 = .1267E6,\ \xt_2^2 = .1274E6,\ \xt_3^2 = .1282E6, & \\\
+&\xt_4^2 = .1289E6,\ \xt_5^2 = .1296E6, & \\
+&\sum \xt_i^2 = .6408E6 \qquad 5 \cdot (\bar {\xt})^2 = 5 \cdot .1282E6 = .6410E6&
 \end{eqnarray*}
 
 The second formula gives a negative empirical variance!
@@ -157,52 +167,52 @@ The second formula gives a negative empirical variance!
 Three approaches to calculate the $1/n$ normalized standard deviation of a sample:
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 sd1 = function(x) {
   s2 = mean((x - mean(x))^2)
   sqrt(s2)
 }
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.1cm}
-\begin{verbbox}
+\begin{verbatim}
 sd2 = function(x) {
   s2 = mean(x^2) - mean(x)^2
   sqrt(s2)
 }
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.1cm}
-\begin{verbbox}
+\begin{verbatim}
 sd3 = function(x) {
   n = length(x)
   s2 = ((n - 1) / n) * var(x)
   sqrt(s2)
 }
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \framebreak
 \lz
 
-\begin{verbbox}
+\begin{verbatim}
 options("digits" = 20)
 sd1(1:9)
 ## [1] 2.5819888974716112
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
-\begin{verbbox}
+\begin{verbatim}
 sd2(1:9)
 ## [1] 2.5819888974716116
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
-\begin{verbbox}
+\begin{verbatim}
 sd3(1:9)
 ## [1] 2.5819888974716112
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \normalsize
 \framebreak
@@ -227,9 +237,10 @@ sd3(1:9)
 
 \vspace*{-0.5cm}
 
-\begin{footnotesize}
-\url{https://github.com/SurajGupta/r-source/blob/56becd21c75d104bfec829f9c23baa2e144869a2/src/library/stats/src/cov.c}
-\end{footnotesize}
+\citelink{GUPTA2024COVC}
+% \begin{footnotesize}
+% \url{https://github.com/SurajGupta/r-source/blob/56becd21c75d104bfec829f9c23baa2e144869a2/src/library/stats/src/cov.c}
+% \end{footnotesize}
 
 \end{vbframe}
 
@@ -254,14 +265,13 @@ sd3(1:9)
 
 % Nun auch klar warum \textbf{exp2} schlecht funktioniert für $x < 0$
 
-% $\SpAr$ Differenz von sehr vielen betragsmäßig großen
+% $\quad \Rightarrow \quad$ Differenz von sehr vielen betragsmäßig großen
 % Zahlen
 
-% $\SpAr$  Für $|x|$ sehr groß fast schon ein Zufallsergebnis
+% $\quad \Rightarrow \quad$  Für $|x|$ sehr groß fast schon ein Zufallsergebnis
 
 % Hier einfache Lösung des Problems  $\exp(-x) = 1 / \exp(x)$
 % \end{vbframe}
-
 \endlecture
 \end{document}
 

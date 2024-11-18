@@ -1,21 +1,26 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-<<setup-child, include = FALSE>>=
-library(knitr)
-library(microbenchmark)
-library(reshape2)
-library(ggplot2)
-library(xtable)
-set_parent("../style/preamble.Rnw")
-
-set.seed(1)
-@
-
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
 
-\lecturechapter{\Sexpr{lecture_nr}}{Properties \& Examples of Big O}
-\lecture{CIM1 Statistical Computing}
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
+\begin{document}
 
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Big O
+}{% Lecture title
+Properties \& Examples of Big O
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Properties
+  \item NP-complete
+}
+
+%\lecture{CIM1 Statistical Computing}
 
 \begin{vbframe}{Properties}
 
@@ -78,7 +83,7 @@ $$ g(n) = n^2 \cdot \exp(n) $$
 \begin{vbframe}{Determining the runtime}
 How fast a function runs depends on the different statements that are executed.
 $$
-total time = time(statement_1) + time(statement_2) + \ldots + time(statement_k)
+total\_time = time(statement_1) + time(statement_2) + \ldots + time(statement_k)
 $$
 
 If each statement is a simple base operation, the time for each
@@ -87,14 +92,13 @@ statement is constant and the total runtime is also constant: $\order(1)$.
 \framebreak
 
 \begin{block}{If-else}
-
-<<eval=FALSE>>=
+\begin{verbatim}
 if (cond) {
   block1 # sequence of statements
 } else {
   block2 # sequence of statements
 }
-@
+\end{verbatim}
 
 \begin{itemize}
   \item Either \code{block1} \textbf{or} \code{block2} is executed
@@ -108,12 +112,11 @@ if (cond) {
 \framebreak
 
 \begin{block}{Loops}
-
-<<eval=FALSE>>=
+\begin{verbatim}
 for (i in 1:n) {
   block # sequence of statements
 }
-@
+\end{verbatim}
 
 \begin{itemize}
   \item We consider $n$ as part of our input size (e.g., number of elements in a list).
@@ -125,14 +128,13 @@ for (i in 1:n) {
 \framebreak
 
 \begin{block}{Nested loops}
-
-<<eval=FALSE>>=
+\begin{verbatim}
 for (i in 1:n) {
   for (j in 1:m) {
     block # sequence of statements
   }
 }
-@
+\end{verbatim}
 
 \begin{itemize}
   \item Let $m$, $n$ be part of our input size (e.g. number of rows/columns of a matrix).
@@ -145,15 +147,14 @@ for (i in 1:n) {
 \framebreak
 
 \begin{block}{Statements with function calls}
-
 \begin{itemize}
   \item When a statement calls a function, the complexity of the function must be included in the calculation.
   \item This also holds for loops:\\
-  <<eval=FALSE>>=
+  \begin{verbatim}
   for (i in 1:n) {
     g(i)
   }
-  @
+  \end{verbatim}
   If $g \in \order(n)$, the runtime of the loop is $\order(n^2)$.
 \end{itemize}
 
@@ -172,7 +173,7 @@ The bubble sort is an algorithm that sorts the elements of a (numeric) vector of
 
 \begin{minipage}{.45\textwidth}
 \begin{footnotesize}
-\begin{lstlisting}
+\begin{verbatim}
 for (k in n:2) {
   for (i in 1:(k - 1)) {
     if (x[i] > x[i + 1]) {
@@ -183,7 +184,7 @@ for (k in n:2) {
     }
   }
 }
-\end{lstlisting}
+\end{verbatim}
 \end{footnotesize}
 \end{minipage}\hfill
 \begin{minipage}{.45\textwidth}
@@ -228,19 +229,19 @@ The Coppersmith-Winograd algorithm allows matrix multiplication of two $n\times 
 
 \vfill
 \begin{footnotesize}
-More about the complexity of mathematical operations: \href{https://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations}{\color{blue}\underline{Computational complexity of mathematical operations}}
+More about \href{https://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations}{\color{blue}\underline{Computational complexity of mathematical operations}}
 \end{footnotesize}
 
 \framebreak
 
-<<>>=
+\begin{verbatim}
 multiplyMatrices = function(n) {
   A = matrix(runif(n^2), n, n)
   B = matrix(runif(n^2), n, n)
 
   return(A %*% B)
 }
-@
+\end{verbatim}
 
 \vspace{-0.2cm}
 \begin{center}
@@ -250,26 +251,35 @@ multiplyMatrices = function(n) {
 \framebreak
 
 If possible: Avoid matrix multiplication!
-<<>>=
+\begin{verbatim}
 n = 1000
 A = matrix(runif(n), n, n)
 B = matrix(runif(n), n, n)
 y = c(runif(n))
 
 system.time(A %*% B %*% y)
-system.time(A %*% (B %*% y))
-@
+## user system elapsed 
+## 0.72 0.00 0.73
 
-<<>>=
+system.time(A %*% (B %*% y))
+## user system elapsed 
+## 0.00 0.00 0.03
+\end{verbatim}
+
+\begin{verbatim}
 n = 1000
 A = matrix(rnorm(n), n, n) + diag(1, nrow = n)
 b = rnorm(n)
 
 # solving Ax = b
 system.time(solve(A) %*% b)  # A^{-1} %*% b
+## user system elapsed 
+## 0.96 0.01 0.05
 
 system.time(solve(A, b)) # direct solution of the LES
-@
+## user system elapsed 
+## 0.0 0.2 0.0
+\end{verbatim}
 
 
 % \lz
@@ -337,8 +347,8 @@ The \textbf{Fibonacci sequence} is a series of numbers where each number is the 
 
 $1, 1, 2, 3, 5, 8, 13, 21, 34, ...$
 
-\normalsize
-<<size = "scriptsize">>=
+\begin{scriptsize}
+\begin{verbatim}
 fib = function(n) {
   if (n <= 2L)
     return(1L)
@@ -346,12 +356,25 @@ fib = function(n) {
 }
 
 fib_table = microbenchmark(fib(5), fib(10), fib(20), fib(21), times = 500L)
-@
-<<size = "scriptsize", echo=FALSE, results='asis'>>=
-print(xtable(summary(fib_table), digits = 0), booktabs=TRUE, caption.placement="top", size="\\fontsize{8pt}{9pt}\\selectfont")
-@
-
-
+print(xtable(summary(fib_table), digits = 0), booktabs=TRUE, 
+    caption.placement="top", size="\\fontsize{8pt}{9pt}\\selectfont")
+\end{verbatim}
+\begin{table}[ht]
+  \centering
+  \begingroup\fontsize{8pt}{9pt}\selectfont
+  \begin{tabular}{rlrrrrrrr}
+    \toprule
+   & expr & min & lq & mean & median & uq & max & neval \\ 
+    \midrule
+  1 & fib(5) & 2 & 2 & 99 & 3 & 4 & 47817 & 500 \\ 
+    2 & fib(10) & 27 & 29 & 32 & 30 & 33 & 88 & 500 \\ 
+    3 & fib(20) & 3611 & 3733 & 4164 & 3842 & 4052 & 10118 & 500 \\ 
+    4 & fib(21) & 5861 & 6047 & 6926 & 6227 & 6476 & 49636 & 500 \\ 
+     \bottomrule
+  \end{tabular}
+  \endgroup
+  \end{table}
+\end{scriptsize}
 
 \framebreak
 
@@ -382,15 +405,15 @@ The function is executed twice in each step.
 \includegraphics[width=0.5\textwidth]{figure_man/fibonacci.png}
 \end{center}
 
-By simply \enquote{counting} the nodes of this recursion tree you can determine the exact number of operations. \\
+By simply "counting" the nodes of this recursion tree you can determine the exact number of operations. \\
 $\to$ Worst case runtime $\order(2^n)$.
 
 \framebreak
 
 
 \textbf{Variations of Fibonacci(n): Iterative}
-
-<<fib2, size = "scriptsize">>=
+\begin{scriptsize}
+\begin{verbatim}
 fib2 = function(n) {
   a = 0; b = 1
   if (n <= 2)
@@ -400,18 +423,38 @@ fib2 = function(n) {
   }
   return(b)
 }
-@
+\end{verbatim}
+\end{scriptsize}
 This is $\order(n)$ (if we, incorrectly, assume addition is constant in n).
 
 \framebreak
-<<size = "scriptsize", tidy = FALSE, cache = TRUE>>=
-fib2_table = microbenchmark(fib2(10), fib2(20), fib2(40), fib2(80), fib2(160),
-                            times = 5000L)
-@
-<<size = "scriptsize", echo=FALSE, results='asis'>>=
-print(xtable(summary(fib2_table), digits = 0), booktabs=TRUE, caption.placement="top", size="\\fontsize{8pt}{9pt}\\selectfont")
-@
-Time measurement becomes imprecise since ``for loops'' are not that slow in R due to JIT compilation. Hence we are using doubles here as a lazy trick to generate large fibonacci numbers. An alternative to generate large integers would be to use the int64 package.\\
+\begin{scriptsize}
+\begin{verbatim}
+fib2_table = microbenchmark(fib2(10), fib2(20), fib2(40), fib2(80), 
+                            fib2(160), times = 5000L)
+
+print(xtable(summary(fib2_table), digits = 0), booktabs=TRUE, 
+    caption.placement="top", size="\\fontsize{8pt}{9pt}\\selectfont")
+\end{verbatim}
+
+\begin{table}[ht]
+  \centering
+  \begingroup\fontsize{8pt}{9pt}\selectfont
+  \begin{tabular}{rlrrrrrrr}
+    \toprule
+   & expr & min & lq & mean & median & uq & max & neval \\ 
+    \midrule
+  1 & fib2(10) & 1 & 1 & 2 & 1 & 2 & 37 & 5000 \\ 
+    2 & fib2(20) & 1 & 2 & 2 & 2 & 2 & 24 & 5000 \\ 
+    3 & fib2(40) & 2 & 2 & 4 & 2 & 3 & 6755 & 5000 \\ 
+    4 & fib2(80) & 3 & 3 & 4 & 3 & 4 & 26 & 5000 \\ 
+    5 & fib2(160) & 5 & 5 & 7 & 6 & 7 & 49 & 5000 \\ 
+     \bottomrule
+  \end{tabular}
+  \endgroup
+  \end{table}
+\end{scriptsize}
+Time measurement becomes imprecise since ``for loops'' are not that slow in \texttt{R} due to JIT compilation. Hence we are using doubles here as a lazy trick to generate large fibonacci numbers. An alternative to generate large integers would be to use the int64 package.\\
 
 
 
@@ -419,9 +462,10 @@ Time measurement becomes imprecise since ``for loops'' are not that slow in R du
 
 \framebreak
 
-\textbf{Variations of Fibonacci(n): In C}
+\textbf{Variations of Fibonacci(n): In \texttt{C}}
 
-<<fib3, size = "scriptsize", warning=FALSE, message=FALSE>>=
+\begin{scriptsize}
+\begin{verbatim}
 library(inline)
 fib3 = cfunction(signature(n="integer"), language="C",
          convention=".Call", body = '
@@ -439,55 +483,74 @@ fib3 = cfunction(signature(n="integer"), language="C",
          UNPROTECT(1);
          return res;
          ')
-@
-See how ugly the C interface is?
+\end{verbatim}
+\end{scriptsize}
+See how ugly the \texttt{C} interface is?
 \framebreak
 
 %\textbf{Variations of fib(n): In C}
-<<size = "scriptsize", tidy = FALSE, cache = TRUE>>=
+\begin{scriptsize}
+\begin{verbatim}
 fib3_table = microbenchmark(fib3(20L), fib3(40L),times = 5000L)
-@
-<<size = "scriptsize", echo=FALSE, results='asis'>>=
-print(xtable(summary(fib3_table), digits = 0), booktabs=TRUE, caption.placement="top", size="\\fontsize{8pt}{9pt}\\selectfont")
-@
+
+print(xtable(summary(fib3_table), digits = 0), booktabs=TRUE, 
+    caption.placement="top", size="\\fontsize{8pt}{9pt}\\selectfont")
+\end{verbatim}
+
+\begin{table}[ht]
+  \centering
+  \begingroup\fontsize{8pt}{9pt}\selectfont
+  \begin{tabular}{rlrrrrrrr}
+    \toprule
+   & expr & min & lq & mean & median & uq & max & neval \\ 
+    \midrule
+  1 & fib3(20L) & 300 & 400 & 465 & 400 & 500 & 13900 & 5000 \\ 
+    2 & fib3(40L) & 300 & 400 & 479 & 400 & 500 & 21200 & 5000 \\ 
+     \bottomrule
+  \end{tabular}
+  \endgroup
+  \end{table}
+\end{scriptsize}
 
 This is both $\order(n)$ ... See the difference? Actually, you do not see anything as the function
 is so fast, we would need to calculate with bigints to really see the $\order(n)$!
 
 \framebreak
 
-\textbf{Variations of Fibonacci(n): C++-version}
-<<fib4, warning = FALSE, message=FALSE>>=
+\textbf{Variations of Fibonacci(n): \texttt{C++}-version}
+\begin{verbatim}
 library(Rcpp)
 fib4 = cppFunction('int fibonacci(const int x) {
          if (x <= 2) return(1);
          return (fibonacci(x - 1)) + fibonacci(x - 2);
 }
 ' )
-@
+\end{verbatim}
 
-Much nicer C++-Interface with Rcpp.
+Much nicer \texttt{C++}-Interface with Rcpp.
 
 \framebreak
 
 %\textbf{Variations of fib(n): C++-version}
-%<<size = "footnotesize">>=
+%\begin{verbatim}
 %microbenchmark(fib3(20L), fib4(20L), fib3(40L), fib4(40L))
-%@
+%\end{verbatim}
 
 %\framebreak
 
 
 \textbf{Variations of Fibonacci(n): Matrix power-exponentiation}
-<<fib5, size = "footnotesize">>=
-suppressAll(library(expm))
+
+\begin{footnotesize}
+\begin{verbatim}
+library(expm)
 fib5 = function(n) {
   A = matrix(c(1, 1, 1, 0), 2, 2)
   B = A%^%n
   B[1, 2]
 }
-@
-
+\end{verbatim}
+\end{footnotesize}
 
 How does \pkg{fib5()} work?
 
@@ -530,7 +593,8 @@ $$
 
 Implemented as a recursive algorithm:
 
-<<size = "scriptsize">>=
+\begin{scriptsize}
+\begin{verbatim}
 exp.by.squaring = function(x, n) {
   if(n<0) {
     return(exp.by.squaring(1 / x, -n))
@@ -545,15 +609,17 @@ exp.by.squaring = function(x, n) {
   }
 }
 exp.by.squaring(2,5)
-@
+## [1] 32
+\end{verbatim}
+\end{scriptsize}
 
 % Time can not be measured via microbenchmark since it is too fast.
 \framebreak
 
 %\textbf{Variations of Fibonacci(n): Matrix power-exponentiation}
-%<<size = "footnotesize">>=
+%\begin{verbatim}
 %microbenchmark(fib5(7), fib5(25L), fib5(49), times = 1000)
-%@
+%\end{verbatim}
 
 
 \framebreak
@@ -613,6 +679,5 @@ It has not yet been proven that P $\ne$ NP holds.
 
 \end{vbframe}
 
-
-
 \endlecture
+\end{document}

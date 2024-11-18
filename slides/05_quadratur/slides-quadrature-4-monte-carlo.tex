@@ -1,22 +1,26 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%library(ggplot2)
-%set_parent("../style/preamble.Rnw")
-%options(digits = 16)
-%@
-
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{5}{Monte Carlo Integration}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Quadrature
+}{% Lecture title
+Monte Carlo Integration
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Simple Monte Carlo
+  \item Hit-or-Miss approach
+}
 
-
-%\section{Monte Carlo Integration}
+%\lecture{CIM1 Statistical Computing}
 
 \begin{vbframe}{Simple Monte Carlo}
 
@@ -31,9 +35,9 @@ with $x \sim U(a, b)$
 \item With $x_i \overset{iid}{\sim} U(a, b), i = 1, ..., n$ the Monte Carlo estimation is given by
 
 $$
-Q_{MC}(f) = \frac{b - a}{n} \sum_{i = 1}^n f(x_i)
+Q_{MC}(f) = \frac{b - a}{n} \sumin f(x_i)
 $$
-\item By \enquote{sampling} $n$ independent random numbers from $U(a,b)$ an estimate for the integral can be calculated.
+\item By "sampling" $n$ independent random numbers from $U(a,b)$ an estimate for the integral can be calculated.
 \end{itemize}
 
 \framebreak
@@ -45,16 +49,16 @@ Monte Carlo is a \textbf{non-deterministic} approach. The estimation for the int
 \item We can derive the variance from $Q_{MC}(f)$:
 \vspace*{-0.2cm}
 \begin{eqnarray*}
-\text{Var}\left(Q_{MC}(f)\right) &=& \text{Var}\left(\frac{b - a}{n} \sum_{i = 1}^n f(x_i)\right) \\
+\text{Var}\left(Q_{MC}(f)\right) &=& \text{Var}\left(\frac{b - a}{n} \sumin f(x_i)\right) \\
 &\overset{iid}{=}& \frac{(b - a)^2}{n^2}\cdot n \cdot \text{Var}(f(x)) = \frac{(b - a)^2}{n} \sigma^2
 \end{eqnarray*}
-where $\sigma^2 = \text{Var}(f(x))$ denotes the variance of the random variable $f(x)$ with $x \sim U(a, b)$ which can be empirically estimated by \begin{footnotesize}$\hat \sigma^2 = \frac{1}{n - 1} \sum_{i = 1}^n \left(f(x_i) - \frac{1}{n}\sum_{i = 1}^n f(x_i)\right)^2, x_i \overset{iid}{\sim} U(a, b)$\end{footnotesize}.
+where $\sigma^2 = \text{Var}(f(x))$ denotes the variance of the random variable $f(x)$ with $x \sim U(a, b)$ which can be empirically estimated by \begin{footnotesize}$\hat \sigma^2 = \frac{1}{n - 1} \sumin \left(f(x_i) - \frac{1}{n}\sumin f(x_i)\right)^2, x_i \overset{iid}{\sim} U(a, b)$\end{footnotesize}.
 
 \framebreak
 
-% \item Mit $\hat \sigma^2 = \sum_{i = 1}^n \frac{\left(f(x_i) - \frac{1}{n}\sum_{i = 1}^n f(x_i)\right)^2}{n - 1}$ kann Varianz von $Q_{MC}(f)$ geschätzt werden
+% \item Mit $\hat \sigma^2 = \sumin \frac{\left(f(x_i) - \frac{1}{n}\sumin f(x_i)\right)^2}{n - 1}$ kann Varianz von $Q_{MC}(f)$ geschätzt werden
 % \begin{eqnarray*}
-% \widehat{\text{Var}}\left(Q_{MC}(f)\right) &=& \frac{(b - a)^2}{n} \cdot \sum_{i = 1}^n \frac{\left(f(x_i) - \frac{1}{n}\sum_{i = 1}^n f(x_i)\right)^2}{n - 1}.
+% \widehat{\text{Var}}\left(Q_{MC}(f)\right) &=& \frac{(b - a)^2}{n} \cdot \sumin \frac{\left(f(x_i) - \frac{1}{n}\sumin f(x_i)\right)^2}{n - 1}.
 % \end{eqnarray*}
 
 \item If $\sigma^2 < \infty$ the variance of the estimate (and thus also the worst case error of the procedure) approaches $0$ for $n \to \infty$
@@ -85,20 +89,19 @@ We draw $n$ independently uniformly distributed data points from a rectangle enc
 
 \framebreak
 
-\textbf{\enquote{Hit-or-Miss} Approach:}
-
+\textbf{"Hit-or-Miss" Approach:}
 
 
 We still consider the integral $\int_a^b f(x) dx$. We assume that $0 \le f(x) \le c$. If we count the number of hits (the points underneath the curve), we obtain the integral by:
 
 $$
-  I(f) \approx \frac{Hits}{n} \cdot \text{area of the rectangle} = \frac{\sum_i \mathbf{1}_{y_i \le f(x_i)}}{n} \cdot c \cdot (b - a)
+  I(f) \approx \frac{Hits}{n} \cdot \text{area of the rectangle} = \frac{\sumin \mathbf{1}_{y_i \le f(x_i)}}{n} \cdot c \cdot (b - a)
 $$
 
 \vspace*{-0.3cm}
 
 \begin{center}
-\includegraphics[width =0.7\textwidth]{figure_man/hitormiss2.png}
+\includegraphics[width =0.68\textwidth]{figure_man/hitormiss2.png}
 \end{center}
 
 
@@ -106,13 +109,13 @@ $$
 
 
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 m$estimate # Estimation of area
 ## [1] 2.288
 m$hits # Number of points underneath the curve
 ## [1] 286
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 
 \normalsize
@@ -225,42 +228,50 @@ This naive method works well for simple examples, but error rates are high for m
 % \end{itemize}
 
 \begin{center}
-<<echo=F, include = FALSE>>=
+\begin{scriptsize}
+\begin{verbatim}
 set.seed(333)
-@
-<<include = FALSE>>=
+
 T = 10000; shape = 2; rate = 1 / 2
 theta = rgamma(T, shape = shape, rate = rate)
-@
-<<out.width = '80%', fig.align = "center", echo=F, include = FALSE>>=
+
 hist(theta, freq = FALSE, ylim = c(0, 0.2), main = "")
 lines(density(theta))
-@
+\end{verbatim}
+\end{scriptsize}
+
+\includegraphics[width =0.6\textwidth]{figure_man/gamdistri_monte_carlo.png}
 \end{center}
 
 % \framebreak
 %
 % Schätzung des Posterior-Erwartungswertes $\hat{E}(\theta | \xv)$
 
-<<include = FALSE>>=
+\begin{verbatim}
 (Etheta = mean(theta)) # MC estimator
-(se.Etheta = sqrt(var(theta) / T)) # Variance of MC estimator
+## [1] 4.007281
+(se.Etheta = sqrt(var(theta) / T)) # variance
+## [1] 0.02841768
 shape * 1 / rate # Theoretical expectation
-
-@
+## [1] 4
+\end{verbatim}
 
 
 % \framebreak
 %
 % Schätzung des Posterior-Verteilungsfunktion $P(\theta > 5) | \xv)$
 
-<<include = FALSE>>=
+\begin{verbatim}
 (Ptheta = mean(theta > 5)) # MC Estimator
-(se.Ptheta = sqrt(var(theta > 5) / T)) # Variance of MC estimator
-1 - pgamma(5, shape = shape, rate = rate) # theoretical value
-f = function(x) { dgamma(x, shape = shape, rate = rate) }
+## [1] 0.2863
+(se.Ptheta = sqrt(var(theta > 5) / T)) # variance
+## [1] 0.004520539
+1 - pgamma(5, shape = shape, rate = rate) # theo value
+## [1] 0.2872975
+f = function(x) {dgamma(x, shape = shape, rate = rate)}
 integrate(f, 5, Inf) # Numerical integration in R
-@
+## 0.2872975 with absolute error < 9.3e-05
+\end{verbatim}
 
 % \framebreak
 

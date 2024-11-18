@@ -1,24 +1,32 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%set_parent("../style/preamble.Rnw")
-%options(digits = 16)
-%@
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{3}{Numerical Stability}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Numerics
+}{% Lecture title
+Numerical Stability
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Stable Algorithm
+}
 
+%\lecture{CIM1 Statistical Computing}
 
 %\section{Stability}
 
 \begin{vbframe}{Stability of algorithms}
 
 \begin{itemize}
-\item The condition of a problem describes the \enquote{error amplification} of input errors.
+\item The condition of a problem describes the "error amplification" of input errors.
 \item The condition is given by the problem (or the data) and we have usually \textbf{no} influence on it.
 \item In practice, a numerical task is often divided into smaller subproblems, i.e. an algorithm
 
@@ -48,11 +56,11 @@ There are two concepts that can be used to investigate the stability of an algor
 
 \begin{itemize}
 \item In the \textbf{forward analysis}, the error is estimated and accumulated for each partial result.
-\item In the \textbf{backward analysis}, the result is interpreted as an exactly calculated result for disturbed data. For which input $\tilde x$ would $f$ return the same result?
+\item In the \textbf{backward analysis}, the result is interpreted as an exactly calculated result for disturbed data. For which input $\xt$ would $f$ return the same result?
 $$
-\tilde f(x) = f(\tilde x)?
+\tilde f(x) = f(\xt)?
 $$
-If $|\tilde x - x|$ is small, the algorithm is backward stable.
+If $|\xt - x|$ is small, the algorithm is backward stable.
 \end{itemize}
 
 
@@ -93,11 +101,12 @@ Let
 \vspace{0.2cm}
 \footnotesize
 
-\begin{verbbox}
+\begin{verbatim}
 b = 400000
 c = - 1.234567890123456
-\end{verbbox}
-\par\colorbox{code}{\parbox{\textwidth}{\theverbbox}}\par
+\end{verbatim}
+%\col
+
 \normalsize
 \vspace{0.2cm}
 Then the problem is well-conditioned with $\kappa =  0.999999999998071$
@@ -112,12 +121,13 @@ Then the problem is well-conditioned with $\kappa =  0.999999999998071$
 But note that $\kappa$ gives the condition for the function, not the implementation!
 \footnotesize
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 sqrt(b^2 - c); b
 ## [1] 400000.0000015432
 ## [1] 4e+05
-\end{verbbox}
-\par\colorbox{code}{\parbox{\textwidth}{\theverbbox}}\par
+\end{verbatim}
+%\col
+
 \vspace{0.2cm}
 \normalsize
 We expect a loss of significance. 
@@ -133,25 +143,25 @@ y = \frac{c}{z} \qquad z = b + \sqrt{b^2 - c}
 $$
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 # Stable alternative for x0
 x0.instable = b - sqrt(b^2 - c)
 x0.stable = c / (b + sqrt(b^2 - c))
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.1cm}
-\begin{verbbox}
+\begin{verbatim}
 c(x0.instable, x0.stable)
 ## [1] -1.543201506137848e-06 -1.543209862651343e-06
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.1cm}
-\begin{verbbox}
+\begin{verbatim}
 p = function(x) x^2 - 2 * b * x + c
 c(p(x0.instable), p(x0.stable))
 ## [1] -6.685210796275598e-06 0.000000000000000e+00
-\end{verbbox}
-\col
+\end{verbatim}
+
 \normalsize
 
 \framebreak
@@ -190,7 +200,7 @@ Large absolute values of $x_j$ can result in an
 \lz
 \footnotesize
 
-\begin{verbbox}
+\begin{verbatim}
 exp(-500)
 ## [1] 7.124576406741286e-218
 
@@ -202,8 +212,8 @@ exp(-1000)
 
 exp(1000)
 ## [1] Inf
-\end{verbbox}
-\col
+\end{verbatim}
+
 \normalsize
 
 \framebreak
@@ -215,26 +225,26 @@ $$
 
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 softmax = function(x) exp(x) / sum(exp(x))
 x = c(990, 1000, 999)
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.1cm}
 
-\begin{verbbox}
+\begin{verbatim}
 softmax(x) # Instable version (Overflow)
 ## [1] NaN NaN NaN
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.1cm}
 
-\begin{verbbox}
+\begin{verbatim}
 softmax(x - 1000) # stable version without Overflow
 ## [1] 3.318890658198521e-05 7.310343155951328e-01
 ## [3] 2.689324954982852e-01
-\end{verbbox}
-\col
+\end{verbatim}
+
 \normalsize
 
 \framebreak
@@ -243,7 +253,7 @@ Another problem is underflow in the numerator. A naive implementation of the log
 \lz
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 x = c(800, 0.0001, -800)
 
 log.softmax = function(x) {
@@ -253,18 +263,18 @@ log.softmax = function(x) {
 
 log.softmax(x)
 ## [1] NaN -Inf -Inf
-\end{verbbox}
-\col
+\end{verbatim}
+
 \normalsize
 \framebreak
 Stable alternative implementation:
 
 $$
-\log s(\xv)_k = x_k - b - \log \sum_j^n \exp(x_j - b), \qquad b := \max_i x_i
+\log s(\xv)_k = x_k - b - \log \sumjn \exp(x_j - b), \qquad b := \max_i x_i
 $$
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 log.softmax2 = function(x) {
   b = max(x)
   logsum = b + log(sum(exp(x - b)))
@@ -273,8 +283,8 @@ log.softmax2 = function(x) {
 
 log.softmax2(x)
 ## [1] 0.0000 -799.9999 -1600.0000
-\end{verbbox}
-\col
+\end{verbatim}
+
 \normalsize
 
 % Zwei Möglichkeiten zur Berechnung von $f(x)$:
@@ -301,9 +311,9 @@ log.softmax2(x)
 
 % \begin{vbframe}{Fehleranalyse}
 % Zur Analyse von Algorithmen in Maschinenarithmetik ist es nützlich
-% die Fehlerrelation der Maschinenzahlen  $|\tilde x - x| \le \epsm |x|$ umzuschreiben
+% die Fehlerrelation der Maschinenzahlen  $|\xt - x| \le \epsm |x|$ umzuschreiben
 % $$
-% \tilde x = x(1 + \delta) , \quad \mbox{ wobei } |\delta| \leq \epsm \; .
+% \xt = x(1 + \delta) , \quad \mbox{ wobei } |\delta| \leq \epsm \; .
 % $$
 % Ein Algorithmus besteht aus einer Reihe von arithmetischen Operationen, und jede hat ihre jeweilige Konditionszahl
 % $$
@@ -319,7 +329,7 @@ log.softmax2(x)
 % Berechnung der Fehlerfortpflanzung, wobei Fehler hvherer Ordnung
 % typischerweise vernachldssigt werden.
 
-% Salopp: $\qquad f_j(\tilde x) = f_j(x) (1 + \kappa_j \delta)$
+% Salopp: $\qquad f_j(\xt) = f_j(x) (1 + \kappa_j \delta)$
 % \end{vbframe}
 
 

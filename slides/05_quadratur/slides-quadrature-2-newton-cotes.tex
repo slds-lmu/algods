@@ -1,21 +1,27 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%library(ggplot2)
-%set_parent("../style/preamble.Rnw")
-%options(digits = 16)
-%@
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{5}{Newton-C\^{o}tes}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Quadrature
+}{% Lecture title
+Newton-C\^{o}tes
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Polynomial interpolation
+  \item Newton-C\^{o}tes
+  \item Composite rule
+}
 
-
-
-%\section{Newton-C\^{o}tes Formulas}
+%\lecture{CIM1 Statistical Computing}
 
 \begin{vbframe}{Quadrature with polynomials}
 
@@ -675,7 +681,7 @@ In numerical integration this is known as the \textbf{composite rule}.
 
 % \framebreak
 %
-% Andere Interpretation: Lineare Interpolation von $f$ über jedes Intervall $\SpAr$ Fläche von
+% Andere Interpretation: Lineare Interpolation von $f$ über jedes Intervall $\quad \Rightarrow \quad$ Fläche von
 % Trapez $\frac h2 [f(a + ih) + f(a + (i + 1)h)]$.
 %
 % \lz
@@ -940,7 +946,7 @@ In numerical integration this is known as the \textbf{composite rule}.
 % \item Anzahl der Teilintervalle $n$ nicht vom Benutzer gewählt, sondern adaptiv durch Algorithmus.
 %
 % % \item Knoten nicht äquidistant, sondern rekursiv neue Knoten in Regionen, wo Fehler
-% % groß $\SpAr$ Brauchen Fehlerabschätzung!
+% % groß $\quad \Rightarrow \quad$ Brauchen Fehlerabschätzung!
 %
 % \item $Q_1$ und $Q_2$ seien zwei Quadraturen. $Q_1$ sei die Quadratur auf dem gesamten Intervall,
 % $Q_2$ die Summe von 2 Quadraturen auf der linken und rechten Hälfte.
@@ -964,7 +970,7 @@ In numerical integration this is known as the \textbf{composite rule}.
 % \begin{vbframe}{Gauß-Quadratur}
 % Bisher: Mit vorgegebenen Stützstellen $x_i$ berechne die Gewichte $\omega_i$, so dass
 % $$
-% I(f) \approx Q(f) = \sum_{i = 1}^n \omega_i f(x_i).
+% I(f) \approx Q(f) = \sumin \omega_i f(x_i).
 % $$
 
 % \lz
@@ -1161,7 +1167,7 @@ In numerical integration this is known as the \textbf{composite rule}.
 % \item Stützstellen sind die Nullstellen von Orthogonalpolynomen.
 % \item Legendre, Tschebyscheff, Jacobi, Laguerre, Hermite
 %   $$
-%   \int_a^b f(x)w(x)dx \approx \sum_{i = 1}^n \omega_i f(x_i),
+%   \int_a^b f(x)w(x)dx \approx \sumin \omega_i f(x_i),
 %   $$
 %   mit $w(x) \geq 0 \,\, \forall x$, $\,\, \int_a^b x^k w(x)dx < \infty \,\, \forall k \geq 0$.
 % \item Gauß-Legendre Quadratur $w(x) = 1$

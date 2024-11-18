@@ -1,38 +1,28 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%options(digits = 16)
-
-%library(RCurl)
-%library(XML)
-%library(tm)
-%library(NMF)
-%library(microbenchmark)
-%library(ggplot2)
-%library(wordcloud)
-%set_parent("../style/preamble.Rnw")
-%@
-
-
-\newcommand{\xdownarrow}[1]{%
-  {\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
-}
-
-\newcommand{\grey}[1]{\textcolor{grey}{#1}}
-\newcommand{\red}[1]{\textcolor{red}{#1}}
-
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Matrix Decomposition
+}{% Lecture title
+Overdetermined Systems \& Regression Example
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Overdetermined systems
+  \item Normal equation
+  \item Regression
+}
+%\lecture{CIM1 Statistical Computing}
 
-\lecturechapter{7}{Overdetermined Systems \& Regression Example}
-\lecture{CIM1 Statistical Computing}
-
-
-\begin{vbframe}{Overdetermined systems}
+\begin{vbframe}{Overdetermined Systems}
 
 A system of linear equations $\bm{Ax} = \bm{b}$ with $\bm{A} \in \R^{m\times n}, m \ge n$ with more equations than unknowns, is called \textbf{overdetermined}.
 
@@ -100,7 +90,7 @@ $$
 
 
 
-% Falls $\mathbf{X}$ vollen Rang hat $\SpAr \hat{\boldsymbol{\beta}} =
+% Falls $\mathbf{X}$ vollen Rang hat $\quad \Rightarrow \quad \hat{\boldsymbol{\beta}} =
 %   (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}$.\\
 
 % \framebreak
@@ -113,7 +103,7 @@ $$
 % $$
 % wobei  $\mathbf{P} = \mathbf{X}(\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top$ symmetrisch und
 % idempotent. \\
-% $\SpAr$ \textbf{Projektionsoperator}\\
+% $\quad \Rightarrow \quad$ \textbf{Projektionsoperator}\\
 % \medskip
 % $\mathbf{P}$ \dots Projektion auf linearen Unterraum, der von $\mathbf{X}$ aufgespannt \\
 % $\mathbf{I} - \mathbf{P}$ \dots Projektion auf Orthogonalraum\\
@@ -201,7 +191,7 @@ $$
 % wobei $\kappa^* := \sqrt{\kappa(\mathbf{X}^\top\mathbf{X})}$\\
 % \medskip
 % Nur Störungen von $\mathbf{y}$, die tatsächlich Einfluss auf die geschätzte Lösung haben,
-% wirken sich auf geschätzte Koeffizienten aus $\SpAr$ sinnvolles Resultat für Regressionsdiagnostik.
+% wirken sich auf geschätzte Koeffizienten aus $\quad \Rightarrow \quad$ sinnvolles Resultat für Regressionsdiagnostik.
 
 \end{vbframe}
 
@@ -307,7 +297,7 @@ If $\mathbf{X}$ is of full rank then $\mathbf{X}^\top\mathbf{X}$ is positive-def
 
 \framebreak
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 X = matrix(c(rep(1, 6), c(1.01, 1.01)), ncol = 2)
 X
 ## [,1] [,2]
@@ -320,34 +310,34 @@ XX
 ## [,1] [,2]
 ## [1,] 4.00 4.020000000000000
 ## [2,] 4.02 4.040200000000000
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \framebreak
-\begin{verbbox}
+\begin{verbatim}
 XX2 = round(XX, 3)
 XX2
 ## [,1] [,2]
 ## [1,] 4.00 4.02
 ## [2,] 4.02 4.04
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 cholesky(XX)
 ## [,1] [,2]
 ## [1,] 2.00 0.00000000000000000
 ## [2,] 2.01 0.01000000000007716
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 cholesky(XX2)
 ## [,1] [,2]
 ## [1,] 2.00 0
 ## [2,] 2.01 NaN
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \normalsize
 %<<include = FALSE>>=
@@ -471,7 +461,7 @@ $$
 
 \framebreak
 
-With $\bm{A} \coloneqq \bigl( \begin{smallmatrix} \bm{X} \\ \sqrt{\lambda} \bm{I} \end{smallmatrix} \bigr) \in \mathbb{R}^{n+p,p} $  the normal equations for ridge regression can be rewritten as
+With $\bm{A} oneqq \bigl( \begin{smallmatrix} \bm{X} \\ \sqrt{\lambda} \bm{I} \end{smallmatrix} \bigr) \in \mathbb{R}^{n+p,p} $  the normal equations for ridge regression can be rewritten as
 \begin{eqnarray*}
 \left(\mathbf{X}^\top\mathbf{X} + \lambda I \right)\boldsymbol{\beta} &=& \mathbf{X}^\top\mathbf{y} \\
 \mathbf{A}^\top\mathbf{A}\boldsymbol{\beta} &=& \mathbf{A}^\top\begin{pmatrix} \mathbf{y} \\ \mathbf{0} \end{pmatrix}
@@ -576,7 +566,7 @@ $\Rightarrow$ \textbf{Note:} QR decomposition is not the fastest method regardin
 % Für Vektor $\mathbf{u}$ ist Matrix $\mathbf{U} = \mathbf{I} - d\mathbf{uu}^\top$ orthogonal,
 % falls $d = 2/ \mathbf{u}^\top\mathbf{u}$.
 % Wähle $\mathbf{u} = \mathbf{x} + s\mathbf{e}_1$ mit $s = \mathbf{x}^\top\mathbf{x}$
-% $\SpAr \mathbf{Ux} = - s\mathbf{e}_1$.\\
+% $\quad \Rightarrow \quad \mathbf{Ux} = - s\mathbf{e}_1$.\\
 % \medskip
 % Sukzessive Elimination von Spaltenelementen liefert QR-Zerlegung.\\
 % \medskip

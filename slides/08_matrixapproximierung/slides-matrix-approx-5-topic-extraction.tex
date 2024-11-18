@@ -1,35 +1,24 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-
-%library(knitr)
-%options(digits = 16)
-
-%library(RCurl)
-%library(XML)
-%library(tm)
-%library(NMF)
-%library(microbenchmark)
-%library(ggplot2)
-%library(wordcloud)
-%set_parent("../style/preamble.Rnw")
-%@
-
-
-\newcommand{\xdownarrow}[1]{%
-	{\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
-}
-
-\newcommand{\grey}[1]{\textcolor{grey}{#1}}
-\newcommand{\red}[1]{\textcolor{red}{#1}}
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{7}{Topic Extraction}
-\lecture{CIM1 Statistical Computation}
-
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Matrix Approximation
+}{% Lecture title
+Topic Extraction
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Topic Extraction
+}
+%\lecture{CIM1 Statistical Computing}
 
 
 \begin{vbframe}{Application: Topic Extraction}
@@ -38,9 +27,9 @@ Often online articles refer to articles with similar content, e.g.
 
 \begin{center}
 	\textbf{\emph{\href{https://www.nytimes.com/2017/11/05/technology/machine-learning-artificial-intelligence-ai.html?rref=collection\%2Fsectioncollection\%2Ftechnology&action=click&contentCollection=technology&region=rank&module=package&version=highlights&contentPlacement=2&pgtype=sectionfront}{Building AI that Can Build AI}}} \\
-	$\Big\downarrow$ \footnotesize{\enquote{related}}\\
+	$\Big\downarrow$ \footnotesize{"related"}\\
 	\normalsize \textbf{	\emph{\href{https://www.nytimes.com/2017/09/10/business/warehouse-robots-learning.html?action=click&contentCollection=Technology&module=RelatedCoverage&region=Marginalia&pgtype=article}{In the Future, Warehouse Robots Will Learn on Their Own}}} \\
-	$\Big\downarrow$ \footnotesize \enquote{related}\\
+	$\Big\downarrow$ \footnotesize "related"\\
 	\normalsize\textbf{	\emph{\href{https://www.nytimes.com/2017/09/10/technology/amazon-robots-workers.html?action=click&contentCollection=Business\%20Day&module=RelatedCoverage&region=Marginalia&pgtype=article}{As Amazon Pushes Forward With Robots, Workers Find New Roles}}}
 \end{center}
 
@@ -52,7 +41,7 @@ We set up the corresponding document-term matrix.
 
 \lz
 
-\footnotesize
+\begin{footnotesize}
 \begin{verbatim}
 ##                doc1 doc2 doc3
 ## accelerate      1    0    0
@@ -62,7 +51,7 @@ We set up the corresponding document-term matrix.
 ## address         1    1    0
 ## adjust          1    0    0
 \end{verbatim}
-
+\end{footnotesize}
 %<<echo = F>>=
 %options(digits = 2)
 %@
@@ -77,15 +66,15 @@ We set up the corresponding document-term matrix.
 
 \framebreak
 
-We \enquote{search} two topics linking the articles.
+We "search" two topics linking the articles.
 \vspace{0.2cm}
 
-\footnotesize
-\begin{verbbox}
+\begin{footnotesize}
+\begin{verbatim}
 set.seed(1)
 res = nmf(tdm, 2, "Frobenius")
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \lz
 \begin{verbatim}
@@ -97,7 +86,7 @@ res = nmf(tdm, 2, "Frobenius")
 ## address        0.0026   6.3e-05
 ## adjust         0.0016   3.8e-11
 \end{verbatim}
-
+\end{footnotesize}
 %<<>>=
 %set.seed(1)
 %res = nmf(tdm, 2, "Frobenius")
@@ -115,14 +104,17 @@ res = nmf(tdm, 2, "Frobenius")
 \normalsize
 \end{vbframe}
 
-\begin{vbframe}{Topic Extraction: Topic 1}
+\begin{vbframe}{Topic Extraction}
 
 For both topics, we print the $30$ words with the largest values in the columns of matrix $\mathbf{W}$. The size of the word in the wordcloud is determined by the value of $w_{ij}$ (placement of the word is completely random).\\
 
-\begin{center}
-	\includegraphics[width = 0.4\textwidth]{figure_man/wordcloud01.png}
-\end{center}
-
+%\begin{center}
+%	\includegraphics[width = 0.4\textwidth]{figure_man/wordcloud01.png}
+%\end{center}
+\begin{figure}
+	\subfloat[Topic 1]{\includegraphics[width=0.4\textwidth]{figure_man/wordcloud01.png}}
+	\subfloat[Topic 2]{\includegraphics[width=0.4\textwidth]{figure_man/wordcloud02.png}}\\
+  \end{figure}
 %<<echo = F, out.width='70%', fig.align='center'>>=
 %df = wordmatrix[order(- wordmatrix[, 1]), ]
 %df = as.data.frame(df[1:30, ])
@@ -132,11 +124,11 @@ For both topics, we print the $30$ words with the largest values in the columns 
 
 \end{vbframe}
 
-\begin{vbframe}{Topic Extraction: Topic 2}
-\lz
-\begin{center}
-	\includegraphics[width = 0.4\textwidth]{figure_man/wordcloud02.png}
-\end{center}
+%\begin{vbframe}{Topic Extraction: Topic 2}
+%\lz
+%\begin{center}
+%	\includegraphics[width = 0.4\textwidth]{figure_man/wordcloud02.png}
+%\end{center}
 
 
 %<<echo = F, fig.align='center'>>=
@@ -146,7 +138,7 @@ For both topics, we print the $30$ words with the largest values in the columns 
 %wordcloud(df$word,df$topic2)
 %@
 
-\end{vbframe}
+%\end{vbframe}
 
 \begin{vbframe}{Topic Extraction: Coefficient matrix $\mathbf{H}$}
 

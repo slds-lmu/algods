@@ -1,36 +1,26 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-<<setup-child, include = FALSE>>=
-library(knitr)
-options(digits = 16)
-
-library(RCurl)
-library(XML)
-library(tm)
-library(NMF)
-library(microbenchmark)
-library(ggplot2)
-library(wordcloud)
-set_parent("../style/preamble.Rnw")
-@
-
-
-\newcommand{\xdownarrow}[1]{%
-  {\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
-}
-
-\newcommand{\grey}[1]{\textcolor{grey}{#1}}
-\newcommand{\red}[1]{\textcolor{red}{#1}}
-
-
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
 
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
+\begin{document}
 
-\lecturechapter{7}{QR Decomposition}
-\lecture{CIM1 Statistical Computing}
-
-
-
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Matrix Decomposition
+}{% Lecture title
+QR Decomposition
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Misconceptions
+  \item Alternative notations
+  \item Complexity vs. empirical runtime
+}
+%\lecture{CIM1 Statistical Computing}
 
 \begin{vbframe}{QR decomposition}
 
@@ -131,44 +121,217 @@ $$
 
 \end{vbframe}
 
-\begin{frame}{Gram-Schmidt visualized}
+\begin{vbframe}{Gram-Schmidt visualized}
 
 \begin{scriptsize}
 
 \textbf{Given:} Three independent vectors \textcolor{red}{$a_1$}, \textcolor{green}{$a_2$}, \textcolor{blue}{$a_3$} \\
 \textbf{Aim:} Vectors of an orthonormal basis \textcolor{red}{$q_1$}, \textcolor{green}{$q_2$}, \textcolor{blue}{$q_3$}
 
-
-\begin{enumerate}
 \setbeamercovered{transparent}
+\begin{enumerate}
   \item \textcolor{red}{$a_1$} serves as the first vector of the orthogonal basis (\textcolor{red}{$u_1$}).
-\uncover<3->{
-  \item \textcolor{green}{$a_2$} is projected onto \textcolor{red}{$u_1$}; projection is substracted from \textcolor{green}{$a_2$}
+  \item<2-> \textcolor{green}{$a_2$} is projected onto \textcolor{red}{$u_1$}; projection is substracted from \textcolor{green}{$a_2$}
         to obtain \textcolor{green}{$u_2$}.
-}
-\uncover<6->{
-  \item \textcolor{blue}{$a_3$} is projected onto \textcolor{red}{$u_1$} and \textcolor{green}{$u_2$},
+  \item<3-> \textcolor{blue}{$a_3$} is projected onto \textcolor{red}{$u_1$} and \textcolor{green}{$u_2$},
         to obtain \textcolor{blue}{$u_3$}.
-}
-\uncover<15->{
-  \item \textcolor{red}{$u_1$}, \textcolor{green}{$u_2$} and \textcolor{blue}{$u_3$} are normalized.
-}
+  \item<4-> \textcolor{red}{$u_1$}, \textcolor{green}{$u_2$} and \textcolor{blue}{$u_3$} are normalized.
 \end{enumerate}
 
 \end{scriptsize}
 
-\centering
-<<echo=FALSE,results='asis'>>=
-figures = list.files("figure_man/")
-
-for (i in 1:(length(figures)-1)) {
-cat("\\only<", i, ">{\\includegraphics[width=0.5\\textwidth]{figure_man/", figures[i], "}}\n", sep = "")
-}
-@
-
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{figure_man/frame_010_delay-2s.png}
+  \includegraphics[width=0.45\textwidth]{figure_man/frame_013_delay-1s.png}
+\end{figure}
 \tiny{\url{https://commons.wikimedia.org/wiki/File:Gram-Schmidt_orthonormalization_process.gif}}
 
-\end{frame}
+\framebreak
+
+\begin{scriptsize}
+
+\textbf{Given:} Three independent vectors \textcolor{red}{$a_1$}, \textcolor{green}{$a_2$}, \textcolor{blue}{$a_3$} \\
+\textbf{Aim:} Vectors of an orthonormal basis \textcolor{red}{$q_1$}, \textcolor{green}{$q_2$}, \textcolor{blue}{$q_3$}
+
+\setbeamercovered{transparent}
+\begin{enumerate}
+  \item<2-> \textcolor{red}{$a_1$} serves as the first vector of the orthogonal basis (\textcolor{red}{$u_1$}).
+  \item \textcolor{green}{$a_2$} is projected onto \textcolor{red}{$u_1$}; projection is substracted from \textcolor{green}{$a_2$}
+        to obtain \textcolor{green}{$u_2$}.
+  \item<3-> \textcolor{blue}{$a_3$} is projected onto \textcolor{red}{$u_1$} and \textcolor{green}{$u_2$},
+        to obtain \textcolor{blue}{$u_3$}.
+  \item<4-> \textcolor{red}{$u_1$}, \textcolor{green}{$u_2$} and \textcolor{blue}{$u_3$} are normalized.
+\end{enumerate}
+
+\end{scriptsize}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.33\textwidth]{figure_man/frame_016_delay-3s.png}
+  \includegraphics[width=0.33\textwidth]{figure_man/frame_019_delay-3s.png}
+  \includegraphics[width=0.33\textwidth]{figure_man/frame_039_delay-4s.png}
+\end{figure}
+\tiny{\url{https://commons.wikimedia.org/wiki/File:Gram-Schmidt_orthonormalization_process.gif}}
+
+\framebreak
+
+\begin{scriptsize}
+
+\textbf{Given:} Three independent vectors \textcolor{red}{$a_1$}, \textcolor{green}{$a_2$}, \textcolor{blue}{$a_3$} \\
+\textbf{Aim:} Vectors of an orthonormal basis \textcolor{red}{$q_1$}, \textcolor{green}{$q_2$}, \textcolor{blue}{$q_3$}
+
+\setbeamercovered{transparent}
+\begin{enumerate}
+  \item<2-> \textcolor{red}{$a_1$} serves as the first vector of the orthogonal basis (\textcolor{red}{$u_1$}).
+  \item<3-> \textcolor{green}{$a_2$} is projected onto \textcolor{red}{$u_1$}; projection is substracted from \textcolor{green}{$a_2$}
+        to obtain \textcolor{green}{$u_2$}.
+  \item \textcolor{blue}{$a_3$} is projected onto \textcolor{red}{$u_1$} and \textcolor{green}{$u_2$},
+        to obtain \textcolor{blue}{$u_3$}.
+  \item<4-> \textcolor{red}{$u_1$}, \textcolor{green}{$u_2$} and \textcolor{blue}{$u_3$} are normalized.
+\end{enumerate}
+
+\end{scriptsize}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{figure_man/frame_060_delay-2s.png}
+  \includegraphics[width=0.45\textwidth]{figure_man/frame_063_delay-1s.png}
+\end{figure}
+\tiny{\url{https://commons.wikimedia.org/wiki/File:Gram-Schmidt_orthonormalization_process.gif}}
+
+\framebreak
+
+\begin{scriptsize}
+
+\textbf{Given:} Three independent vectors \textcolor{red}{$a_1$}, \textcolor{green}{$a_2$}, \textcolor{blue}{$a_3$} \\
+\textbf{Aim:} Vectors of an orthonormal basis \textcolor{red}{$q_1$}, \textcolor{green}{$q_2$}, \textcolor{blue}{$q_3$}
+
+\setbeamercovered{transparent}
+\begin{enumerate}
+  \item<2-> \textcolor{red}{$a_1$} serves as the first vector of the orthogonal basis (\textcolor{red}{$u_1$}).
+  \item<3-> \textcolor{green}{$a_2$} is projected onto \textcolor{red}{$u_1$}; projection is substracted from \textcolor{green}{$a_2$}
+        to obtain \textcolor{green}{$u_2$}.
+  \item \textcolor{blue}{$a_3$} is projected onto \textcolor{red}{$u_1$} and \textcolor{green}{$u_2$},
+        to obtain \textcolor{blue}{$u_3$}.
+  \item<4-> \textcolor{red}{$u_1$}, \textcolor{green}{$u_2$} and \textcolor{blue}{$u_3$} are normalized.
+\end{enumerate}
+
+\end{scriptsize}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.33\textwidth]{figure_man/frame_066_delay-3s.png}
+  \includegraphics[width=0.33\textwidth]{figure_man/frame_069_delay-3s.png}
+  \includegraphics[width=0.33\textwidth]{figure_man/frame_089_delay-4s.png}
+\end{figure}
+\tiny{\url{https://commons.wikimedia.org/wiki/File:Gram-Schmidt_orthonormalization_process.gif}}
+
+\framebreak
+
+\begin{scriptsize}
+
+\textbf{Given:} Three independent vectors \textcolor{red}{$a_1$}, \textcolor{green}{$a_2$}, \textcolor{blue}{$a_3$} \\
+\textbf{Aim:} Vectors of an orthonormal basis \textcolor{red}{$q_1$}, \textcolor{green}{$q_2$}, \textcolor{blue}{$q_3$}
+
+\setbeamercovered{transparent}
+\begin{enumerate}
+  \item<2-> \textcolor{red}{$a_1$} serves as the first vector of the orthogonal basis (\textcolor{red}{$u_1$}).
+  \item<3-> \textcolor{green}{$a_2$} is projected onto \textcolor{red}{$u_1$}; projection is substracted from \textcolor{green}{$a_2$}
+        to obtain \textcolor{green}{$u_2$}.
+  \item \textcolor{blue}{$a_3$} is projected onto \textcolor{red}{$u_1$} and \textcolor{green}{$u_2$},
+        to obtain \textcolor{blue}{$u_3$}.
+  \item<4-> \textcolor{red}{$u_1$}, \textcolor{green}{$u_2$} and \textcolor{blue}{$u_3$} are normalized.
+\end{enumerate}
+
+\end{scriptsize}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{figure_man/frame_092_delay-1s.png}
+  \includegraphics[width=0.45\textwidth]{figure_man/frame_095_delay-3s.png}
+\end{figure}
+\tiny{\url{https://commons.wikimedia.org/wiki/File:Gram-Schmidt_orthonormalization_process.gif}}
+
+\framebreak
+
+\begin{scriptsize}
+
+\textbf{Given:} Three independent vectors \textcolor{red}{$a_1$}, \textcolor{green}{$a_2$}, \textcolor{blue}{$a_3$} \\
+\textbf{Aim:} Vectors of an orthonormal basis \textcolor{red}{$q_1$}, \textcolor{green}{$q_2$}, \textcolor{blue}{$q_3$}
+
+\setbeamercovered{transparent}
+\begin{enumerate}
+  \item<2-> \textcolor{red}{$a_1$} serves as the first vector of the orthogonal basis (\textcolor{red}{$u_1$}).
+  \item<3-> \textcolor{green}{$a_2$} is projected onto \textcolor{red}{$u_1$}; projection is substracted from \textcolor{green}{$a_2$}
+        to obtain \textcolor{green}{$u_2$}.
+  \item \textcolor{blue}{$a_3$} is projected onto \textcolor{red}{$u_1$} and \textcolor{green}{$u_2$},
+        to obtain \textcolor{blue}{$u_3$}.
+  \item<4-> \textcolor{red}{$u_1$}, \textcolor{green}{$u_2$} and \textcolor{blue}{$u_3$} are normalized.
+\end{enumerate}
+
+\end{scriptsize}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{figure_man/frame_098_delay-3s.png}
+  \includegraphics[width=0.45\textwidth]{figure_man/frame_118_delay-4s.png}
+\end{figure}
+\tiny{\url{https://commons.wikimedia.org/wiki/File:Gram-Schmidt_orthonormalization_process.gif}}
+
+\framebreak
+
+\begin{scriptsize}
+
+\textbf{Given:} Three independent vectors \textcolor{red}{$a_1$}, \textcolor{green}{$a_2$}, \textcolor{blue}{$a_3$} \\
+\textbf{Aim:} Vectors of an orthonormal basis \textcolor{red}{$q_1$}, \textcolor{green}{$q_2$}, \textcolor{blue}{$q_3$}
+
+\setbeamercovered{transparent}
+\begin{enumerate}
+  \item<2-> \textcolor{red}{$a_1$} serves as the first vector of the orthogonal basis (\textcolor{red}{$u_1$}).
+  \item<3-> \textcolor{green}{$a_2$} is projected onto \textcolor{red}{$u_1$}; projection is substracted from \textcolor{green}{$a_2$}
+        to obtain \textcolor{green}{$u_2$}.
+  \item<4-> \textcolor{blue}{$a_3$} is projected onto \textcolor{red}{$u_1$} and \textcolor{green}{$u_2$},
+        to obtain \textcolor{blue}{$u_3$}.
+  \item \textcolor{red}{$u_1$}, \textcolor{green}{$u_2$} and \textcolor{blue}{$u_3$} are normalized.
+\end{enumerate}
+
+\end{scriptsize}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{figure_man/frame_131_delay-2s.png}
+  \includegraphics[width=0.45\textwidth]{figure_man/frame_134_delay-3s.png}
+\end{figure}
+\tiny{\url{https://commons.wikimedia.org/wiki/File:Gram-Schmidt_orthonormalization_process.gif}}
+
+\framebreak
+
+\begin{scriptsize}
+
+\textbf{Given:} Three independent vectors \textcolor{red}{$a_1$}, \textcolor{green}{$a_2$}, \textcolor{blue}{$a_3$} \\
+\textbf{Aim:} Vectors of an orthonormal basis \textcolor{red}{$q_1$}, \textcolor{green}{$q_2$}, \textcolor{blue}{$q_3$}
+
+\setbeamercovered{transparent}
+\begin{enumerate}
+  \item<2-> \textcolor{red}{$a_1$} serves as the first vector of the orthogonal basis (\textcolor{red}{$u_1$}).
+  \item<3-> \textcolor{green}{$a_2$} is projected onto \textcolor{red}{$u_1$}; projection is substracted from \textcolor{green}{$a_2$}
+        to obtain \textcolor{green}{$u_2$}.
+  \item<4-> \textcolor{blue}{$a_3$} is projected onto \textcolor{red}{$u_1$} and \textcolor{green}{$u_2$},
+        to obtain \textcolor{blue}{$u_3$}.
+  \item \textcolor{red}{$u_1$}, \textcolor{green}{$u_2$} and \textcolor{blue}{$u_3$} are normalized.
+\end{enumerate}
+
+\end{scriptsize}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{figure_man/frame_144_delay-3s.png}
+  \includegraphics[width=0.45\textwidth]{figure_man/frame_149_delay-8s.png}
+\end{figure}
+\tiny{\url{https://commons.wikimedia.org/wiki/File:Gram-Schmidt_orthonormalization_process.gif}}
+
+\end{vbframe}
 
 \begin{vbframe}{QR decomposition: Example}
 
@@ -266,7 +429,7 @@ Two other methods for QR decomposition\\
 For vector $\mathbf{u}$, matrix $\mathbf{U} = \mathbf{I} - d\mathbf{uu}^\top$ is orthogonal,
 if $d = 2/ \mathbf{u}^\top\mathbf{u}$.
 Choose $\mathbf{u} = \mathbf{x} + s\mathbf{e}_1$ with $s = \mathbf{x}^\top\mathbf{x}$
-$\SpAr \mathbf{Ux} = - s\mathbf{e}_1$.\\
+$\quad \Rightarrow \quad \mathbf{Ux} = - s\mathbf{e}_1$.\\
 \medskip
 Successive elimination of column elements yields QR decomposition.\\
 \medskip
@@ -335,6 +498,7 @@ $\bm{Q}_1 \times \bm{R}_1$ is known as a \textbf{reduced} QR decomposition.
 
 
 \endlecture
+\end{document}
 
 
 

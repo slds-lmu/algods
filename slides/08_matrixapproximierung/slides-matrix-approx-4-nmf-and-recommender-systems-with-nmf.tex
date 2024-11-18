@@ -1,36 +1,25 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-
-%library(knitr)
-%options(digits = 16)
-
-%library(RCurl)
-%library(XML)
-%library(tm)
-%library(NMF)
-%library(microbenchmark)
-%library(ggplot2)
-%library(wordcloud)
-%set_parent("../style/preamble.Rnw")
-%@
-
-
-\newcommand{\xdownarrow}[1]{%
-	{\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
-}
-
-\newcommand{\grey}[1]{\textcolor{grey}{#1}}
-\newcommand{\red}[1]{\textcolor{red}{#1}}
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{7}{Non-Negative Matrix Factorization \& Recommender Systems Application}
-\lecture{CIM1 Statistical Computation}
-
-
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Matrix Approximation
+}{% Lecture title
+Non-Negative Matrix Factorization \& Recommender Systems Application
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Non-negative matrix factorization
+  \item Recommender systems application (2)
+}
+%\lecture{CIM1 Statistical Computing}
 
 \begin{vbframe}{Non-negative matrix factorization}
 
@@ -119,19 +108,20 @@ Back to our previous \textbf{example}:
 
 \begin{footnotesize}
 \begin{center}
-\[
-\begin{blockarray}{ccccc}
-& \text{Die Hard} & \text{Top Gun} & \text{Titanic} &  \text{Notting Hill} \\
-\begin{block}{r(cccc)}
-\text{User 1} &  5  &  \textcolor{red}{\text{NA}}  & 3 &  \textcolor{red}{\text{NA}}  \\
-\text{User 2}  & 5 & 4 & 3 &  3  \\
-\text{User 3}  &  2  &  \textcolor{red}{\text{NA}}  & 5 &  \textcolor{red}{\text{NA}}  \\
-\text{User 4}  & 5  &  5  &  3  &  1 \\
-\text{User 5}  & 1  &  2  &  5  &  5  \\
-\text{User 6}  & 1  &  2  &  4  &  5  \\
-\end{block}
-\end{blockarray}
- \]
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|c|c|c|c|}
+    \hline
+           & \textbf{Die Hard} & \textbf{Top Gun} & \textbf{Titanic} & \textbf{Notting Hill} \\ \hline
+    \textbf{User 1} & 5 & \textcolor{red}{NA} & 3 & \textcolor{red}{NA} \\ \hline
+    \textbf{User 2} & 5 & 4 & 3 & 3 \\ \hline
+    \textbf{User 3} & 2 & \textcolor{red}{NA} & 5 & \textcolor{red}{NA} \\ \hline
+    \textbf{User 4} & 5 & 5 & 3 & 1 \\ \hline
+    \textbf{User 5} & 1 & 2 & 5 & 5 \\ \hline
+    \textbf{User 6} & 1 & 2 & 4 & 5 \\ \hline
+    \end{tabular}
+\end{table}
+    
 \end{center}
 \end{footnotesize}
 
@@ -177,13 +167,13 @@ We suspect that our movie database contains movies from two different categories
 \vspace{0.3cm}
 \footnotesize
 
-\begin{verbbox}
+\begin{verbatim}
 set.seed(1)
 res = nmf(X, rank = 2)
 W = res@fit@W
 H = res@fit@H
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \framebreak
 
@@ -232,7 +222,7 @@ H
 \framebreak
 
 \normalsize
-The columns of the $6 \times 2$ matrix $\mathbf{W}$ could be interpreted as movie categories (here: \enquote{Action} and \enquote{Romance}). The figure shows which users prefer which categories.
+The columns of the $6 \times 2$ matrix $\mathbf{W}$ could be interpreted as movie categories (here: "Action" and "Romance"). The figure shows which users prefer which categories.
 
 \lz
 
@@ -285,7 +275,7 @@ W %*% H
 %@
 
 \normalsize
-Here we would also recommend \enquote{Top Gun} to user 1, an action movie. For user 3 we recommend \enquote{Notting Hill}, because he tends to prefer romantic movies.
+Here we would also recommend "Top Gun" to user 1, an action movie. For user 3 we recommend "Notting Hill", because he tends to prefer romantic movies.
 
 
 \end{enumerate}
@@ -298,12 +288,11 @@ Here we would also recommend \enquote{Top Gun} to user 1, an action movie. For u
 More on Recommender Systems:
 \begin{itemize}
 \item \href{https://endymecy.gitbooks.io/spark-ml-source-analysis/content/\%E6\%8E\%A8\%E8\%8D\%90/papers/Matrix\%20Factorization\%20Techniques\%20for\%20Recommender\%20Systems.pdf}{Matrix Factorization Techniques for Recommender Systems}
-\item \href{https://rpubs.com/tarashnot/recommender_comparison}{Recommender Systems Comparison (including implementation in R)}
+\item \href{https://rpubs.com/tarashnot/recommender_comparison}{Recommender Systems Comparison (including implementation in \texttt{R})}
 \item \href{https://grouplens.org/datasets/movielens/100k/}{Movielens Dataset}
 \end{itemize}
 
 \end{vbframe}
-
 
 
 \endlecture

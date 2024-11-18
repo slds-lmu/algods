@@ -1,40 +1,30 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%options(digits = 16)
-
-%library(RCurl)
-%library(XML)
-%library(tm)
-%library(NMF)
-%library(microbenchmark)
-%library(ggplot2)
-%library(wordcloud)
-%set_parent("../style/preamble.Rnw")
-%@
-
-
-\newcommand{\xdownarrow}[1]{%
-  {\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
-}
-
-\newcommand{\grey}[1]{\textcolor{grey}{#1}}
-\newcommand{\red}[1]{\textcolor{red}{#1}}
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{7}{Cholesky Decomposition}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Matrix Decomposition
+}{% Lecture title
+Cholesky Decomposition
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Cholesky decomposition
+  \item Properties of Cholesky decomposition
+}
+%\lecture{CIM1 Statistical Computing}
 
 
+\begin{vbframe}{Cholesky Decomposition}
 
-
-\begin{vbframe}{Cholesky decomposition}
-
-\textbf{Aim:} Solve LES of the form $\Amat \xv = \boldsymbol{b}$\\
+\textbf{Aim:} Solve LES of the form $\Amat \xv = \mathbf{b}$\\
 \medskip
 with $\Amat \in \R^{n \times n}$, $\Amat$ positive-definite
 \medskip
@@ -71,15 +61,15 @@ $$
  \only<1>{
  \begin{eqnarray*}
 \mat{
-\textcolor{blue}{l_{11}} & \red{0}  & \red{0}  & \red{0}  \\
+\textcolor{blue}{l_{11}} & \textcolor{red}{0}  & \textcolor{red}{0}  & \textcolor{red}{0}  \\
 l_{21} & l_{22} & 0 & 0 \\
 l_{31} & l_{32} & l_{33} & 0 \\
 l_{41} & l_{42} & l_{43} & l_{44} }
 \mat{
 \textcolor{blue}{l_{11}} & l_{21} & l_{31} & l_{41} \\
-\red{0} & l_{22} & l_{32} & l_{42} \\
-\red{0} & 0 & l_{33} & l_{43} \\
-\red{0} & 0 & 0 & l_{44} }
+\textcolor{red}{0} & l_{22} & l_{32} & l_{42} \\
+\textcolor{red}{0} & 0 & l_{33} & l_{43} \\
+\textcolor{red}{0} & 0 & 0 & l_{44} }
 = \mat{
 \textcolor{blue}{4} & 2 & 2 & 2 \\
 2 & 5 & 3 & 3 \\
@@ -97,14 +87,14 @@ l_{41} & l_{42} & l_{43} & l_{44} }
  \begin{eqnarray*}
 \mat{
 l_{11} & 0 & 0 & 0 \\
-\textcolor{blue}{l_{21}} & \textcolor{blue}{l_{22}} & \red{0} & \red{0} \\
+\textcolor{blue}{l_{21}} & \textcolor{blue}{l_{22}} & \textcolor{red}{0} & \textcolor{red}{0} \\
 l_{31} & l_{32} & l_{33} & 0 \\
 l_{41} & l_{42} & l_{43} & l_{44} }
 \mat{
 \textcolor{blue}{l_{11}} & l_{21} & l_{31} & l_{41} \\
-\red{0} & l_{22} & l_{32} & l_{42} \\
-\red{0} & 0 & l_{33} & l_{43} \\
-\red{0} & 0 & 0 & l_{44} }
+\textcolor{red}{0} & l_{22} & l_{32} & l_{42} \\
+\textcolor{red}{0} & 0 & l_{33} & l_{43} \\
+\textcolor{red}{0} & 0 & 0 & l_{44} }
 = \mat{
 4 & 2 & 2 & 2 \\
 \textcolor{blue}{2} & 5 & 3 & 3 \\
@@ -123,17 +113,17 @@ l_{11}^2 = a_{11} &\rightarrow& l_{11} = \sqrt{a_{11}} = \sqrt{4} = 2 \\
  \begin{eqnarray*}
 \mat{
 l_{11} & 0 & 0 & 0 \\
-\textcolor{blue}{l_{21}} & \textcolor{blue}{l_{22}} & \red{0} & \red{0} \\
+\textcolor{blue}{l_{21}} & \textcolor{blue}{l_{22}} & \textcolor{red}{0} & \textcolor{red}{0} \\
 l_{31} & l_{32} & l_{33} & 0 \\
 l_{41} & l_{42} & l_{43} & l_{44} }
 \mat{
 l_{11} & \textcolor{blue}{l_{21}} & l_{31} & l_{41} \\
 0 & \textcolor{blue}{l_{22}} & l_{32} & l_{42} \\
-0 & \red{0} & l_{33} & l_{43} \\
-0 & \red{0} & 0 & l_{44} }
+0 & \textcolor{red}{0} & l_{33} & l_{43} \\
+0 & \textcolor{red}{0} & 0 & l_{44} }
 = \mat{
 4 & 2 & 2 & 2 \\
-2 & \red{5} & 3 & 3 \\
+2 & \textcolor{red}{5} & 3 & 3 \\
 2 & 3 & 11 & 5 \\
 2 & 3 & 5 & 19 }
 \end{eqnarray*}
@@ -151,13 +141,13 @@ l_{21} \cdot l_{11} = a_{21} &\rightarrow& l_{21} = \frac{a_{21}}{l_{11}}  = \fr
 \mat{
 l_{11} & 0 & 0 & 0 \\
 l_{21} & l_{22} & 0 & 0 \\
-\textcolor{blue}{l_{31}} & \textcolor{blue}{l_{32}} & \textcolor{blue}{l_{33}} & \red{0} \\
+\textcolor{blue}{l_{31}} & \textcolor{blue}{l_{32}} & \textcolor{blue}{l_{33}} & \textcolor{red}{0} \\
 l_{41} & l_{42} & l_{43} & l_{44} }
 \mat{
 \textcolor{blue}{l_{11}} & l_{21} & l_{31} & l_{41} \\
-\red{0} & l_{22} & l_{32} & l_{42} \\
-\red{0} & 0 & l_{33} & l_{43} \\
-\red{0} & 0 & 0 & l_{44} }
+\textcolor{red}{0} & l_{22} & l_{32} & l_{42} \\
+\textcolor{red}{0} & 0 & l_{33} & l_{43} \\
+\textcolor{red}{0} & 0 & 0 & l_{44} }
 = \mat{
 4 & 2 & 2 & 2 \\
 2 & 5 & 3 & 3 \\
@@ -356,7 +346,7 @@ n \frac{(n + 2) (n + 1)}{2} - n - n\frac{(n+1)(2n+ 1)}{6} \\
 
 %\begin{vbframe}{Beispiel Cholesky-Zerlegung}
 
-<<include = FALSE>>=
+\begin{verbatim}
 cholesky = function(a) {
   n = nrow(a)
   l = matrix(0, nrow = n, ncol = n)
@@ -371,28 +361,24 @@ cholesky = function(a) {
   }
   return(l)
 }
-@
+\end{verbatim}
 
 %\framebreak
 
-<<include = FALSE>>=
+\begin{verbatim}
 A = crossprod(matrix(runif(16), 4, 4))
 cholesky(A)
-@
 
-%\framebreak
-
-<<include = FALSE>>=
 t(chol(A))
-@
+\end{verbatim}
 
 %\framebreak
 
-<<include = FALSE>>=
+\begin{verbatim}
 A = crossprod(matrix(runif(1e+06), 1e+03, 1e+03))
 system.time(cholesky(A))
 system.time(chol(A))
-@
+\end{verbatim}
 
 %\begin{Schunk}
 % \begin{Sinput}

@@ -1,22 +1,27 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%library(ggplot2)
-%library(microbenchmark)
-%set_parent("../style/preamble.Rnw")
-%@
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{6}{Congruential Generators}
-\lecture{CIM1 Statistical Computation}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Random Numbers
+}{% Lecture title
+Congruential Generators
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Linear congruential generator
+  \item Multiplicative congruential generators
+}
+%\lecture{CIM1 Statistical Computing}
 
-
-
-\begin{vbframe}{Linear congruential generator}
+\begin{vbframe}{Linear Congruential Generator}
 
 Let $a,c,m \in \N$, then a \textbf{linear congruential generator (LCG)} is defined by
 $$
@@ -41,7 +46,7 @@ Longer period, specifically designed for 48-bit fraction-arithmetic.
 
 
 
-\begin{vbframe}{Multiplicative congruential generators}
+\begin{vbframe}{Multiplicative Congruential Generators}
 
 Special case for $c = 0$: \textbf{multiplicative congruential generator (MCG)}
 
@@ -160,7 +165,7 @@ The sequence starts already at $i = 9$ from the beginning, period length $=8$.
 
 Concrete implementations:
 \begin{itemize}
- \item Very popular for a long time: Lewis Goodman Miller (1969) (e.g., IMSL, early Matlab versions, \ldots):
+ \item Very popular for a long time: LEWIS, Goodman\citelink{LEWIS1969} (e.g., IMSL, early Matlab versions, \ldots):
     $$
       m=2^{31}-1, \qquad a=7^5
     $$
@@ -273,7 +278,7 @@ We are going to visualize the
 
 Further examples for MCGs:
 \begin{itemize}
- \item Park, Miller, Stockmeyer (1993):  $m = 2^{31} - 1, a = 48271$.
+ \item Park, Miller\citelink{PARK1993}:  $m = 2^{31} - 1, a = 48271$.
  \item Marsaglia I:  $m = 2^{32}, a = 69069$.
  \item SAS / IMSL:  $m = 2^{31} - 1, a = 397204094$.
  \item Fishman-Moore I, II und III:   $m = 2^{31} - 1$\\
@@ -284,5 +289,4 @@ Further examples for MCGs:
 
 
 \endlecture
-
 \end{document}

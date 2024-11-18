@@ -1,19 +1,26 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%library(ggplot2)
-%library(microbenchmark)
-%set_parent("../style/preamble.Rnw")
-%@
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{6}{Mersenne Twister \& R}
-\lecture{CIM1 Statistical Computation}
-
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Random Numbers
+}{% Lecture title
+Mersenne Twister \& \texttt{R}
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Mersenne Twister algorithm
+  \item Properties of Mersenne Twister
+  \item Implementation in \texttt{R}
+}
+%\lecture{CIM1 Statistical Computing}
 
 
 \begin{vbframe}{Mersenne Twister}
@@ -53,10 +60,10 @@ $$
 $$
 
 \begin{itemize}
-	\item $n$: Degree of recurrence, \enquote{size} of blocks
+	\item $n$: Degree of recurrence, "size" of blocks
 	\item $m$: Integer $1 \le m < n$
 	\item $\mathbf{x}_{k}^l$, $\mathbf{x}_{k}^r$: Left and right part of the vector $x_{k}$
-	\item $0 \le c \le w - $1 determines where the \enquote{left part} ends
+	\item $0 \le c \le w - $1 determines where the "left part" ends
 \end{itemize}
 
 \vspace*{0.2cm}
@@ -144,7 +151,7 @@ The following operations are performed:
 \mathbf{y} &\mapsto& \mathbf{y} := \mathbf{y} \oplus ((\mathbf{y} < < t) \text{ AND } \mathbf{c}) \\ \mathbf{y} &\mapsto& \mathbf{z} := \mathbf{y} \oplus (\mathbf{y} >> l)
 \end{eqnarray*}
 
-where $\mathbf{x} >> u$ ($\mathbf{x} << u$) describes the bitwise \enquote{right}-shift (\enquote{left}-shift) by $u$ and \enquote{AND} describes the bitwise \enquote{and}.
+where $\mathbf{x} >> u$ ($\mathbf{x} << u$) describes the bitwise "right"-shift ("left"-shift) by $u$ and "AND" describes the bitwise "and".
 
 \lz
 
@@ -174,7 +181,7 @@ Coefficients for MT19937: (standard implementation 32-bit)
 \textbf{Properties}:
 
 \begin{itemize}
-	\item Extremely long period of $2^{19937} - 1\approx 4.3 \cdot 10^{6001}$ (so-called \enquote{Mersenne prime})
+	\item Extremely long period of $2^{19937} - 1\approx 4.3 \cdot 10^{6001}$ (so-called "Mersenne prime")
 	\item All bits of the output sequence are uniformly distributed $\to$ thus the corresponding integer values are also uniformly distributed
 	\item Low correlation of consecutive values
 	\item Fast implementation by calculating $n$ ($n = 624$ in MT19937) random numbers in one step
@@ -476,7 +483,7 @@ Further information:
 \begin{itemize}
 \item In the procedures discussed, integers between $0$ and $m - 1$ were generated.
 \item If real random numbers in the interval $(0, 1)$ need to be simulated, a simple division by $m$ is sufficient.
-\item \textbf{Problem:} The random number can be $0$, while for an \enquote{actual} $(0, 1)$ - uniformly distributed random variable $U$ the following holds:
+\item \textbf{Problem:} The random number can be $0$, while for an "actual" $(0, 1)$ - uniformly distributed random variable $U$ the following holds:
 $$
 \mathbb{P}(U = 0) = 0
 $$
@@ -503,8 +510,8 @@ $$
 
 \end{vbframe}
 
-\begin{vbframe}{PRNGs in R}
-The Mersenne Twister is (currently) the default method in R with period
+\begin{vbframe}{PRNGs in \texttt{R}}
+The Mersenne Twister is (currently) the default method in \texttt{R} with period
 $2^{19937} - 1 \approx 10^{6001}$ and guaranteed uniform distribution in
 623 dimensions.
 Seeds are 624 32-bit integers on top of the current position in this set. The \code{set.seed()} function generates a valid seed from a
@@ -514,7 +521,7 @@ $$
 $$
 There are a number of other generators available. Furthermore, the
 user can also specify her own generator as default.
-\code{RNGversion('x.y.z')} can be used to set the random generators as they were in an earlier R version (for reproducibility) (Wichman-Hill up to 0.98, Marsaglia-Multicarry up to 0.00).
+\code{RNGversion('x.y.z')} can be used to set the random generators as they were in an earlier \texttt{R} version (for reproducibility) (Wichman-Hill up to 0.98, Marsaglia-Multicarry up to 0.00).
 1.6.1). Initialization of the seed via time.
 \end{vbframe}
 
@@ -525,61 +532,61 @@ user can also specify her own generator as default.
 \item \code{set.seed()} function
 
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 set.seed(123); u1 <- runif(100)
 set.seed(123); u2 <- runif(100) 
 identical(u1, u2) # the same because of identical RNG status
 ## [1] TRUE
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \normalsize
-\item \code{.Random.seed()} is an integer vector, containing the random number generator (RNG) state for random number generation in R. It can be saved and restored, but should not be altered by the user.
+\item \code{.Random.seed()} is an integer vector, containing the random number generator (RNG) state for random number generation in \texttt{R}. It can be saved and restored, but should not be altered by the user.
 
 \item \code{RNGkind()} is a more friendly interface to query or set the kind of RNG in use.
 \footnotesize
 
-\begin{verbbox}
+\begin{verbatim}
 # default for "kind", "normal kind" and "sample kind" 
 RNGkind("default") 
 RNGkind()
 ## [1] "Mersenne-Twister" "Inversion"  "Rejection"
 .Random.seed[1:3] # the default random seed is 626 integers
 ## [1] 10403 624 1858651209
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \normalsize
 \framebreak
 \item Change default of kind ("Mersenne-Twister") to "Wichmann-Hill"
 
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 RNGkind("Wich")
 RNGkind()
 ## [1] "Wichmann-Hill" "Inversion" "Rejection"
 .Random.seed
 ## [1] 10400  5989  8337  9843
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \normalsize
-\item Change methods depending on defaults in a specific R Version
+\item Change methods depending on defaults in a specific \texttt{R} Version
 
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 RNGversion(getRversion()) # current version
 RNGkind()
 ## [1] "Mersenne-Twister" "Inversion" "Rejection"
-RNGversion("1.0.0") # first R version
+RNGversion("1.0.0") # first \texttt{R} version
 ## Warning in RNGkind("Marsaglia-Multicarry", "Buggy
 Kinderman-Ramage", "Rounding"): buggy version of 
 Kinderman-Ramage generator used
 ## Warning in RNGkind("Marsaglia-Multicarry", "Buggy
 Kinderman-Ramage", "Rounding"): non-uniform 'Rounding' 
 sampler used
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 %\end{footnotesize}
 \end{itemize}
@@ -591,15 +598,15 @@ sampler used
 
 \begin{vbframe}{Parallel computing}
 A complex topic is the application of random number generators for parallel computing, where a long calculation is split between several machines and processed in parallel.
-Usually, a \enquote{master} distributes the jobs to several \enquote{slaves}.
-Initialization of seed using the two \enquote{standard} methods
+Usually, a "master" distributes the jobs to several "slaves".
+Initialization of seed using the two "standard" methods
 \begin{itemize}
   \item Time of day or
   \item Fixed given number
 \end{itemize}
 is not useful.
-Special algorithms for this purpose are provided e.g. in the R packages \texttt{rlecuyer} or
-\texttt{rstreams} (both use the same algorithm from L'Ecuyer).
+Special algorithms for this purpose are provided e.g. in the \texttt{R} packages \pkg{rlecuyer} or
+\pkg{rstreams} (both use the same algorithm from L'Ecuyer).
 \end{vbframe}
 
 

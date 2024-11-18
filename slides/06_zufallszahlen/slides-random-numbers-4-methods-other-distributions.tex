@@ -1,21 +1,27 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%library(ggplot2)
-%library(microbenchmark)
-%set_parent("../style/preamble.Rnw")
-%@
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{6}{Methods for other Distributions}
-\lecture{CIM1 Statistical Computation}
-
-
-%\section{Methods for other distributions}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Random Numbers
+}{% Lecture title
+Methods for other Distributions
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Inversion sampling
+  \item Transformations
+  \item Mixture distribution
+  \item Sampling multivariate Gaussian
+}
+%\lecture{CIM1 Statistical Computing}
 
 
 % \begin{vbframe}{Drawing from Finite Populations}
@@ -258,9 +264,9 @@ Equation system corresponds to $x < log(1-u)/log(q) \leq x+1$.
 \begin{itemize}
   \item The quality of the random numbers is heavily dependent on the quality of the quantile function.
   \item While $F$ is often easy to calculate, the computation of $F^{-1}$ can be difficult:
-\\ $\SpAr$ Solve numerically $F(X) - U = 0$.
+\\ $\quad \Rightarrow \quad$ Solve numerically $F(X) - U = 0$.
   \item Especially for quantile functions, which approximate the distribution function numerically in the corresponding integral, the inversion method is inefficient and inaccurate.
- \item But: in R for example, normally distributed random numbers are currently calculated using inverse transform sampling.
+ \item But: in \texttt{R} for example, normally distributed random numbers are currently calculated using inverse transform sampling.
 \end{itemize}
 \end{vbframe}
 
@@ -334,11 +340,11 @@ Draw from a 50\%-50\% - mixture of $N(0,1)$ and $N(3,0.5)$
 \end{vbframe}
 
 \begin{vbframe}{Sampling Multivariate gaussian}
-$X=(X_1, ..., X_d) \sim N_d(\mu, \Sigma)$:
+$X=(X_1, ..., X_d) \sim N_d(\muv, \Sigma)$:
 $$
-f(x) = \frac{1}{(2\pi)^{d/2} |\Sigma|^{1/2}}exp(-(1/2)(x-\mu)^T\Sigma^{-1}(x-\mu))
+f(x) = \frac{1}{(2\pi)^{d/2} |\Sigma|^{1/2}}exp(-\frac{1}{2}(\bm{x}-\muv)^T\Sigma^{-1}(\bm{x}-\muv))
 $$
-with mean $\mu=(\mu_1,...,\mu_d)^T$ and symmetrical, positive definite covariance matrix $\Sigma$.
+with mean $\muv=(\mu_1,...,\mu_d)^T$ and symmetrical, positive definite covariance matrix $\Sigma$.
 
 \lz
 
@@ -357,19 +363,19 @@ with mean $\mu=(\mu_1,...,\mu_d)^T$ and symmetrical, positive definite covarianc
 \lz
 
 \begin{itemize}
-\item If $Z \sim N_d(\mu, \Sigma)$, then $CZ+b$ is $\sim N_d(C\mu+b, C\Sigma C^T)$.
+\item If $Z \sim N_d(\muv, \Sigma)$, then $CZ+\bm{b}$ is $\sim N_d(C\muv+\bm{b}, C\Sigma C^T)$.
 
 \lz
 
-\item If $Z \sim N_d(0,I_d)$, then $CZ+b$ is $\sim N_d(b, CC^T)$.
+\item If $Z \sim N_d(0,\id_d)$, then $CZ+\bm{b}$ is $\sim N_d(\bm{b}, CC^T)$.
 
 \lz
 
-\item Assuming $\Sigma$ can be factorized into $\Sigma=CC^T$ for a matrix $C$, then $CZ+\mu \sim N_d(\mu, \Sigma)$.
+\item Assuming $\Sigma$ can be factorized into $\Sigma=CC^T$ for a matrix $C$, then $CZ+\muv \sim N_d(\muv, \Sigma)$.
 
 \lz
 
-\item Hence, $CZ+\mu$ is the transformation we are looking for.
+\item Hence, $CZ+\muv$ is the transformation we are looking for.
 \end{itemize}
 
 \framebreak
@@ -452,7 +458,5 @@ with mean $\mu=(\mu_1,...,\mu_d)^T$ and symmetrical, positive definite covarianc
 % \end{vbframe}
 
 
-
 \endlecture
-
 \end{document}

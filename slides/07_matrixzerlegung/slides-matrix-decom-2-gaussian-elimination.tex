@@ -1,33 +1,25 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%options(digits = 16)
-
-%library(RCurl)
-%library(XML)
-%library(tm)
-%library(NMF)
-%library(microbenchmark)
-%library(ggplot2)
-%library(wordcloud)
-%set_parent("../style/preamble.Rnw")
-%@
-
-
-\newcommand{\xdownarrow}[1]{%
-  {\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
-}
-
-\newcommand{\grey}[1]{\textcolor{grey}{#1}}
-\newcommand{\red}[1]{\textcolor{red}{#1}}
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{7}{Gaussian Elimination (LU Decomposition)}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Matrix Decomposition
+}{% Lecture title
+Gaussian Elimination (LU Decomposition)
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Gaussian elimination (LU decomposition)
+  \item Properties of Gaussian elimination
+}
+%\lecture{CIM1 Statistical Computing}
 
 % \begin{vbframe}{Notation}
 % 
@@ -72,7 +64,7 @@
 
 %\section{Algorithms to solve Systems of Linear Equations}
 
-\begin{vbframe}{Gaussian elimination (LU decomposition)}
+\begin{vbframe}{Gaussian Elimination (LU Decomposition)}
 \textbf{Aim:} Solve LES of the form $\Amat \xv = \boldsymbol{b}$\\
 \medskip
 
@@ -547,7 +539,7 @@ Similar to forward substitution, the required effort is
 \begin{vbframe} {Properties LU decomposition}
 
 \begin{itemize}
-\item \enquote{Interpretation} of the Gaussian elimination as matrix decomposition
+\item "Interpretation" of the Gaussian elimination as matrix decomposition
 % \item $\Amat$ is split into a lower triangle matrix $\mathbf{L}$ and a lower triangle matrix $\mathbf{U}$.
 \item Numerically stable during pivoting
 \item \textbf{Existence:} For each \textbf{regular} matrix $\Amat$ there is a permutation matrix $\mathbf{P}$, a normalized lower triangle matrix $\mathbf{L} \in \R^{n \times n}$ and a normalized upper triangular matrix $\mathbf{U} \in \R^{n \times n}$ such that 

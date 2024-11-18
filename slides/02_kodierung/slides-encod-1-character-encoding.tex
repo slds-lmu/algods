@@ -1,16 +1,25 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%set_parent("../style/preamble.Rnw")
-%@
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
 
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{2}{Character Encoding}
-\lecture{Computerintensive Methods}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Encoding
+}{% Lecture title
+Character Encoding
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item ASCII
+  \item 8-Bit
+  \item Unicode
+}
 
 %\section{Character encoding}
 
@@ -59,7 +68,7 @@
 \begin{vbframe}{Bits and Bytes}
 \begin{itemize}
 \item On digital computers, all information is represented in strings of $0$'s and $1$'s.
-\item A single $0$/$1$ digit is called \textbf{bit} (\enquote{binary} + \enquote{digit}).
+\item A single $0$/$1$ digit is called \textbf{bit} ("binary" + "digit").
 \item To represent text, bits are usually arranged in groups of eight, in so-called \textbf{bytes}.
 \end{itemize}
 
@@ -95,32 +104,32 @@ ASCII was the most common character encoding on the World Wide Web until Decembe
 \begin{center}
 \begin{tabular}{l}
 % $\,\,$\includegraphics{32bit} \\[0.15cm]
-\includegraphics[width=0.5\paperwidth]{figure_man/ascii_code_chart}
+\includegraphics[width=0.43\paperwidth]{figure_man/ascii_code_chart}
 \end{tabular}
 
 {\scriptsize Source: \url{https://en.wikipedia.org/wiki/ASCII}}
 \end{center}
 
 {\footnotesize ASCII reserves the first 32 characters for control characters: codes originally intended not to represent printable information, but rather to control devices (printer etc.).
-For example, the character \enquote{LF} represents a line break (\enquote{line feed}).}
+For example, the character "LF" represents a line break ("line feed").}
 
 \framebreak
 \vspace*{-0.5cm}
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 intToBits(65L)
 ## [1] 01 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00
 ## [19] 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-\end{verbbox}
-\col
-\vspace{0.2cm}
-\begin{verbbox}
+\end{verbatim}
+
+\vspace{0.5mm}
+\begin{verbatim}
 utf8ToInt("A")
 ## [1] 65
-\end{verbbox}
-\col
-\vspace{0.2cm}
-\begin{verbbox}
+\end{verbatim}
+
+\vspace{0.5mm}
+\begin{verbatim}
 intToUtf8(65)
 ## [1] "A"
 
@@ -130,11 +139,10 @@ ascii.tab = data.frame(
   dec = coderange,
   hex = as.raw(coderange)
 )
-\end{verbbox}
-\col
-\lz
+\end{verbatim}
+
 \begin{footnotesize}
-Note: bit order from left to right (in contrast to the \enquote{usual} representation of binary numbers).
+Note: bit order from left to right (in contrast to the "usual" representation of binary numbers).
 \end{footnotesize}
 
 \framebreak
@@ -194,7 +202,7 @@ cannot even be represented in 8 bits.
 \begin{itemize}
 \item Goal: a unified code-scheme for any
   languages, mathematics, music, \ldots
-\item Up to $2^{32}$ characters, probably \enquote{only}
+\item Up to $2^{32}$ characters, probably "only"
   $2^{21}$ will ever be used. Human languages use the
   first $2^{16}$ (2 bytes).
 \item Defined and managed by the unicode consortium, a non-profit organization that
@@ -225,11 +233,11 @@ cannot even be represented in 8 bits.
 
 \framebreak
 
-Unfortunately, there are several \enquote{Unicode Transformation Formats (UTF)}.
+Unfortunately, there are several "Unicode Transformation Formats (UTF)".
 The two most important ones are:
 \begin{description}
 \item[UTF-8:] the most common scheme on Unix systems. The Internet Mail Consortium (IMC) recommended that all e-mail programs should be able to display and create mail using UTF-8, and the W3C recommends UTF-8 as the default encoding in XML and HTML. 
-\item[UTF-16:] older, is internally used by many \enquote{early adopters} like
+\item[UTF-16:] older, is internally used by many "early adopters" like
   Windows NT (2000, XP, Vista, 7), Java, or Mac OS X. Not
   compatible with ASCII, since it uses 16 Bit.
 \end{description}
@@ -254,7 +262,6 @@ UTF-8 has a variable width encoding to use 1-4 bytes:
 \end{itemize}
 
 \end{vbframe}
-
 
 \endlecture
 \end{document}

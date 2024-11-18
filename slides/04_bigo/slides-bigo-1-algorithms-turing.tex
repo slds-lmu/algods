@@ -1,21 +1,27 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%library(microbenchmark)
-%library(reshape2)
-%library(ggplot2)
-%set_parent("../style/preamble.Rnw")
-
-%set.seed(1)
-%@
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{4}{Algorithms \& Turing Machines}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Big O
+}{% Lecture title
+Algorithms \& Turing Machines
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Definition of algorithm
+  \item Turing machines
+  \item Algorithms and elementary operations
+}
+
+%\lecture{CIM1 Statistical Computing}
 
 \begin{vbframe}{Algorithm}
 
@@ -128,7 +134,7 @@ The field of computability theory deals in particular with the question which pr
 \end{minipage}
 \end{center}
 
-holds. Since the term \enquote{intuitively computable function} cannot be formalized, the thesis cannot be proved.
+holds. Since the term "intuitively computable function" cannot be formalized, the thesis cannot be proved.
 
 \vfill
 
@@ -417,14 +423,14 @@ Computability can also be defined equivalently on the basis of other equally pow
 \begin{itemize}
 \item We can theoretically describe the runtime of an algorithm by using turing machines and counting the number of steps a turing machine needs to solve the problem.
 \item However, it is usually sufficient to consider an algorithm - less precise but more intuitive - as a \textbf{list of instructions}.
-\item Using this definition, we can \enquote{measure} the runtime by counting the number of \enquote{elementary operations} performed.
+\item Using this definition, we can "measure" the runtime by counting the number of "elementary operations" performed.
 \item An elementary operation is a step that does \textbf{not} depend on the size of the problem.
 \item This distinction makes it easier for us to measure the runtime of an algorithm.
 \end{itemize}
 
 \framebreak
 
-For simplicity, we assume that the time needed to evaluate a function is \textbf{proportional} to the number of \enquote{elementary operations} performed.
+For simplicity, we assume that the time needed to evaluate a function is \textbf{proportional} to the number of "elementary operations" performed.
 
 \lz
 
@@ -470,7 +476,6 @@ Both algorithms will provide the correct result*, but while the number of basic 
 \end{footnotesize}
 
 \end{vbframe}
-
 
 
 \endlecture

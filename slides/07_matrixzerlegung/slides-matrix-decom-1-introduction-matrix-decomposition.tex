@@ -1,33 +1,25 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%options(digits = 16)
-
-%library(RCurl)
-%library(XML)
-%library(tm)
-%library(NMF)
-%library(microbenchmark)
-%library(ggplot2)
-%library(wordcloud)
-%set_parent("../style/preamble.Rnw")
-%@
-
-
-\newcommand{\xdownarrow}[1]{%
-  {\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
-}
-
-\newcommand{\grey}[1]{\textcolor{grey}{#1}}
-\newcommand{\red}[1]{\textcolor{red}{#1}}
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{7}{Introduction to Matrix Decomposition and Recap on Matrices}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Matrix Decomposition
+}{% Lecture title
+Introduction to Matrix Decomposition and Recap on Matrices
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item System of linear equations
+  \item Basic knowledge of matrices
+}
+%\lecture{CIM1 Statistical Computing}
 
 % \begin{vbframe}{Notation}
 % 
@@ -133,7 +125,7 @@ We have seen that a solution of the LES by using $\bm{x} = \bm{A}^{-1}\bm{b}$ is
 % Allerdings gibt es Matrizen, bei denen die beste Skalierung nichts nützt, z.B.\ Hilbertmatrizen.\\
 % \medskip
 % Letztlich ist das Problem schlecht konditioniert, wenn Spalten der Matrix stark korrelieren
-% $\SpAr$ bekanntes  Problem der \textbf{Multikollinearität} in der Statistik.
+% $\quad \Rightarrow \quad$ bekanntes  Problem der \textbf{Multikollinearität} in der Statistik.
 
 
 % Abgesehen von der Kondition des LGS, sollte ein LGS \textbf{niemals} mittels
@@ -176,17 +168,17 @@ We solve the LES once by matrix inversion and once directly using \texttt{solve(
 \footnotesize
 \vspace{0.5cm}
 
-\begin{verbbox}
+\begin{verbatim}
 n = 10
 H = hilbert(n)
 x = rnorm(n)
 b = H %*% x
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \framebreak
 \vspace{0.1cm}
-\begin{verbbox}
+\begin{verbatim}
 microbenchmark(
 xhat_inverting = solve(H) %*% b, # matrix inversion
 xhat_solving = solve(H, b)) # direct solution
@@ -197,18 +189,18 @@ xhat_solving = solve(H, b)) # direct solution
 ## cld
 ## b
 ## a
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \vspace{0.3cm}
-\begin{verbbox}
+\begin{verbatim}
 norm(xhat_inverting - x) # matrix inversion
 ## [1] 0.005478653464037843
 
 norm(xhat_solving - x) # direct solution
 ## [1] 0.0003750897921233343
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 %<<echo=F>>=
 %hilbert = function(n) {
@@ -251,7 +243,7 @@ norm(xhat_solving - x) # direct solution
 
 \lz
 
-\textbf{Idea:} Decompose the matrix $\Amat$ into a product of matrices in such a way that the linear system is \enquote{easily} solvable.
+\textbf{Idea:} Decompose the matrix $\Amat$ into a product of matrices in such a way that the linear system is "easily" solvable.
 
 \lz
 
@@ -392,7 +384,7 @@ Or equivalently: A matrix is positive semi-definite if all eigenvalues are non-n
 
 \lz
 
-A matrix is \textbf{positive-definite}, if the above equation can be rewritten with a \enquote{strict} greater than
+A matrix is \textbf{positive-definite}, if the above equation can be rewritten with a "strict" greater than
 
 $$
 \xv^{\top}\Amat\xv > 0 \quad \text{for all }\xv \in \R^n, \xv \ne \boldsymbol{0}.
