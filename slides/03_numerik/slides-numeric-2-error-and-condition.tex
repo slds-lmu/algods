@@ -1,18 +1,26 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%set_parent("../style/preamble.Rnw")
-%options(digits = 16)
-%@
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{3}{Numerical Error \& Conditioning}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Numerics
+}{% Lecture title
+Numerical Error \& Conditioning
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Error caused by condition of the problem
+  \item Error caused by stability of algorithms
+}
 
-
+%\lecture{CIM1 Statistical Computing}
 
 
 %\section{Error \& Condition}
@@ -32,20 +40,20 @@ Errors in the result are caused by
 
 \framebreak
 
-Given: Approximate value $\tilde x$ for exact value $x$.
+Given: Approximate value $\xt$ for exact value $x$.
 
 \begin{itemize}
 \item Absolute error (this is signed!):
 $$
-  \Delta x = \tilde x - x
+  \Delta x = \xt - x
 $$
 
 If $|\Delta x| \le \epsilon$, then $\epsilon$ is known as absolute error bound.
 
 \item Relative error:
 $$
-  \delta_x = \frac{|\tilde x - x|}{|x|} = \frac{|\Delta x|}{|x|}\qquad
-  % \mbox{und} \qquad \tilde \delta = \frac{\tilde x - x}{\tilde x}
+  \delta_x = \frac{|\xt - x|}{|x|} = \frac{|\Delta x|}{|x|}\qquad
+  % \mbox{und} \qquad \tilde \delta = \frac{\xt - x}{\xt}
 $$
 If $\delta_x \le \rho$, then $\rho$ is known as relative error bound.
 \end{itemize}
@@ -61,8 +69,8 @@ may obviously not be too close to zero ($\to$ use absolute error instead).
 The following holds:
 \begin{eqnarray*}
   \label{eq:1}
-  \tilde x &=& x \left(1+\frac{\Delta x}{x}\right)
-  % \tilde x &=& x (1-\tilde\delta)^{-1}
+  \xt &=& x \left(1+\frac{\Delta x}{x}\right)
+  % \xt &=& x (1-\tilde\delta)^{-1}
 \end{eqnarray*}
 % und wegen
 % $$
@@ -184,7 +192,7 @@ In the right case (well-conditioned) the disturbance has only a minor effect on 
 
 \begin{vbframe}{Condition (Definition)}
 
-Consider a problem of form $y = f(x)$. Condition describes to what extent the solution changes with minor data disturbance ($\tilde x = x + \delta x$).
+Consider a problem of form $y = f(x)$. Condition describes to what extent the solution changes with minor data disturbance ($\xt = x + \delta x$).
 
 \lz
 
@@ -211,7 +219,7 @@ Note that for machine numbers $\Delta x < \epsm$ (approximation error when impor
 
 %\begin{itemize}
 %  \item Vergleich der relativen Fehler von Input und Output.
-% \item  $\kappa$ gro_ $\SpAr$ \textbf{schlecht konditioniertes Problem}
+% \item  $\kappa$ gro_ $\quad \Rightarrow \quad$ \textbf{schlecht konditioniertes Problem}
 % (schwierig)
 %\end{itemize}
 \end{vbframe}
@@ -225,20 +233,20 @@ For vectors, errors are defined by means of a suitable norm.
 
 \textbf{Absolute error:}
 $$
-  \Delta \xv = \tilde \xv - \xv
+  \Delta \xv = \xtil - \xv
 $$
 
 \textbf{Relative error:}
 $$
-  \delta = \frac{\|\tilde \xv - \xv \|}{\|\xv\|} \qquad
-  % \mbox{und} \qquad \tilde \delta = \frac{\tilde x - x}{\tilde x}
+  \delta = \frac{\|\xtil - \xv \|}{\|\xv\|} \qquad
+  % \mbox{und} \qquad \tilde \delta = \frac{\xt - x}{\xt}
 $$
 
 Similarly, for $f:\R^n \rightarrow \R^d$ the \textbf{norm-wise} condition at the location $\xv$ is defined by using the condition number.
 
 \lz
 
-% Sei $\xv = (x_1,\dots,x_n)$, $\tilde{\xv} = (x_1+\delta_1,\dots,x_n+\delta_n)$ und
+% Sei $\xv = (x_1,\dots,x_n)$, $\xtil = (x_1+\delta_1,\dots,x_n+\delta_n)$ und
 % $\yv = (y_1,\dots,y_d)$.
 %
 % \lz
@@ -253,7 +261,7 @@ Let $f: \R^n \to \R$ be differentiable in point $x$, the condition can be specif
 
 \vspace*{-.3cm}
 $$
-\kappa =  \frac{\|\xv\|}{\|f(\xv)\|} \|\nabla f(\xv)\|.
+\kappa =  \frac{\|\xv\|}{\|\fx\|} \|\nabla \fx\|.
 $$
 
 \lz
@@ -265,7 +273,7 @@ The definition of the condition can be written as
 
 \vspace*{-.3cm}
 \begin{eqnarray*}
-\kappa &=& \limsup_{\|\Delta \xv\| \to 0} \frac{\|f(\xv + \Delta \xv)-\yv\|}{\|\yv\|} \frac{\|\xv\|}{\|\Delta \xv\|}  = \limsup_{\|\Delta \xv\|\to 0} \frac{\|f(\xv + \Delta \xv)-\yv\|}{\|\Delta \xv\|} \frac{\|\xv\|}{\|f(\xv)\|} 
+\kappa &=& \limsup_{\|\Delta \xv\| \to 0} \frac{\|f(\xv + \Delta \xv)-\yv\|}{\|\yv\|} \frac{\|\xv\|}{\|\Delta \xv\|}  = \limsup_{\|\Delta \xv\|\to 0} \frac{\|f(\xv + \Delta \xv)-\yv\|}{\|\Delta \xv\|} \frac{\|\xv\|}{\|\fx\|} 
 \end{eqnarray*}
 
 According to the mean value theorem the following applies: there is a $\bm{v} \in (\bm{0}, \Delta \xv)$ such that
@@ -276,13 +284,13 @@ $$
 \vspace*{0.5cm}
 From $\|\Delta \xv\| \to 0$ follows $\|\bm{v}\|\to 0$ and thus
 \begin{eqnarray*}
-\kappa &=& \limsup_{\|\Delta \xv\| \to 0} \|\nabla f(\xv + \bm{v})\| \frac{\|\xv\|}{\|f(\xv)\|} = \|\nabla f(\xv)\| \frac{\|\xv\|}{\|f(\xv)\|}
+\kappa &=& \limsup_{\|\Delta \xv\| \to 0} \|\nabla f(\xv + \bm{v})\| \frac{\|\xv\|}{\|\fx\|} = \|\nabla \fx\| \frac{\|\xv\|}{\|\fx\|}
 \end{eqnarray*}
 \end{footnotesize}
 
 
 \begin{itemize}
-\item $\nabla f(\xv)$ corresponds to the $1 \times n$ Jacobi matrix here. Thus, $\|\nabla f(\xv)\|$ is an induced \emph{matrix norm}.
+\item $\nabla \fx$ corresponds to the $1 \times n$ Jacobi matrix here. Thus, $\|\nabla \fx\|$ is an induced \emph{matrix norm}.
 \item The condition depends on the choice of the vector norm / induced matrix norm.
 \end{itemize}
 
@@ -302,7 +310,7 @@ From $\|\Delta \xv\| \to 0$ follows $\|\bm{v}\|\to 0$ and thus
 % \frac{\|f(\xv + \Delta \xv)-\yv\|_\infty}{\|\yv\|_\infty} \leq \kappa_{rel} \ \max_i \frac{|\Delta x_i|}{|x_i|} \text{ für } \|\Delta \xv\| \to 0.
 % $$
 % % \begin{itemize}
-% %  \item  $\kappa$ gro_ $\SpAr$ \textbf{schlecht konditioniertes Problem} (schwierig)
+% %  \item  $\kappa$ gro_ $\quad \Rightarrow \quad$ \textbf{schlecht konditioniertes Problem} (schwierig)
 % % \end{itemize}
 %
 %
@@ -316,7 +324,7 @@ From $\|\Delta \xv\| \to 0$ follows $\|\bm{v}\|\to 0$ and thus
 We look at $f(x_1, x_2) = x_1 \cdot x_2$ and calculate $\kappa$ using
 
 $$
-\kappa = \frac{\|\nabla f(\xv)\|_1 \cdot \|\xv\|_1}{|f(\xv)|}
+\kappa = \frac{\|\nabla \fx\|_1 \cdot \|\xv\|_1}{|\fx|}
 $$
 
 Since
@@ -324,9 +332,9 @@ Since
 \vspace*{-.5cm}
 
 \begin{eqnarray*}
-\|\nabla f(\xv)\|_1 &=& \|(x_2, x_1)\|_1 \overset{*}{=} \max (|x_1|, |x_2|)\\\\
+\|\nabla \fx\|_1 &=& \|(x_2, x_1)\|_1 \overset{*}{=} \max (|x_1|, |x_2|)\\\\
 \|\xv\|_1 &=& \|(x_1, x_2)\|_1 = |x_1| + |x_2| \\\\
-|f(\xv)| &=& |x_1 x_2|\\\
+|\fx| &=& |x_1 x_2|\\\
 \end{eqnarray*}
 
 \vspace*{-.5cm}
@@ -360,7 +368,7 @@ $^*$ Attention: induced matrix norm (maximum absolute column sum norm).
 %
 %  $\quad y = x_1 + x_2,\quad \tilde y = (x_1 + \Delta x_1) + (x_2 + \delta_2)$
 %  \begin{eqnarray*}
-%  \SpAr \frac{\tilde y - y}{y} &=& \frac{\delta_1 + \delta_2}{x_1 + x_2} \\
+%  \quad \Rightarrow \quad \frac{\tilde y - y}{y} &=& \frac{\delta_1 + \delta_2}{x_1 + x_2} \\
 %    &=& \frac{x_1}{x_1 + x_2}\ \frac{\delta_1}{x_1} +  \frac{x_2}{x_1 + x_2}\ \frac{\delta_2}{x_2}
 %  \end{eqnarray*}
 %  Schlecht konditioniert, falls $x_1 + x_2$ nahe bei 0 ($\kappa$ wird beliebig groß).
@@ -374,7 +382,7 @@ $^*$ Attention: induced matrix norm (maximum absolute column sum norm).
 We will consider $f(x_1, x_2) = x_1 \pm x_2$ and calculate $\kappa$ using
 
 $$
-\kappa = \frac{\|\nabla f(\xv)\|_1 \cdot \|\xv\|_1}{|f(\xv)|}
+\kappa = \frac{\|\nabla \fx\|_1 \cdot \|\xv\|_1}{|\fx|}
 $$
 
 Since
@@ -382,9 +390,9 @@ Since
 \vspace*{-.5cm}
 
 \begin{eqnarray*}
-\|\nabla f(\xv)\|_1 &=& \|(1, \pm 1) \|\overset{*}{=} 1 \\\
+\|\nabla \fx\|_1 &=& \|(1, \pm 1) \|\overset{*}{=} 1 \\\
 \|\xv\|_1 &=& \|(x_1, x_2)\|_1 = |x_1| + |x_2| \\\
-|f(\xv)| &=& |x_1 \pm x_2|\\\
+|\fx| &=& |x_1 \pm x_2|\\\
 \end{eqnarray*}
 
 \vspace*{-.5cm}
@@ -416,23 +424,23 @@ This problem is known as \textbf{loss of significance}.
 \begin{vbframe}{Loss of significance (example)}
 
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 x = 1.234567890123456
 y = 1.234567890000000
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \normalsize
 \lz
 Theoretically we should get a result of \texttt{1.23456e-10} for the difference $x - y$. But the computer returns
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 x - y
 
 ## [1] 1.234561342045026e-10
-\end{verbbox}
-\col
+\end{verbatim}
+
 \lz
 \lz
 \normalsize
@@ -440,23 +448,23 @@ Why is this the case?
 
 \framebreak
 
-The numbers $x, y$ cannot be represented exactly in floating point notation, but only as a rounded number with $16$ significant digits. This inaccurate representation results in \enquote{uncertainties} from the 17th decimal place on.
+The numbers $x, y$ cannot be represented exactly in floating point notation, but only as a rounded number with $16$ significant digits. This inaccurate representation results in "uncertainties" from the 17th decimal place on.
 
 \lz
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 sprintf("%.20f", x)
 ## [1] "1.23456789012345602430"
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \vspace{0.1cm}
-\begin{verbbox}
+\begin{verbatim}
 sprintf("%.20f", y)
 ## [1] "1.23456788999999989009"
-\end{verbbox}
-\col
+\end{verbatim}
+
 \lz
 \framebreak
 \normalsize

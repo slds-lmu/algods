@@ -1,19 +1,25 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%library(ggplot2)
-%library(microbenchmark)
-%set_parent("../style/preamble.Rnw")
-%@
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{6}{(Adaptive) Rejection Sampling}
-\lecture{CIM1 Statistical Computation}
-
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Random Numbers
+}{% Lecture title
+(Adaptive) Rejection Sampling
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Rejection sampling
+  \item Adaptive rejection sampling
+}
+%\lecture{CIM1 Statistical Computing}
 
 \begin{vbframe}{Rejection Sampling}
 \begin{itemize}
@@ -64,7 +70,7 @@
 
 \vspace*{-0.3cm}
 \begin{footnotesize}
-\textbf{Note:} In this plot $\alpha$ is shown as a percentage of the \enquote{total distance}, so it does not refer to the y-axis in the plot.
+\textbf{Note:} In this plot $\alpha$ is shown as a percentage of the "total distance", so it does not refer to the y-axis in the plot.
 \end{footnotesize}
 
 \framebreak
@@ -315,7 +321,7 @@ Cauchy distribution (therefore we have Inverse transform sampling):
 
 \begin{vbframe}{Adaptive Rejection Sampling}
 
-Often it is difficult to find a \enquote{good} proposal density $f_Y$. \textbf{Adaptive rejection sampling (ARS)} is an approach to construct adaptive proposal densities. ARS is based on the following ideas:
+Often it is difficult to find a "good" proposal density $f_Y$. \textbf{Adaptive rejection sampling (ARS)} is an approach to construct adaptive proposal densities. ARS is based on the following ideas:
 
 \begin{itemize}
 \item Working with log densities (often algebraically simpler)
@@ -391,7 +397,7 @@ Often it is difficult to find a \enquote{good} proposal density $f_Y$. \textbf{A
 \vfill
 
 \begin{footnotesize}
-$^{(*)}$ A method for \enquote{sampling} $f_Y$ and an implementation can be found here: \\
+$^{(*)}$ A method for "sampling" $f_Y$ and an implementation can be found here: \\
 \url{https://blog.inferentialist.com/2016/09/26/adaptive-sampling.html}
 \end{footnotesize}
 
@@ -500,7 +506,7 @@ $^{(*)}$ A method for \enquote{sampling} $f_Y$ and an implementation can be foun
 % Oft schwierig, aber häufig ist $G_f$ beschränkt, liegt also innerhalb von einem Rechteck
 % $u \in [0,u_{\text{max}}], v \in [v_{\text{min}},v_{\text{max}}]$.\\
 % \medskip
-% $\SpAr$ Algorithmus:
+% $\quad \Rightarrow \quad$ Algorithmus:
 % \begin{itemize}
 % \item Ziehe $U \sim \text{U}(0,u_{\text{max}})$ und $V\sim \text{U}(v_{\text{min}},v_{\text{max}})$. \\
 %   Vorsicht bei Kongruenzgeneratoren auf 2d Eigenschaften!

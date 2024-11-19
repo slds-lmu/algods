@@ -1,34 +1,24 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-
-%library(knitr)
-%options(digits = 16)
-
-%library(RCurl)
-%library(XML)
-%library(tm)
-%library(NMF)
-%library(microbenchmark)
-%library(ggplot2)
-%library(wordcloud)
-%set_parent("../style/preamble.Rnw")
-%@
-
-
-\newcommand{\xdownarrow}[1]{%
-	{\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
-}
-
-\newcommand{\grey}[1]{\textcolor{grey}{#1}}
-\newcommand{\red}[1]{\textcolor{red}{#1}}
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{7}{Low-Rank Approximation}
-\lecture{CIM1 Statistical Computation}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Matrix Approximation
+}{% Lecture title
+Low-Rank Approximation
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Low-Rank Approximation
+}
+%\lecture{CIM1 Statistical Computing}
 
 % \begin{vbframe}{Notation}
 % 
@@ -54,7 +44,7 @@
 
 \begin{vbframe}{Low-rank approximation}
 
-Let $\mathbf{X}$ be a $m \times n$ data matrix, where the columns of the matrix represent different \enquote{objects} (images, text documents, ...). In many practical applications $\mathbf{X}$ is high-dimensional.
+Let $\mathbf{X}$ be a $m \times n$ data matrix, where the columns of the matrix represent different "objects" (images, text documents, ...). In many practical applications $\mathbf{X}$ is high-dimensional.
 
 \begin{footnotesize}
 \begin{table}[]
@@ -80,7 +70,7 @@ $^{(*)}$ Example: \url{https://musiclab.chromeexperiments.com/Spectrogram}
 In a low-rank approximation, $\mathbf{X}$ is factorized into two matrices $\mathbf{W} \in \R^{m \times k}$ and $\mathbf{H} \in \R^{k \times n}$ such that
 
 $$
-\mathbf{X} \approx \underbrace{\mathbf{W}}_{\substack{\text{\enquote{dictionary},}\\ \text{\enquote{patterns},} \\ \text{\enquote{topics}}}} \cdot \underbrace{\mathbf{H}}_{\text{\enquote{regressors}}}
+\mathbf{X} \approx \underbrace{\mathbf{W}}_{\substack{\text{"dictionary",}\\ \text{"patterns",} \\ \text{"topics"}}} \cdot \underbrace{\mathbf{H}}_{\text{"regressors"}}
 $$
 
 Compared to $n$ and $m$, $k$ is usually small.
@@ -109,7 +99,7 @@ $^{(*)}$ Example from \url{http://perso.telecom-paristech.fr/~essid/teach/NMF_tu
 
 \textbf{(Possible) Advantages: }
 \begin{itemize}
-\item The dimension reduction reveals \textbf{latent variables} (here: \enquote{Facial Features}) and the data can be \enquote{explained}.
+\item The dimension reduction reveals \textbf{latent variables} (here: "Facial Features") and the data can be "explained".
 \item The storage space can be reduced significantly (for appropriate choice of $k$). Instead of a $m \times n$ matrix, a $m \times k$ and a $k \times n$ matrix with $k \ll m, n$ must be stored. \\
 \begin{footnotesize}
 \vspace*{0.2cm}
@@ -125,7 +115,7 @@ Calculation example: $n = 1000$ images with $m = 10000$ pixels each. Using a mat
 % % $$
 % % 24 \cdot 10^6 \text{  Einträge}
 % % $$
-% % \item Könnten wir $\mathbf{X}$ mit einer Niedrigrangapproximation für $k = 3$ \enquote{gut} annähern, so müssen bei der Speicherung von $\mathbf{W}$ und $\mathbf{H}$ insgesamt nur
+% % \item Könnten wir $\mathbf{X}$ mit einer Niedrigrangapproximation für $k = 3$ „gut“ annähern, so müssen bei der Speicherung von $\mathbf{W}$ und $\mathbf{H}$ insgesamt nur
 % % $$
 % % m \cdot k + k \cdot n = 100 \cdot 3 + 3 \cdot 240.000 = 720.300
 % % $$
@@ -200,7 +190,6 @@ The matrices $\bm{W}$ and $\bm{H}$ can be set as $\bm{W}:= \mathbf{U}_k \boldsym
 
 
 \endlecture
-
 \end{document}
 
 

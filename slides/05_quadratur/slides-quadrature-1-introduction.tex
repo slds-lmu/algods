@@ -1,18 +1,27 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%library(ggplot2)
-%set_parent("../style/preamble.Rnw")
-%options(digits = 16)
-%@
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{5}{Introduction to Quadrature}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Quadrature
+}{% Lecture title
+Introduction to Quadrature
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Intergration
+  \item Condition of intergration
+  \item Discretization
+}
+
+%\lecture{CIM1 Statistical Computing}
 
 % \begin{vbframe}{Notation}
 % 
@@ -244,14 +253,14 @@ $$
 %
 % \begin{eqnarray*}
 % | Q(f) - Q(g) | &=& | Q(f - g) | \\
-% &\le& \sum_{i = 1}^n | \omega_i | | f(x_i) - g(x_i) | \\
-% &\le& \left( \sum_{i = 1}^n | \omega_i | \right) \cdot \| f - \mathbf{g} \|_{\infty}
+% &\le& \sumin | \omega_i | | f(x_i) - g(x_i) | \\
+% &\le& \left( \sumin | \omega_i | \right) \cdot \| f - \mathbf{g} \|_{\infty}
 % \end{eqnarray*}
 %
 % \lz
 %
 % $Q$ liefert für konstante Funktionen, $f(x)\equiv \text{const}$, nur dann den richtigen Wert,
-% falls $\sum_{i = 1}^n \omega_i = b - a$.
+% falls $\sumin \omega_i = b - a$.
 %
 % \lz
 %
@@ -289,7 +298,7 @@ $$
 
 \begin{vbframe}{Discretization}
 
-\textbf{Discretization} is a central concept of numerical mathematics and the basis of many quadrature formulas. A continuous object (e.g. a function) is divided into $n$ \enquote{parts} to allow numerical evaluation and implementation.
+\textbf{Discretization} is a central concept of numerical mathematics and the basis of many quadrature formulas. A continuous object (e.g. a function) is divided into $n$ "parts" to allow numerical evaluation and implementation.
 
 \vspace*{0.2cm}
 

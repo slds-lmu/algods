@@ -13,8 +13,9 @@ Introduction
 Introduction
 }{% Relative path to title page image: Can be empty but must not start with slides/
 }{% Learning goals, wrapped inside itemize environment
-  \item Learn a thing
-  \item Learn another thing
+  \item Numerical analysis
+  \item Numerical computations
+  \item Optimization
 }
 
 \begin{vbframe}{What is this lecture about}
@@ -28,13 +29,13 @@ not so much from statistics itself.
 \end{vbframe}
 
 \begin{vbframe}{Stat. Computing vs. Comp. Statistics}
-Westlake (1994)
-
-\textbf{\enquote{Computational statistics relates to the advance
+%Westlake (1994)
+\citelink{COMPSTAT1994}
+\textbf{"Computational statistics relates to the advance
   of statistical theory and methods through the use of computational
   methods. This includes both the use of computation to explore the
   impact of theories and methods, and development of algorithms to
-  make these ideas available to users.}}
+  make these ideas available to users."}
 
 \lz
 \textbf{Statistical Computing}\\
@@ -94,7 +95,7 @@ We will mainly study the former.
   \item What is an algorithm?
   \item What is computable?
   \item How to analyze algorithms? What is
-    a \enquote{good} / \enquote{clever} algorithm?
+    a "good" / "clever" algorithm?
   \item How can you describe the efficiency of an algorithm?
 \end{itemize}
 
@@ -154,7 +155,7 @@ We are interested in these if:
 % \framebreak
 
 % \begin{itemize}
-% \item \enquote{Elementary} mathematical functions like \textsf{sin},
+% \item "Elementary} mathematical functions like \textsf{sin},
 %   \textsf{cos}, \textsf{exp}, \textsf{log}, \ldots\ are components of
 %   numerical software.
 % \item Even if the result of a function evaluation can be represented in $\M$, often only an approximation for the true value is returned.
@@ -247,13 +248,13 @@ We are interested in these if:
 % \framebreak
 
 % Beim \textbf{inversen Problem} ist nicht eindeutig, wie der Fehler
-% gemessen wird: Sei $\tilde x$ die berechnete Lösung, und $x^*$ die
+% gemessen wird: Sei $\xt$ die berechnete Lösung, und $x^*$ die
 % wahre Lösung. Es ergeben sich zwei Fehlerarten (der Einfachheit halber nehmen
 % wir an, dass $f$ modulo $\M$ exakt berechnet werden kann):
 
 % \begin{enumerate}
-% \item Fehler der Näherungslösung: $x^* - \tilde x$
-% \item Residuum der Näherungslösung: $y - f(\tilde x)$
+% \item Fehler der Näherungslösung: $x^* - \xt$
+% \item Residuum der Näherungslösung: $y - f(\xt)$
 % \end{enumerate}
 % Da $x^*$ unbekannt ist, kann meist nur das Residuum direkt berechnet
 % werden, während der Fehler nur abgeschätzt werden kann. Wie gut diese
@@ -309,7 +310,6 @@ For a tolerance of $0.001$, the numerical solution is:
 %<<include=FALSE>>=
 %opts_chunk$set(size = "scriptsize")
 %@
-\lz
 \footnotesize
 \begin{verbatim}
 f = function(x) { 2 + cos(x) + sin(2 * x) }
@@ -508,7 +508,7 @@ rnorm(10)
 \normalsize
 \lz
 \begin{itemize}
-\item How do we sample from a \enquote{non-standard} density?
+\item How do we sample from a "non-standard" density?
 \item Wait for someone to create a CRAN package for it...?
 \end{itemize}
 
@@ -518,7 +518,7 @@ rnorm(10)
 
 How do we solve the normal equations?
 
-  $$ \boldsymbol{\beta} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T y $$
+  $$ \bm{\beta} = \olsest $$
 
 \begin{itemize}
 \item So invert matrix once (how does that work?),
@@ -531,11 +531,11 @@ How do we solve the normal equations?
 
 \begin{vbframe}{Example: LASSO}
  How do we optimize something like this?
-  $$\sum_{i=1}^n (\bm{\beta}^T \xv^{(i)} - y^{(i)})^2 + \lambda \sum_{j=1}^p |\beta_j|$$
+  $$\sumin (\bm{\beta}^T \xv^{(i)} - y^{(i)})^2 + \lambda \sumjp |\beta_j|$$
 
   \begin{itemize}
     \item Analytically solvable? Answer: no!
-    \item How does it work \enquote{numerically}?
+    \item How does it work "numerically"?
     \item How expensive is it?
   \end{itemize}
 \end{vbframe}

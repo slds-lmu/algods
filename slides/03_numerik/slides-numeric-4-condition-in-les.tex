@@ -1,16 +1,28 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%set_parent("../style/preamble.Rnw")
-%options(digits = 16)
-%@
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{3}{Condition in systems of linear equations (LES)}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Numerics
+}{% Lecture title
+Condition in systems of linear equations (LES)
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Matrix multiplication
+  \item LES
+  \item Sherman-Morrison formula
+  \item Woodbury formula
+}
+
+%\lecture{CIM1 Statistical Computing}
 
 \begin{vbframe}{Condition number: matrix multiplication}
 Although we are actually interested in $\xv = \Amat^{-1}\yv$, we first consider the direct problem: $\yv = \Amat \xv$.
@@ -49,7 +61,7 @@ The absolute error is therefore estimated as follows
 % \medskip
 % $\quad y = x_1 + x_2,\quad \tilde y = (x_1 + \delta_1) + (x_2 + \delta_2)$
 % \begin{eqnarray*}
-%  \SpAr \frac{\tilde y - y}{y} &=& \frac{\delta_1 + \delta_2}{x_1 + x_2} \\
+%  \quad \Rightarrow \quad \frac{\tilde y - y}{y} &=& \frac{\delta_1 + \delta_2}{x_1 + x_2} \\
 %    &=& \frac{x_1}{x_1 + x_2}\ \frac{\delta_1}{x_1} +  \frac{x_2}{x_1 + x_2}\ \frac{\delta_2}{x_2}
 % \end{eqnarray*}
 % Schlecht konditioniert, falls $x_1 + x_2$ nahe bei 0 ($\kappa$ wird beliebig groß).\\
@@ -149,26 +161,26 @@ For the solution of the LES $\Amat \xv = \yv$ this means: a small variation in t
 \lz
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 A = matrix(c(1, 1 + 10e-10, 1, 1 - 10e-10), nrow = 2)
 y = c(1, 1)
 yt = c(1, 1.00001)
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.1cm}
 
-\begin{verbbox}
+\begin{verbatim}
 solve(A, y)
 ## [1] 0.4999999722444252 0.5000000277555748
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.1cm}
 
-\begin{verbbox}
+\begin{verbatim}
 solve(A, yt)
 ## [1] 5000.499858862901 -4999.499858862901
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \normalsize
 
@@ -179,16 +191,16 @@ $$
 H_{ij} = \frac{1}{i + j - 1},
 $$
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 hilbert = function(n) {
   i = 1:n 
   return(1 / outer(i - 1, i, "+"))
 }
 hilbert(4)
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 ##                    [,1]               [,2]
 ## [1,] 1.0000000000000000 0.5000000000000000
 ## [2,] 0.5000000000000000 0.3333333333333333
@@ -199,12 +211,12 @@ hilbert(4)
 ## [2,] 0.2500000000000000 0.2000000000000000
 ## [3,] 0.2000000000000000 0.1666666666666667
 ## [4,] 0.1666666666666667 0.1428571428571428
-\end{verbbox}
-\col
+\end{verbatim}
+
 \framebreak
 
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 foo = function(n) {
   cond = sapply(n, function(i) {
     norm(hilbert(i)) * norm(solve(hilbert(i)))
@@ -220,8 +232,8 @@ foo(4:10)
 ## [5,] 8 3.387279082022739e+10
 ## [6,] 9 1.099650993366049e+12
 ## [7,] 10 3.535372424347476e+13
-\end{verbbox}
-\col
+\end{verbatim}
+
 \end{vbframe}
 
 
@@ -236,15 +248,15 @@ A problem is called ill-posed if it violates at least one of these properties. H
 \end{vbframe}
 
 
-\begin{vbframe}{\enquote{Do not invert that matrix}}
+\begin{vbframe}{"Do not invert that matrix"}
 
 \textbf{Important:} \textbf{Never} solve an LES (numerically) using $\xv = \Amat^{-1} \yv$.
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 solve(A) %*% y
-\end{verbbox}
-\col
+\end{verbatim}
+
 \lz
 
 \normalsize
@@ -262,10 +274,10 @@ The condition inflates: $\|\Amat\|^2\|\Amat^{-1}\|^2$
 \textbf{Better:} Solve directly by
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 solve(A, y)
-\end{verbbox}
-\col
+\end{verbatim}
+
 \lz
 \normalsize
 \textbf{Advantages:}

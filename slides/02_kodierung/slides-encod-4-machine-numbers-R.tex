@@ -1,15 +1,26 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%set_parent("../style/preamble.Rnw")
-%@
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{2}{Machine numbers for $\R$}
-\lecture{Computerintensive Methods}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Encoding
+}{% Lecture title
+Machine numbers for $\R$
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item IEEE745
+  \item Floating point number
+  \item Distance
+}
+
 
 
 
@@ -51,7 +62,7 @@ Characterized by:
 
 Representation:
 $$
-x = S \cdot b^e \cdot (1 + \sum_{i=1}^m u_{i} b^{-i}) %\quad \mbox{or} \quad \mbox (\pm, e, (u_1,\dots,u_m))
+x = S \cdot b^e \cdot (1 + \sumim u_{i} b^{-i}) %\quad \mbox{or} \quad \mbox (\pm, e, (u_1,\dots,u_m))
 $$
 Thus: a sign bit, an exponent and the significant digits (binary coded with mantissa bits $u_i, i = 1,..., m$).
 %In implementations are usually $b = 2$ and the exponent is a binary coded integer.
@@ -142,7 +153,7 @@ $$
 
 \lz
 
-If all exponent bits are $0$, a \textbf{denormalized} number is stored. The mantissa before the \enquote{decimal} point is then $0$. In this case:
+If all exponent bits are $0$, a \textbf{denormalized} number is stored. The mantissa before the "decimal" point is then $0$. In this case:
 $$
 x = S \cdot b^{e_{\min}} \cdot \left(\sum_{i=1}^m u_{i} b^{-i}\right) %\quad \mbox{or} \quad \mbox (\pm, e, (u_1,\dots,u_m))
 $$
@@ -288,8 +299,8 @@ The corresponding values in the decimal system:
 \end{vbframe}
 
 \begin{vbframe}
-\frametitle{Types in C (programming language)}
-Most programming languages provide several fixed-point and floating point representations. C has:
+\frametitle{Types in \texttt{C} (programming language)}
+Most programming languages provide several fixed-point and floating point representations. \texttt{C} has:
 \begin{description}
 \item[Fixed:] signed short int, unsigned short int, signed long int, \ldots
 \item[Float:] float, double, long double
@@ -327,11 +338,11 @@ computing power.
 \end{vbframe}
 
 
-\begin{vbframe}{Floating point numbers in \pkg{R}}
+\begin{vbframe}{Floating point numbers in \texttt{R}}
 
 \begin{itemize}
-\item By default, \pkg{R} displays $6$ decimal places. This can be adjusted using the command \texttt{options(digits = m)}.
-\item Internally, \pkg{R} calculates all floating point operations in double precision (IEEE 754, double precision, 64 bit).
+\item By default, \texttt{R} displays $6$ decimal places. This can be adjusted using the command \texttt{options(digits = m)}.
+\item Internally, \texttt{R} calculates all floating point operations in double precision (IEEE 754, double precision, 64 bit).
 % single precision is only available as a memory type for the interfaces.
 \item \texttt{.Machine} contains all information about the encoding
   % for example smallest and largest floating point number (\texttt{double.xmin, double.xmax}), t
@@ -339,78 +350,78 @@ computing power.
 
 \framebreak
 \lz
-\begin{verbbox}
+\begin{verbatim}
 .Machine$double.base      # base
 ## [1] 2
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
-\begin{verbbox}
+\begin{verbatim}
 .Machine$double.digits    # number of mantissa bits
 ## [1] 53
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
-\begin{verbbox}
+\begin{verbatim}
 .Machine$double.exponent  # number of exponent bits
 ## [1] 11
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
-\begin{verbbox}
+\begin{verbatim}
 .Machine$double.xmin      # smallest float
 ## [1] 2.225074e-308
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
-\begin{verbbox}
+\begin{verbatim}
 .Machine$double.xmax      # largest float
 ## [1] 1.797693e+308
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \framebreak
 
 %What is going on here?
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 0.1 + 0.2 == 0.3
 ## [1] FALSE
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
 \normalsize
 \begin{itemize}
-\item \texttt{sprintf} (wrapper for the corresponding C function) outputs a formatted string. Both numbers cannot be represented exactly (hence, also not their sum):
+\item \texttt{sprintf} (wrapper for the corresponding \texttt{C} function) outputs a formatted string. Both numbers cannot be represented exactly (hence, also not their sum):
 \footnotesize
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 sprintf("%.20f", 0.1)    # decimal notation (20 digits)
 ## [1] "0.10000000000000000555"
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 sprintf("%.20f", 0.2)
 ## [1] "0.20000000000000001110"
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 sprintf("%.20f", 0.1 + 0.2)
 ## [1] "0.30000000000000004441"
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
 \normalsize
 \item This problem can be avoided by using the comparison \textbf{with tolerance} \texttt{all.equal} instead of the exact comparison \texttt{==}.
 \footnotesize
 \vspace{0.2cm}
-\begin{verbbox}
+\begin{verbatim}
 all.equal(0.1 + 0.2, 0.3)
 ## [1] TRUE
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \end{itemize}
 \normalsize
@@ -805,7 +816,7 @@ The distance between the representable numbers is important:
  \item The largest real number less than $1$ is $1-b^{-m-1}$ \\
  ($e = -1, u_0 = 0$ and $u_1 = \hdots = u_m = 1$). \\[2mm]
  \item This results in important constants called
-  \enquote{machine epsilons}:
+  "machine epsilons":
   $$
     \label{eq:2}
     \epsilon_{\min} = b^{-m-1} \qquad % https://en.wikibooks.org/wiki/Floating_Point/Epsilon
@@ -848,52 +859,51 @@ This machine epsilon is our minimal accuracy.
 % o.B.d.A. sei $x\ge 0$, $b^{e-1}\le x< b^e$, und die
 % Gleitkommadarstellung
 % $$
-%   \tilde x = b^e \sum_{i=1}^m u_i b^{-i}
+%   \xt = b^e \sum_{i=1}^m u_i b^{-i}
 % $$
 % Der absolute Abstand zweier Maschinenzahlen im Intervall
 % $[b^{e-1},b^e]$ ist $b^{e-m}$, daher ist der absolute Fehler betragsmäßig
 % $$
-%   |\tilde x - x| \le b^{e-m}
+%   |\xt - x| \le b^{e-m}
 % $$
 % sowie der relative Fehler betragsmäßig
 % $$
-% \frac{|\tilde x - x|}{x} \le \frac{b^{e-m}}{x}
+% \frac{|\xt - x|}{x} \le \frac{b^{e-m}}{x}
 %   \le \frac{b^{e-m}}{b^{e-1}} = b^{1-m} = \epsm
 % $$
 % Allgemein gilt daher
 % $ \qquad \qquad
-%   |\tilde x - x| \le \epsm |x|
+%   |\xt - x| \le \epsm |x|
 % $ \\  Bei Rundung gewinnt man noch einen Faktor 1/2.
 
 \framebreak
 \lz
-\begin{verbbox}
+\begin{verbatim}
 options(digits = 20)
 1 + 1 / (2^53)
 ## [1] 1
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
-\begin{verbbox}
+\begin{verbatim}
 1 + 1 / (2^52)
 ## [1] 1.0000000000000002
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
-\begin{verbbox}
+\begin{verbatim}
 1 / (2^52)
 ## [1] 2.2204460492503131e-16
-\end{verbbox}
-\col
+\end{verbatim}
+
 \vspace{0.3cm}
-\begin{verbbox}
+\begin{verbatim}
 .Machine$double.eps
 ## [1] 2.2204460492503131e-16
-\end{verbbox}
-\col
+\end{verbatim}
+
 
 \end{vbframe}
-
 
 \endlecture
 \end{document}

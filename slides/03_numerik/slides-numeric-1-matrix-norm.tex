@@ -1,16 +1,26 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%set_parent("../style/preamble.Rnw")
-%options(digits = 16)
-%@
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{3}{Matrix Norm}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Numerics
+}{% Lecture title
+Matrix Norm
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Definition of matrix norm
+  \item Inequalities of matrix norm
+}
+
+%\lecture{CIM1 Statistical Computing}
 
 % \begin{vbframe}{Notation}
 % 
@@ -36,7 +46,7 @@
 \vspace*{-0.1cm}
 \textbf{Motivation:}
 
-In statistics we are often confronted with matrices (e.g. design matrix $X$). To perform an error analysis for related LES, meaning we want to know if the given problem is well-conditioned, the matrix norm is used.
+In statistics we are often confronted with matrices (e.g. design matrix $\Xmat$). To perform an error analysis for related LES, meaning we want to know if the given problem is well-conditioned, the matrix norm is used.
 
 \lz
 \vspace*{-0.1cm}
@@ -52,7 +62,7 @@ $\|\cdot\| : \R^n \rightarrow \R^+_0$ is called norm, if:
 
 General $p$ norm of a vector $\xv \in \R^n$:
 $$
-\|\xv\|_p = \left(\sum\limits_{i=1}^n |x_i|^p\right)^{1/p},
+\|\xv\|_p = \left(\sumin |x_i|^p\right)^{1/p},
 $$
 where $\|\xv\|_\infty = \max_i (|x_i|)$.\\
 \medskip
@@ -106,8 +116,8 @@ Most important to us is $\|.\| := \|.\|_2$
 
 Intuition matrix norm:
 \begin{itemize}
-\item Longest possible \enquote{stretch} of a vector of length 1 when multiplied by $\Amat$.
-\item For spectral norm: longest possible \enquote{stretch} in direction of the eigenvector of $\Amat^T\Amat$ (major axis of the ellipse) belonging to the largest absolute eigenvalue.
+\item Longest possible "stretch" of a vector of length 1 when multiplied by $\Amat$.
+\item For spectral norm: longest possible "stretch" in direction of the eigenvector of $\Amat^T\Amat$ (major axis of the ellipse) belonging to the largest absolute eigenvalue.
 \end{itemize}
 
 \begin{center}
@@ -143,7 +153,6 @@ Left: Vectors of length 1. Right: Vectors after multiplication by $A$.
   
 \end{enumerate}
 
-
 % \begin{eqnarray*}
 % \|\mathbf{AB}\|_p &=& \sup \left( \frac{\|\mathbf{ABx}\|_p}{\|\xv\|_p} \right) \\
 %   &=& \sup \left( \frac{\|\mathbf{ABx}\|_p}{\|\xv\|_p} \frac{\|\mathbf{Bx}\|_p}{\|\mathbf{Bx}\|_p} \right) \\
@@ -154,8 +163,6 @@ Left: Vectors of length 1. Right: Vectors after multiplication by $A$.
 % \end{eqnarray*}
 
 \end{vbframe}
-
-
 
 \endlecture
 \end{document}

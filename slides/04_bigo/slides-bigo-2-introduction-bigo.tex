@@ -1,20 +1,26 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%library(microbenchmark)
-%library(reshape2)
-%library(ggplot2)
-%set_parent("../style/preamble.Rnw")
-%
-%set.seed(1)
-%@
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{4}{Introduction to Big O}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Big O
+}{% Lecture title
+Introduction to Big O
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Definition of Big O
+  \item Classes of functions
+}
+
+%\lecture{CIM1 Statistical Computing}
 
 \begin{vbframe}{Efficiency of algorithms}
 
@@ -68,7 +74,7 @@ Typical input sizes are:
 \begin{vbframe}{Introductory example}
 \lz
 \footnotesize
-\begin{verbbox}
+\begin{verbatim}
 isElement = function(xs, el) {
   for (x in xs) {
     if (identical(x, el))
@@ -76,17 +82,17 @@ isElement = function(xs, el) {
   }
   return(FALSE)
 }
-\end{verbbox}
-\col
+\end{verbatim}
+
 \lz
-\begin{verbbox}
+\begin{verbatim}
 ## expr mean
 ## 1 isElement(1:1000, 1000L) 308.286
 ## 2 isElement(1:2000, 2000L) 626.519
 ## 3 isElement(1:5000, 5000L) 1684.067
 ## 4 isElement(1:10000, 10000L) 3137.450
-\end{verbbox}
-\col
+\end{verbatim}
+
 %<<>>=
 %isElement = function(xs, el) {
 %  for (x in xs) {
@@ -255,7 +261,7 @@ $$
         $$f = \order(n^2)$$
         although it is formally incorrect:\\
     $n^2 = \order(n^2)$ and $n^2/2 = \order(n^2)$, but $n^2 \neq n^2/2$
-    \item In this context, the \enquote{$=$} is not intended to be a sign of equality, but a simple \enquote{is}
+    \item In this context, the "$=$" is not intended to be a sign of equality, but a simple "is"
   \end{itemize}
 \end{vbframe}
 
@@ -288,8 +294,6 @@ The table is sorted from slow to fast growing for $c > 1$
 \end{center}
 
 \end{vbframe}
-
-
 
 \endlecture
 \end{document}

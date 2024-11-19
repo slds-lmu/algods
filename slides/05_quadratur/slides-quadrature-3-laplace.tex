@@ -1,22 +1,25 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%library(ggplot2)
-%set_parent("../style/preamble.Rnw")
-%options(digits = 16)
-%@
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{5}{Laplace's method}
-\lecture{CIM1 Statistical Computing}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Quadrature
+}{% Lecture title
+Laplace's method
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Laplace's method
+}
 
-
-
-%\section{Laplace's method}
+%\lecture{CIM1 Statistical Computing}
 
 \begin{vbframe}{Laplace's method}
 
@@ -34,7 +37,7 @@
 \begin{itemize}
 \item The mass concentrates on a small area around a center and the function has very rapidly decreasing tails
 %approaches $0$ fast for $x \to \pm \infty$ 
-(\enquote{similarity} to the density of a normal distribution)
+("similarity" to the density of a normal distribution)
 \item The function we want to integrate is the density of a random variable that is approximately normally distributed
 \end{itemize}
 
@@ -125,7 +128,7 @@ But instead of the step function we would like to choose a function that approxi
 
 \lz
 
-\textbf{How?} We center and scale the density function of the normal distribution such that it approximates $f$ \enquote{best possible}.
+\textbf{How?} We center and scale the density function of the normal distribution such that it approximates $f$ "best possible".
 
 \framebreak
 
@@ -180,7 +183,7 @@ $$
 
 \framebreak
 
-Within the integral there is now an expression which \enquote{almost} corresponds to the density of a normal distribution with expectation $\mu := x_0$ and variance $\sigma^2 := -h''(x_0)^{-1}$:
+Within the integral there is now an expression which "almost" corresponds to the density of a normal distribution with expectation $\mu := x_0$ and variance $\sigma^2 := -h''(x_0)^{-1}$:
 
 \vspace{-0.3cm}
 

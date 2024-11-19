@@ -1,16 +1,24 @@
+\documentclass[11pt,compress,t,notes=noshow, xcolor=table]{beamer}
+\input{../../style/preamble}
 
-%<<setup-child, include = FALSE>>=
-%library(knitr)
-%set_parent("../style/preamble.Rnw")
-%@
-
-\input{../../2021/style/preamble4tex}
+% latex-math includes as needed
 \input{../../latex-math/basic-math}
+\input{../../latex-math/basic-ml}
+
+% Lecture title always has to be there
+\title{Algorithms and Data Structures}
 
 \begin{document}
 
-\lecturechapter{2}{Number encoding}
-\lecture{Computerintensive Methods}
+\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
+Encoding
+}{% Lecture title
+Number encoding
+}{% Relative path to title page image: Can be empty but must not start with slides/
+}{% Learning goals, wrapped inside itemize environment
+  \item Codes for numbers
+}
+
 
 
 \begin{vbframe}{Codes for numbers}
@@ -40,7 +48,7 @@
    to the set of the $2^N$ available machine numbers.
 % \item Many people keep dealing with computer arithmetic
   % for a more \quota{esoteric} subject.
-\item A fallacy: \enquote{Computer calculations are always correct.}
+\item A fallacy: "Computer calculations are always correct."
 % \item Unfortunately, that's not true, in many cases computers are capable of
   % not even the basic accounting types.
 \item Basic knowledge of computer arithmetic is essential for anyone who mainly uses computers for calculations, i.e. especially for statisticians.
@@ -48,7 +56,7 @@
 
 \framebreak
 
-\enquote{Bug}-Report in \pkg{R}:
+"Bug"-Report in \texttt{R}:
 \small
 \begin{verbatim}
    From: focus17@libero.it
@@ -153,12 +161,11 @@ On Jul 9, 2010, at 8:46 AM, Trafim Vanishek wrote:
   > where is the trick here?
   >   And how can I end up with the right answer?
 
-See R FAQ 7.31
+See \texttt{R} FAQ 7.31
 > sprintf("%.20f", 100 * .58)
 [1] "57.99999999999999289457"
 \end{verbatim}
 \end{vbframe}
-
 
 \endlecture
 \end{document}
