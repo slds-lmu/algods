@@ -10,16 +10,12 @@
 
 \begin{document}
 
-\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
-Encoding
-}{% Lecture title
-Machine numbers for $\Z$
-}{% Relative path to title page image: Can be empty but must not start with slides/
-}{% Learning goals, wrapped inside itemize environment
+\titlemeta{Encoding}{Machine numbers for $\Z$}{figure_man/1complement}
+{
   \item Signed magnitude representation
-  \item Excess encoding
   \item One's complement
   \item Two's complement
+  \item Integer overflow
 }
 
 
@@ -509,7 +505,7 @@ str(.Machine$integer.max + 1L)
 \normalsize
 
 \begin{vbframe}
-\frametitle{R in 64-bit systems}
+\frametitle{\texttt{R} in 64-bit systems}
 \begin{itemize}
   \item In 2010, the 64-bit version of \texttt{R} was released.
   \item \textbf{But:} integers are still encoded in 32-bit.

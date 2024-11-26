@@ -10,12 +10,9 @@
 
 \begin{document}
 
-\titlemeta{% Chunk title (example: CART, Forests, Boosting, ...), can be empty
-Matrix Approximation
-}{% Lecture title
-Low-Rank Approximation
-}{% Relative path to title page image: Can be empty but must not start with slides/
-}{% Learning goals, wrapped inside itemize environment
+\titlemeta{Matrix Approximation}{Low-Rank Approximation}
+{figure_man/termdocument1.png}
+{
   \item Low-Rank Approximation
 }
 %\lecture{CIM1 Statistical Computing}
@@ -87,7 +84,7 @@ $$
 \bm{X} \quad = \quad \bm{W} \quad \cdot \quad \bm{H}
 $$
 \begin{center}
-\includegraphics[width=0.6\textwidth]{figure_man/ignore/pixel.png}
+\includegraphics[width=0.6\textwidth]{figure_man/pixel.png}
 \end{center}
 
 \vfill
@@ -144,7 +141,7 @@ $$
 Suppose we want to display various newspaper articles in a document-term matrix.
 
 \begin{center}
-\includegraphics[width=0.7\textwidth]{figure_man/ignore/matrixapproxi_s8.png}
+\includegraphics[width=0.7\textwidth]{figure_man/matrixapproxi_s8.png}
 \end{center}
 
 The $k$ columns in $\mathbf{W}$ represent different topics, and the entries of $\mathbf{W}$ can be interpreted as
@@ -154,7 +151,7 @@ w_{ij} = \text{connection of word } i \text{ and subject } j
 $$
 
 \begin{center}
-\includegraphics[width=0.7\textwidth]{figure_man/ignore/matrixapproxi_s9.png}
+\includegraphics[width=0.7\textwidth]{figure_man/matrixapproxi_s9.png}
 \end{center}
 
 The entries of $\mathbf{H}$ can be interpreted as
